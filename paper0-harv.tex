@@ -17,7 +17,7 @@
 %% Template article for Elsevier's document class `elsarticle'
 %% with harvard style bibliographic references
 
-\documentclass[preprint,12pt,authoryear]{elsarticle}
+\documentclass[review,12pt,authoryear]{elsarticle}
 
 %% Use the option review to obtain double line spacing
 %% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
@@ -42,13 +42,32 @@
 %% The amsthm package provides extended theorem environments
 %% \usepackage{amsthm}
 
+%% Commands for TODO notes
+\usepackage{xargs}                      % Use more than one optional parameter in a new commands
+\usepackage[pdftex,dvipsnames]{xcolor}  % Coloured text etc.
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+
+
+%% tabelas mais bonitas
+\usepackage{booktabs}
+
+% Para adicionar espaços após comandos
+\usepackage{xspace}
+
+\input{symbols/symb_otsp}
+
 %% The lineno packages adds line numbers. Start line numbering with
 %% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
 %% for the whole article with \linenumbers.
 %% \usepackage{lineno}
 
-\journal{..}
+\journal{European Journal of Operational Research}
 
+\setlength {\marginparwidth}{2cm} % para os TODOs
 \begin{document}
 
 \begin{frontmatter}
@@ -78,7 +97,7 @@
 %%            country={}}
 %% \fntext[label3]{}
 
-\title{} %% Article title
+\title{A title...} %% Article title
 
 %% use optional labels to link authors explicitly to addresses:
 %% \author[label1,label2]{}
@@ -96,15 +115,29 @@
 %%             state={},
 %%             country={}}
 
-\author{} %% Author name
+\author[1]{João Paulo Francisco da Silva} \ead{joao.silva@ic.unicamp.br} %% Author name
+\author[1]{Lucas Ribeiro Bortoletto} \ead{l173422@dac.unicamp.br}
+\author[1]{Rafael Crivellari Saliba Schouery} \ead{rcss@unicamp.br}
+\author[2]{Edilson Arruda \corref{cor1}} \ead{e.f.arruda@southampton.ac.uk}
+
+\cortext[cor1]{Corresponding author}
 
 %% Author affiliation
-\affiliation{organization={},%Department and Organization
+\affiliation[1]{organization={Institute of Computing, University of Campinas},%Department and Organization
             addressline={}, 
-            city={},
-            postcode={}, 
+            city={Campinas},
+            postcode={13083–852}, 
+            state={SP},
+            country={Brazil}}
+
+\affiliation[2]{organization={Centre for Healthcare Analytics, Southampton Business School, University of Southampton},%Department and Organization
+            addressline={}, 
+            city={Southampton},
+            postcode={13083–852}, 
             state={},
-            country={}}
+            country={UK}}
+
+
 
 %% Abstract
 \begin{abstract}
@@ -113,15 +146,15 @@ Abstract text.
 \end{abstract}
 
 %%Graphical abstract
-\begin{graphicalabstract}
-%\includegraphics{grabs}
-\end{graphicalabstract}
+% \begin{graphicalabstract}
+% %\includegraphics{grabs}
+% \end{graphicalabstract}
 
 %%Research highlights
-\begin{highlights}
-\item Research highlight 1
-\item Research highlight 2
-\end{highlights}
+% \begin{highlights}
+% \item Research highlight 1
+% \item Research highlight 2
+% \end{highlights}
 
 %% Keywords
 \begin{keyword}
@@ -140,18 +173,222 @@ Abstract text.
 
 \section{Literature Review\label{sec:lit_review}}
 
-\section{Preliminaries\label{sec:pre}}
-% (talvez não precise)
-
 \section{Problem Description\label{sec:descr}}
 
-\section{Our Approach (change this title and the order, maybe)}
+\subsection{Hospital Setting\label{sec:hosp_set}}
+\improvement[author=Joao, inline]{Nessa seção, falta pensar melhor em como descrever a forma que o hospital funciona em relação ao gerenciamento de filas (um dos problemas que vamos tratar no trabalho -- RQ) e como o hospital trata da alocação de pacientes nos blocos (outro problema que vamos tratar -- newsvendor. Do jeito em que está, es tou focando mais na parte de alocaçã ode salas, somente.}
+HC - Unicamp is a university hospital located in the city of Campinas, São Paulo, Brazil~\citep{hc_unicamp_historia}. 
+It is a high-complexity hospital that serves around $6.5$ million patients from all over the region of Campinas and other regions of Brazil, handling around $500,000$ cases per year. 
+Of these, about $10,000$ are elective surgeries, while the remainder involve ambulatory consultations and emergency care~\citep{hc_unicamp_dados}.
+In addition, it is a teaching hospital, where doctors, nurses, and other health professionals are trained. 
+It is also a research hospital, where research is conducted in various areas of medicine, as well as interdisciplinary research in collaboration with other research institutions.
 
-\subsection{(R,Q) Policy for Queueing management)\label{sec:rq_pol}}
+This hospital serves an elective surgery patient by a complex flow that involves multiple stages, from the pre-operative to post-operative care.
+This process is illustrated in Figure~\ref{fig:patient_flow}, which shows the main steps in the patient journey through the hospital.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/patient_flow.png}
+    \caption{Patient flow at HC - Unicamp.\label{fig:patient_flow}}
+\end{figure}
+\unsure[author=Joao]{Talvez eu deva remover o upstream e downstream do fluxo por não envolvermos isso nesse paper?}
 
-\subsection{Newsvendor Model for Overtime Management\label{sec:nv_model}}
+This flow begins with queueing management, which starts at the patient's local consultation and proceeds through the regional bed regulation centre -- a government institution responsible for managing hospital beds in the region. 
+The entry into HC - Unicamp most likely occurs in scheduled appointments with institutional physicians. 
+However, there are emergency cases that eventually become elective, and those are also included in this process.
+Once referred, patients are assigned to queues according to medical speciality. 
+Efficient management at this stage is essential\improvement[author=Joao]{Enfatizar que o trabalho trata esse gerenciamento de filas com o (R,Q)}, as it directly impacts waiting times and determines the load distribution across surgical services, influencing the long-term planning of operating theatre usage~\citep{Siqueira2018INTO}.
 
-\subsection{MIP model for OT allocation\label{se:ot}}
+In the upstream units management phase\improvement[author=Joao]{out of our scope. Preciso informar o leitoer que não trataremos up/downstream}, the patient arrives at the scheduled surgery day and undergoes clinical assessment. 
+If ICU support is required before (or even post-surgery), a bed must be secured in advance; otherwise, a ward bed must also be available after the surgery. 
+They then undergo a pre-anaesthetic evaluation, preoperative tests, and surgical checklist procedures. 
+Should any exam contraindicate surgery, the case is suspended and the patient may return home or wait in a ward bed until the next available surgery date according to the complexity of their condition.
+Otherwise, the patient is transferred to the operating theatre, where the surgery and post-operative cleaning take place.
+This phase plays a critical role in minimising last-minute cancellations and maximising surgical theatre throughput.
+
+After confirmation of the surgery, the patient enters the operating theatre.
+At this point, the patient is under the care of a surgical team and an anaesthetist.
+Tasks included in this stage are another surgical checklist, the procedure, and the post-operative cleaning of the theatre.
+This step directly affects the utilisation of operating theatres and the overall throughput of surgical procedures.
+
+The final stage, downstream units management, begins with transfer to the Post-Anaesthesia Recovery Unit (PARU). 
+There is a rare case when the patient is transferred directly to the ICU depending on the clinical status, but this is not the norm.
+Following stabilisation, the patient is either moved from PARU to the ward or the ICU, and eventually discharged. 
+There are cases in which the patient has complications and needs to be readmitted to the ICU, which are also illustrated in Figure~\ref{fig:patient_flow}.
+Finally, the patient is discharged from the hospital, completing the surgical journey.
+This stage determines the turnover rate of surgical patients and influences how quickly new procedures can be scheduled. 
+Therefore, effective downstream management is important for optimising operating theatre availability. 
+
+The hospital has $15$ theatres for elective surgeries: $13$ in the Elective Surgery Centre (ESE), and $2$ in the Ambulatorial Surgery Centre (ASC), which works only in the morning.
+These theatres are heterogeneous in terms of infrastructure and equipment, with compatibilities across the specialities that may vary.
+
+Each month, the set of theatres must be allocated to the $41$ possible medical subspecialities.
+We also define relevant subsets in relation to them: (i) subspecialities that require two consecutive blocks; (ii) subspecialities with circumstantial demands, which do not occur every month but are mandatory; (iii) priority subspecialities that take precedence over others in the allocation choice; and (iv) transplant subspecialities.
+
+The planning horizon covers approximately $20$ working days per month, each divided into two shifts (morning and afternoon) -- in this case, the day and shift define a time block of $6$ hours.
+The hospital's scheduling policy is to allocate each block to a single subspeciality, with the possibility of assigning the same subspeciality to multiple blocks in the same theatre.
+This approach allows for sequential scheduling of blocks, meaning that if a subspeciality is allocated to a theatre in the morning, it can also be allocated to the same theatre in the afternoon, provided that the subspeciality is compatible with the theatre and the respective time block.
+
+The allocation of subspecialities depends on the availability of medical teams and anaesthetists. 
+For a subspeciality to occupy a block\change[author=Joao]{Preciso definir bem o que é ``block'' e o que é ``allocation'', porqur às vezes trato como se fosse a mesma coisa e as vezes não...}, there must be a team available on the respective day and shift. 
+In addition, allocations that require an anaesthetist cannot exceed the number of professionals available in each period. 
+For example, if there are $15$ anaesthetists on a given morning, the number of allocations requiring anaesthesia must be at most $15$.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/trecho_escala.png}
+    \caption{Excerpt from a week's operating theatre schedule.\label{fig:ex_escala}}
+\end{figure}
+
+Figure~\ref{fig:ex_escala} illustrates an excerpt from the surgical schedule.
+Each row represents a time block, and each column represents a theatre; allocations to subspecialities are highlighted by colour (blue for procedures that require an anaesthetist, grey for those that do not).
+The significant number of unallocated slots (blank positions) reflects the complexity of the constraints in this case study.
+Note that the allocations written in red indicate the transplant surgeries, which require two theatres allocated in the same time block.
+
+Schedules such as the one in Figure~\ref{fig:ex_escala} were entirely prepared manually in electronic spreadsheets, requiring more than a day of work. 
+Therefore, automating this process optimises the time spent, freeing up human resources for other hospital activities.
+Additionally, our approach finds an optimal schedule solution according to the hospital's policy, which is not guaranteed by manual scheduling.
+\improvement[author=Joao, inline]{Preciso dizer qual problema estamos resolvendo (alocação de salas), e que ele é parte de todo um esquema que inclui: gerenciamento de filas, alocação de pacientes das filas, alocação de salas}
+
+\section{Mathematical Formulation\label{sec:math_form}}
+
+\subsection{Preliminaries Concepts\label{sec:pre}}
+
+\subsection{$(R,Q)$ surgery scheduling policies: long-term distributions\label{sec:rq_pol}}
+
+\subsection{Managing Surgery Cancellations via a Newsvendor-Based Model\label{sec:nv_model}}
+
+\subsection{Operating Theatre Scheduling Model\label{sec:ot}}
+\info[author=Joao]{Depois preciso ``sincronizar'' essa seção com o todo que estamos produzindo, i.e., essa etapa de alocação vem depois das etapas de gerenciamento de filas e etc.}
+We modeled a deterministic MILP\info[author=Joao]{Depois preciso garantir a introdução dessa sigla em seções anteriores.} formulation for the Operating Theatre Scheduling Problem (OTSP), which focuses on the tactical allocation of operating theatre blocks to medical subspecialities.
+
+To formulate the OTSP, we use the Table~\ref{tab:symb} notation.
+Note that the variable $\blockvar$ is a variable that indicates whether the theatre $\roomidx$ in the block $\blockidx$ is allocated to the subspeciality $\specialtyidx$.\unsure[author=Joao]{Isso bate com o comentario que ja fiz la em cima: preciso sincronizar no texto o que é bloco e o que é alocação!}
+Therefore, throughout the text, we will use the term \textit{allocation} to refer to an allocated speciality.
+
+\begin{table}
+    \centering
+    \caption{\label{tab:symb}Table of Symbols.}
+    \scriptsize
+    \begin{tabular}{cl}
+    \toprule
+    \textbf{Set}                    & \textbf{Description}                                                                       \\
+    \midrule
+        $\roomset$                       & Operating theatres (both elective and outpatient)                       \\
+        $\planninghorizonset$            & Planning horizon days, such that $\planninghorizonset = \{1, 2, ..., \days\}$  \\
+        $\timeperiodset$                 & Time periods (morning or afternoon), such that $\timeperiodset = \{\text{morning}, \text{afternoon}\}$          \\
+        $\blockset$                      & Blocks, such that $\blockset = \planninghorizonset \times \timeperiodset$     \\
+        $\specialtyset$                  & Surgical subspecialities                                                                \\
+        $\specialtymset$                 & Surgical subspecialities that must have two sequential blocks allocated,\\
+                                         & such that $\specialtymset \subseteq \specialtyset$          \\
+        $\specialtycset$                 & Circumstantial surgical subspecialities (do not occur every month),                      \\
+                                         & but have high priority, such that $\specialtycset \subseteq \specialtyset$              \\
+        $\specialtyprset$                & Priority surgical subspecialities, such that $\specialtyprset \subseteq \specialtyset$  \\
+        $\specialtytxset$                & Organ transplant surgical subspecialities, such that $\specialtytxset \subseteq \specialtyset$                                                                                                              \\
+    \midrule
+    \textbf{Index}                           & \textbf{Description}                                                                  \\
+    \midrule
+        $\roomidx$                            & Operating theatre, with $\roomidx \in \roomset$                                       \\
+        $\planninghorizonidx$                 & Planning horizon day, with $\planninghorizonidx \in \planninghorizonset$ \\
+        $\timeperiodidx$                      & Time period (morning or afternoon), with $\timeperiodidx \in \timeperiodset$           \\
+        $\blockidx$                           & Surgery block, with $\blockidx \in \blockset$                                    \\
+        $\specialtyidx$                       & Surgical subspeciality, with $\specialtyidx \in \specialtyset$                      \\
+    \midrule
+    \textbf{Parameter}                        & \textbf{Description}                                                                  \\
+    \midrule
+        $\allowedrooms_{\roomidx\blockidx\specialtyidx}$   & 1 if theatre $\roomidx \in \roomset$ in block $\blockidx \in \blockset$ can              \\
+                                                           & be used by subspeciality $\specialtyidx \in \specialtyset$; 0 otherwise          \\
+        $\demand_{\specialtyidx}$                          & Number of surgeries demanded for subspeciality $\specialtyidx \in \specialtyset$                       \\
+        $\specteams_{\blockidx\specialtyidx}$              & Number of teams from subspeciality $\specialtyidx \in \specialtyset$ available in block  $\blockidx \in \blockset$ \\
+        $\numbersanests_{\blockidx}$                       & Number of anesthesiologists available in block $\blockidx \in \blockset$                         \\
+        $\needanest_{\specialtyidx}$                       & 1 if subspeciality $\specialtyidx \in \specialtyset$ requires an anesthesiologist; 0 otherwise         \\    
+        $\mindeficit_{\specialtyidx}$                      & Minimum number of blocks required for subspeciality $\specialtyidx \in \specialtyset$            \\
+        $\ub$                                              & Upper bound on the number of blocks to allocate, relative to each subspeciality $\specialtyidx \in \specialtyset$   \\
+    \bottomrule
+    \textbf{Variable}                         & \textbf{Description}                                                                  \\
+    \midrule
+        $\blockvar$                                        & 1 if theatre $\roomidx \in \roomset$ in block $\blockidx \in \blockset$ is allocated to subspeciality $\specialtyidx \in \specialtyset$; 0 otherwise                \\
+        $\precvar$                                         & 1 if theatre $\roomidx \in \roomset$ on day $\planninghorizonidx \in \planninghorizonset$ is allocated exclusively to subspeciality $\specialtyidx \in \specialtyset$;\\
+                                                           & 0 otherwise                                  \\
+        $\integervar$                                      & Number of transplants to be performed in block $\blockidx \in \blockset$ by subspeciality $\specialtyidx \in \specialtyset$ \\
+        $\balancevar$                                      & Minimum proportion of allocations per demand among all subspecialities   \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+The Objective Functions (OFs) are organised according to the priority levels established by the hospital's guidelines.
+To reflect these priorities, we adopt a hierarchical optimisation strategy, as proposed in~\citet{Aringhieri2022Hierarchical}.
+Each OF is optimised sequentially, while respecting the optimal values obtained in the previous stages.
+
+Formally, the first OF is defined as
+\begin{align}
+\text{Max } \displaystyle F_1 & = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyprset} \blockvar, \label{eq:f0}
+\end{align}
+which aims to maximise the number of allocations for priority subspecialities ($\specialtyprset$).
+The second function is given by
+\begin{align}
+\text{Max } \displaystyle F_2 & = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyset} \blockvar, \label{eq:f1}
+\end{align}
+which seeks to maximise the total number of allocations, i.e., to increase theatre occupancy.
+The third objective function is defined as
+\begin{align}
+\text{Max } \displaystyle F_3 & = \balancevar, \label{eq:f2}
+\end{align}
+and its purpose is to promote balance in the distribution of allocations across subspecialities.
+This function works in conjunction with a model constraint that enforces that, for each $\specialtyidx \in \specialtyset$, the ratio between the number of allocations and the corresponding demand must be greater than or equal to $\balancevar$.
+Hence, OF~\eqref{eq:f2} maximises the lowest allocation-to-demand ratio among all subspecialities, ensuring a balanced allocation and avoiding over-concentration in a few subspecialities to the detriment of others.
+
+Finally, the fourth OF is given by
+\begin{align}
+\text{Max } \displaystyle F_4 & = \sum_{\roomidx \in \roomset} \sum_{\planninghorizonidx \in \planninghorizonset} \sum_{\specialtyidx \in \specialtyset} \precvar, \label{eq:f3}
+\end{align}
+which aims to maximise the number of subspecialities allocated sequentially on the same day in the same theatre.
+This is particularly important for improving the logistics of the surgical process, reducing the need for equipment and team transfers between theatres.
+
+With this, we formulate the theatre planning problem at HC - Unicamp by the $\modelname$ model, incorporating these OFs and constraints based on the hospital's current operational framework.\change[author=Joao]{O MODELO VAI MUDAR! De acordo com o que vai vir como input do RQ}
+
+{\footnotesize
+\linespread{1}\selectfont
+\begin{alignat}{4}
+    (\modelname) \quad & \omit\rlap{Maximize OFs~\eqref{eq:f0}-\eqref{eq:f3}}\nonumber\\
+    & \mbox{subject to} && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar  & \geq \mindeficit_{\specialtyidx}                    &\qquad & \forall\, \specialtyidx \in \specialtyset  \label{eq:m2-2}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar  & \leq (1 + \ub) \cdot \demand_{\specialtyidx}   &\qquad & \forall\, \specialtyidx \in \specialtyset \label{eq:m2-3}\\
+    &                  && \quad & \sum_{\specialtyidx \in \specialtyset} \blockvar                       & \leq 1     &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset \label{eq:m2-4}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\specialtyidx \in \specialtyset} \needanest_{\specialtyidx} \cdot \blockvar   & \leq \numbersanests_{\blockidx}                    &\qquad & \forall\, \blockidx \in \blockset \label{eq:m2-5}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \blockvar   & \leq \specteams_{\blockidx\specialtyidx}   &\qquad & \forall\, \,\blockidx \in \blockset,\,\specialtyidx \in \specialtyset \label{eq:m2-6}\\
+    &                  && \quad & \blockvar   & = 0    &\qquad & \forall\, \roomidx \in \roomset,\,\blockidx \in \blockset,\,\specialtyidx \in \specialtyset : \nonumber\\
+    &                  &&       &                                                          &                 &\qquad &\allowedrooms_{\roomidx\blockidx\specialtyidx} = 0 \label{eq:m2-7}\\
+    &                  && \quad & \blockvar + x_{\roomidx(\blockidx+1)\specialtyidx} - 1   & \leq \precvar   &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset,\,\specialtyidx \in \specialtyset, \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \planninghorizonidx \in \planninghorizonset :\,\text{ $\blockidx$ and $\blockidx+1$ are blocks} \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \text{ of the same day $\planninghorizonidx$}\label{eq:m2-8}\\
+    &                  && \quad & \blockvar + x_{\roomidx(\blockidx+1)\specialtyidx}       & \geq 2 \cdot \precvar   &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset,\,\specialtyidx \in \specialtyset, \planninghorizonidx \in \planninghorizonset : \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \planninghorizonidx \in \planninghorizonset : \text{ $\blockidx$ and $\blockidx+1$ are blocks} \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \text{ of the same day $\planninghorizonidx$}\label{eq:m2-9}\\
+    &                  && \quad & \blockvar       & = x_{\roomidx(\blockidx+1)\specialtyidx}   &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockmset,\,\specialtyidx \in \specialtymset,\, \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \planninghorizonidx \in \planninghorizonset : \text{ $\blockidx$ and $\blockidx+1$ are blocks} \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \text{ of the same day $\planninghorizonidx$}\label{eq:m2-10}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \blockvar   & = 2 \cdot \integervar  & \qquad & \forall\, \blockidx \in \blockset,\,\specialtyidx \in \specialtytxset  \label{eq:m2-11}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar      & = \demand_{\specialtyidx}     &\qquad & \forall\,\specialtyidx \in \specialtycset  \label{eq:m2-12}\\    
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \frac{\blockvar}{\demand_{\specialtyidx}}   & \geq \balancevar     &\qquad & \forall\,\specialtyidx \in \specialtyset  \label{eq:m2-13}\\ 
+    &                  &&       & \blockvar                           & \in \{0,1\}                 &        & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset,\, \specialtyidx \in \specialtyset\nonumber \\
+    &                  &&       & \precvar                            & \in \{0,1\}                 &        & \forall\, \roomidx \in \roomset,\, \planninghorizonidx \in \planninghorizonset,\, \specialtyidx \in \specialtyset\nonumber \\
+    &                  &&       & \integervar                         & \in \mathbb{Z_{+}}          &        & \forall\, \blockidx \in \blockset,\, \specialtyidx \in \specialtyset\nonumber\\
+    &                  &&       & \balancevar                         & \in \mathbb{R_{+}}.         &        &\nonumber
+\end{alignat}
+}
+
+Constraints~\eqref{eq:m2-2} and~\eqref{eq:m2-3} impose minimum and maximum bounds on the allocation of each subspeciality.
+The parameter $\mindeficit_{\specialtyidx}$, typically set to low values (between 1 and 3), ensures that no subspeciality is left completely unattended.
+The upper bound, governed by $\ub \in [0,1]$, restricts allocations to at most $(1+\ub)$ times the demand $\demand_{\specialtyidx}$, avoiding over-allocation beyond a reasonable limit.\change[author=Joao]{Essas restrições vão mudar, de acordo com os inputs do gerenciamento de filas}
+
+Constraint~\eqref{eq:m2-4} ensures that each theatre and time block receives at most one subspeciality.
+Constraint~\eqref{eq:m2-5} limits the number of allocations that require anaesthetists according to their availability $\numbersanests_{\blockidx}$ in each block.
+Constraint~\eqref{eq:m2-6} restricts the allocation of each subspeciality based on the availability of $\specteams_{\blockidx\specialtyidx}$ medical teams representing it in block $\blockidx$.
+
+Compatibility between theatre, block, and subspeciality is ensured by constraint~\eqref{eq:m2-7}, while constraints~\eqref{eq:m2-8} and~\eqref{eq:m2-9} together guarantee sequential allocation of blocks on the same day when $\precvar = 1$.
+Subspecialities requiring two consecutive blocks are specifically addressed by constraint~\eqref{eq:m2-10}.
+
+Constraint~\eqref{eq:m2-11} imposes that the number of allocations for transplants must be even, reflecting the need for two theatres for the procedure -- one for the donor and one for the recipient.
+Finally, constraint~\eqref{eq:m2-12} requires full service provision for circumstantial subspecialities $\specialtycset$, and equation~\eqref{eq:m2-13} promotes proportional allocation balancing in conjunction with OF~\eqref{eq:f2}.
 
 \section{Computational Experiments\label{sec:exp}}
 
@@ -161,7 +398,7 @@ Abstract text.
 
 
 % *******************************************
-\bibliographystyle{elsarticle-num}
+\bibliographystyle{elsarticle-harv}
 \bibliography{ref}
 % *******************************************
 \end{document}

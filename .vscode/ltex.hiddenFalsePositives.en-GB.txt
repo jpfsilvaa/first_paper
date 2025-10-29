@@ -1,0 +1,1 @@
+{"rule":"PASSIVE_VOICE","sentence":"^\\QIn addition, it is a teaching hospital, where doctors, nurses, and other health professionals are trained.\\E$"}
