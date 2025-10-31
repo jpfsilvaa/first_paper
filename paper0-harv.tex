@@ -97,7 +97,7 @@
 %%            country={}}
 %% \fntext[label3]{}
 
-\title{A title...} %% Article title
+\title{Integrated Framework for Surgery Scheduling Management: From Strategic to Tactical Planning} %% Article title
 
 %% use optional labels to link authors explicitly to addresses:
 %% \author[label1,label2]{}
@@ -115,12 +115,12 @@
 %%             state={},
 %%             country={}}
 
-\author[1]{João Paulo Francisco da Silva} \ead{joao.silva@ic.unicamp.br} %% Author name
-\author[1]{Lucas Ribeiro Bortoletto} \ead{l173422@dac.unicamp.br}
-\author[1]{Rafael Crivellari Saliba Schouery} \ead{rcss@unicamp.br}
+\author[1]{João P. F. da Silva} \ead{joao.silva@ic.unicamp.br} %% Author name
+\author[1]{Lucas Bortoletto} \ead{l173422@dac.unicamp.br}
+\author[1]{Rafael C. S. Schouery} \ead{rcss@unicamp.br}
 \author[2]{Edilson Arruda \corref{cor1}} \ead{e.f.arruda@southampton.ac.uk}
 
-\cortext[cor1]{Corresponding author}
+\cortext[cor1]{Corresponding author. Tel.: (+44)(0)2380 597146.}
 
 %% Author affiliation
 \affiliation[1]{organization={Institute of Computing, University of Campinas},%Department and Organization
@@ -169,9 +169,40 @@ Abstract text.
 
 \end{frontmatter}
 
+% \listoftodos
+
 \section{Introduction\label{sec:intro}}
 
+(...)
+
+Thus, we propose an integrated framework that: (i) manages waiting lists and determines the number of surgeries to be scheduled in each session at the strategic level; and (ii) based on the parameters defined in the strategic planning, allocates surgical specialities to operating theatre sessions at the tactical level.
+Specifically, the major contributions of this work are:\info[author=Joao]{Só pra eu ter em mente, mas na versão ``final'' dessa sessão isso aqui pode ficar mais elaborado.}
+\begin{itemize}
+    \item Waiting list management through $(R,Q)$ control policy considering non-deterministic demand. This policy guarantees waiting time requirements while ensuring long-term stability of each speciality queue.
+    \item Cancellation and overtime management through a Newsvendor model that determines an optimal time budget for the last surgery in a session, based on the random duration of this surgery. That way, we can estimate the number of surgeries to happen in the session.
+    \item Operating Theatre allocation MILP model that includes transplant constraints and can be solved optimally in an efficient manner.
+    \item Real-world application in a Brazilian public high-complexity hospital.
+\end{itemize}
+
 \section{Literature Review\label{sec:lit_review}}
+\begin{enumerate}
+    \item One paragraph about the need for integrated management of queues and OT allocation
+    \begin{itemize}
+        \item Cite reviews that support it (deMello)
+        \item Briefly state our contribution to start the comparison
+    \end{itemize}
+    \item Table of comparison
+    \begin{itemize}
+        \item Queueing management
+        \item Cancellation/overtime management
+        \item Planning level
+        \item Developing country's hospital
+        \item Type of solution (heuristic/exact)
+        \item Performance measures
+    \end{itemize}
+    \item Paragraphs about the comparisons (WIP)
+\end{enumerate}
+
 
 \section{Problem Description\label{sec:descr}}
 
