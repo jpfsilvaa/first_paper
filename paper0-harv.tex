@@ -133,7 +133,7 @@
 \affiliation[2]{organization={Centre for Healthcare Analytics, Southampton Business School, University of Southampton},%Department and Organization
             addressline={}, 
             city={Southampton},
-            postcode={13083–852}, 
+            postcode={}, 
             state={},
             country={UK}}
 
@@ -182,26 +182,51 @@ Specifically, the major contributions of this work are:\info[author=Joao]{Só pr
     \item Cancellation and overtime management through a Newsvendor model that determines an optimal time budget for the last surgery in a session, based on the random duration of this surgery. That way, we can estimate the number of surgeries to happen in the session.
     \item Operating Theatre allocation MILP model that includes transplant constraints and can be solved optimally in an efficient manner.
     \item Real-world application in a Brazilian public high-complexity hospital.
+     -- that includes transplant surgeries and related constraints.
 \end{itemize}
 
-\section{Literature Review\label{sec:lit_review}}
-\begin{enumerate}
-    \item One paragraph about the need for integrated management of queues and OT allocation
-    \begin{itemize}
-        \item Cite reviews that support it (deMello) - {\color{red}Note that DeMello is purely deterministic}
-        \item Briefly state our contribution to start the comparison
-    \end{itemize}
-    \item Table of comparison
-    \begin{itemize}
-        \item Queueing management
-        \item Cancellation/overtime management {\color{red} Do not forget to analyse whether/how uncertainty is tackled.}
-        \item Planning level
-        \item Developing country's hospital
-        \item Type of solution (heuristic/exact)
-        \item Performance measures
-    \end{itemize}
-    \item Paragraphs about the comparisons (WIP)
-\end{enumerate}
+\section{Related Works\label{sec:lit_review}}
+% RASCUNHO da estrutura:
+% 1 - parágrafo que introduz, de forma mais concreta, os níveis de planejamento e as nomenclaturas usadas na literatura (case mix, master schedule, surgical case)
+%   - ainda nesse paragrafo: enfatizar como a integração dos níveis é importante (e o que a falta dessa integração causa)
+%   - ainda mais: interação dos níveis incluindo incerteza na demanda, duração e cancelamento
+%   - brevemente destacar a nossa contribuição com base no que foi dito no paragrafo, pra daí começar a comparar a literatura em relação ao que estamos propondo
+
+% lembrete: imaginar como um leitor entenderia o que eu escrevi
+% TODO: dá pra aprodundar mais, já falando como costumam resolvar os problemas em cada nivel, como consideram incerteza e onde nosso trabalho se encaixa nesses niveis
+Surgical scheduling decisions are organized into time-based planning levels, and one can consider different uncertainty factors on each of them~\citep{Rahimi2020Review}.
+At the strategic level, long-term decisions define hospital resource capacity and its allocation across medical specialities~\citep{Rahimi2020Review}.
+Within this level, Case Mix Planning (CMP) specifies the distribution of Operating Theatre (OT) time among specialities to optimise, for instance, long term costs~\citep{Hof2015Casemix}.
+At the tactical level, medium-term decisions establishes weekly or monthly cyclic OT schedules, known as Master Surgery Scheduling (MSS) Problem~\citep{AlAmin2024Review}.
+Finally, the operational level deals with daily decisions on surgery dates and start times, characterizing the Surgical Case Scheduling (SCS) Problem~\citep{Rahimi2020Review}.
+
+% 2 - Na literatura, como tratam o Case Mix integrado ao Master Schedule? Consideram incerteza na demanda? Se sim, qual o impacto e qual a limitação?
+From strategic to operational levels, decisions are inherently interconnected.
+Therefore, CMP must be the first step towards an integrated surgical scheduling framework~\citep{deMello2013Integrated}.
+% ---- artigo do FUgener é uma boa fonte (e os artigos que citam ele tbm)
+% ---- o artigo de revisao sobre casemix do Hof (e quem cita ele) também é uma boa fonte
+
+% 3 - Na literatura, como consideram cancelamento e overtime? Qual o impacto de considerar isso e até onde foram nesse sentido? (tentar não fugir de problemas que integram CM e MSS)
+
+% 4 - Master Surgery Scheduling: levando em conta o input do Case Mix, quais os resultados e limitações nos escalonamentos de salas?
+
+% -----
+% \begin{enumerate}
+%     \item One paragraph about the need for integrated management of queues and OT allocation
+%     \begin{itemize}
+%         \item Cite reviews that support it (deMello) - {\color{red}Note that DeMello is purely deterministic}
+%         \item Briefly state our contribution to start the comparison
+%     \end{itemize}
+%     \item Table of comparison
+%     \begin{itemize}
+%         \item Queueing management
+%         \item Cancellation/overtime management {\color{red} Do not forget to analyse whether/how uncertainty is tackled.}
+%         \item Planning level
+%         \item Developing country's hospital
+%         \item Type of solution (heuristic/exact)
+%         \item Performance measures
+%     \end{itemize}
+% \end{enumerate}
 
 
 \section{Problem Description\label{sec:descr}}
@@ -426,8 +451,17 @@ Finally, constraint~\eqref{eq:m2-12} requires full service provision for circums
 \section{Conclusion\label{sec:conc}}
 
 
+\begin{color}{red}
+\section{Exerpt to help on aspects of the planning. Note the literature about case mix, which you need to start reading}
 
+Surgery scheduling problems have traditionally been classified into three planning levels: strategic, tactical, and operational\cite{Cardoen2010,Calegari2025}. The strategic level defines the desired split of the capacity into specific surgical specialities (case mix)\cite{Burdett2023}. The tactical level\cite{Bovim2020,Siqueira2018,Carneiro2025} defines a cyclic schedule (often weekly), revised in relatively short time frames (e.g., monthly or quarterly), and the operational level maps patients to operating theatre slots within the next days\cite{Vieira2025}. The disconnect is evident, as the objectives of different planning levels are not necessarily aligned \cite{Melo2025} and there is no guarantee that the capacity prescribed at a given planning level, often via a deterministic approach\cite{Mcrae2020,Burdett2023}, is sufficient to holistically hedge against the propagation of uncertainty in the system and maintain the surgical queues within reasonable limits. Crucially, however, approaches to holistically ensure stochastic stability\cite{Meyn2009} for all surgical specialities remain lacking, despite the existence of some models to evaluate the propagation of uncertainty under fixed capacity and within limited settings\cite{Dellaert2016,Freeman2018,Calegari2025}.
 
+In terms of objectives, case mix planning seeks to balance capacity among specialities, master surgery scheduling allocates time blocks in theatres to surgical teams and patient allocation assigns patients to surgical blocks\cite{wang2021operating,Melo2025}. The propagation of uncertainty at the different levels, however, renders it very unlikely that the distinct objectives can be attained at all levels. 
+%
+%this completely excludes controlling waiting times or ensuring long-term stochastic stability\citeB{Meyn2009} of the waiting queues for each individual sub-speciality, thereby ensuring that the queues do not grow uncontrollably over time. 
+Furthermore, inter-level integration remains limited in scope, often focusing on short-term alignment between surgeries and post-surgical bed occupation and generally relying on deterministic approaches\cite{Melo2025,Siqueira2018}. Occasionally, deterministic approaches respond reactively to uncertainty to minimise deviations with respect to the original planning\cite{VanHuele2015,Calegari2025} or prioritise individual patients in the short term\cite{Mashkani2023}. Stochastic approaches, on the other hand, focus on quantifying and reacting to the effect of uncertainty on the system's operation via probabilistic queuing models\cite{Fugener2015,Dellaert2016}, artificially generated scenarios\cite{shehadeh2022stochastic,zhang2021two} or simulation \cite{Samudra2017,Freeman2018,Bovim2020}, under fixed capacity. To mitigate capacity mismatch, Markov decision processes are utilised for admission control\cite{Barz2015,zhang2021two,Zhu2022}.
+
+\end{color}
 % *******************************************
 \bibliographystyle{elsarticle-harv}
 \bibliography{ref}
