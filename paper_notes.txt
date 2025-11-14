@@ -1,0 +1,183 @@
+----------------
+----------------
+NOME: 
+AUTORES: 
+DOI:
+
+(perguntas em relação ao que eu estou propondo)
+1 - Quais as contribuições?
+2 - Quais as implicações?
+3 - O que está resolvendo?
+4 - Pra que está resolvendo (objetivo)?
+5 - Quais limitações?
+6 - Quais as semelhanças e diferenças com o nosso?
+7 - Tem algo que fazem melhor uqe a gente?
+
+----------------
+----------------
+NOME: A Comprehensive Review and Analysis of Operating Room and Surgery Scheduling
+AUTORES: Rahimi e Gandomi
+DOI: 10.1007/s11831-020-09432-2
+----------------
+Hospital costs account for a significant amount of the total cost of healthcare expenditures.
+
+Cada paper que eu citar, devo falar alguma coisa que eles nao fizeram e a gente vai fazer
+
+The strategic level covers long-term decisions such as capacity planning and allocation which typically takes a long time. A problem within the strategic level is called “Case Mix Problem (CMP)” in which the amount of time a given OR is dedicated to a surgical specialty is determined in order to optimize profit/cost over a long time period [2]. Problems
+
+tactical level: cyclic OR Schedules, Master Surgery Schedule
+
+Based on previously published literature of OR scheduling problems [108], other problem groups—namely “Surgical Process Scheduling (SPS) problem”—is divided into two sub-problems called “advance scheduling” and “allocation scheduling”. The first sub-problem at a tactical level (medium time horizon) solves the planning step by determining a future date for surgical cases. In the operational level—namely “Surgical Case Scheduling (SCS) problem”—as the second part of SPS solves the scheduling step that determines the start time and resource allocation of cases over a short time horizon (typically a day).
+	- então, pensando melhor, a gnete não trabalha no nivel operacional... ainda seria estrategico (case-mix-like) e tatico (mss de um mês)
+
+
+also operational:
+	- advanced scheduling: defining a date for the surgery
+	- allocation scheduling: definig start times
+
+
+Decisions such as the number and specialties of surgeries to be planned and the number of resources required, could be categorized into the strategic level. The time-frame of these decisions take basically from several months to 1 year or longer [26, 167]. However some authors have classified the different levels of OR planning; for example, [163]) integrated the capacity allocation with the tactical level and [106] addressed capacity allocation with case-mix at the tactical level.
+	- parece ser o menis usual (classificar case-mix como tatico)
+
+overtime and idle time are considered to be impor- tant measures, while being **merged in makespan**.
+	-- overtime sendo considerado de forma limitada
+
+
+There has been a vast amount of literature published on the field of uncertainty. Hans et al. [73] proposed a scheduling problem as a stochastic knapsack problem; these authors formulated a robust advanced scheduling problem. While the objective function of the problem is to maximize capacity utilization and minimize the risk of overtime and cancel-lation;
+
+De acordo com esse review, tem uma tendendencia de pesquisas consideraram fatores de incerteza
+	- inclusive eles mostraum um grafico da tendencia dos fatoresque consideram
+
+----------------
+----------------
+NOME: Case mix planning in hospitals: a review and future agenda
+AUTORES: Hof, Sebastian; Fügener, Andreas; Schoenfelder, Jan; Brunner, Jens O.
+DOI: 10.1007/S10729-015-9342-2
+----------------
+
+"The natural purpose of case mix planning is to determine the optimal patient port- folio of a hospital. So far, researchers have concentrated their attention on two different approaches to model the decision-making process. ***The first one focuses on the optimization of the case
+mix without considering how to attain this solution***. This approach can be interpreted as formulating target volumes for the admission of patients."
+
+
+----------------
+----------------
+NOME: Elective Patient Admission and Scheduling under Multiple Resource Constraints
+AUTORES: Barz, Christiane; Rajaram, Kumar
+DOI: 10.1111/poms.12395
+
+
+Possíveis citações:
+- Public funds cover about 45% of these costs and the amount of public funding in health care is expected to double by 2050 (Gupta and Denton 2008).
+- the analysis cannot be restricted to the consideration of one resource, but the resource consumption of all potential bottlenecks must be modeled
+	- isso me lembra o artigo que usei pra citar no paper do IHTC que fala sobre recursos que usam nas modelagens
+- Related Literature Our study can be related to several streams of literature in the area of application and in the methodologies employed. In terms of the application, our work is connected to work in health-care management on appointment scheduling/patient admission and treat- ment planning, as well as revenue management for hospitals and hotels.
+
+
+(perguntas em relação ao que eu estou propondo)
+1 - Quais as contribuições?
+- Uma modelo de admissão de pacientes no nível tático, considerando o uso de multiplos recursos e a evolução estocástica do estado de saude do paciente
+- MDP para modelar estados de uso dos recursos de acordo com a evolução estocástica do diagnostico do paciente
+- Uma ADP para solucionar o modelo 
+- uma heuristica newsvendor para encontrar limitantes
+
+2 - Quais as implicações?
+-"Specifically, we assume that once the patient is admitted, the hospital will provide the best service possible, and utilization or newly incoming requests have no impact on the treatment of currently admitted patients."
+	- Isso implica que não consideram fatores que podem fazer o paciente ser cancelado!
+- Na seção 2.4, falam que a demanda de pacientes é dada por d, e o hospital aceita a, e eles modem aceitar no maximo d
+	- ou seja, nao garantem atender toda a demanda, o que implica em: aumento da fila a longo prazo
+- "we still assume that we know the patient’s resource requirements for the current day with certainty, which might not always be the case in practice"
+	- limitação do modelo deles, dado que não é levado em conta, por exemplo duração da cirurgia
+
+3 - O que está resolvendo?
+Quantos pacientes aceitar e em que dia agendá-los
+
+
+4 - Pra que está resolvendo (objetivo)?
+- para maximizar a receita do hospital, i.e., aceitar pacientes eletivos que trazem maior contribuição
+
+5 - Quais limitações?
+- Não considera manter um balanço das filas
+- Assumem zero cancelamentos de cirurgias
+- Assumem que a "quantidade" do recurso R que o paciente precisa é deterministica em cada estado, então por consequencia assumem que a duração da cirurgia é determinística de certa forma
+	- O modelo é estocástico no processo de evolução clínica (Markov), mas uma vez que o paciente está em um estado, o consumo de recursos naquele dia é determinístico
+
+
+6 - Quais as semelhanças e diferenças com o nosso?
+Semelhanças:
+	- Tentam planejar quantos pacientes vão ser admitidos para gerar input para o escalonamento de salas
+	- Consideram overtime ao penalizar quando isso acontece (o idle time por consequencia, na decisao otima, mas nao é penalizado)
+
+Diferenças:
+	- A demanda é determinística
+	- Não garantem equilibrio das filas no longo prazo
+	- Não consideram duração da cirurgia não-determinística
+	- Não geram um planejamento tático (escala de salas por especialidade)
+	- consideram a chegada de pacientes de emergencia
+
+
+7 - Tem algo que fazem melhor que a gente?
+- consideram uso de mais recursos, de certa forma, porque tá generalizado, mas...
+
+8 - Observações:
+- Chamam de "Patient admission", o que dá a impressão de ser algo operacional (para definir data e hora), mas na verdade é a admissão de qual cirurgia vai ser feita no periodo (2 semanas)
+
+- O newsvendor é usado para determinar a reserva ótima de capacidade para emergências, permitindo criar uma heurística simples, prática e próxima do ótimo para decidir quantos pacientes eletivos aceitar.
+
+
+----------------
+----------------
+NOME: A multilevel integrative approach to hospital case mix and capacity planning
+AUTORES: Ma, Guoxuan; Demeulemeester, Erik
+DOI: 10.1016/J.COR.2012.01.013
+
+(perguntas em relação ao que eu estou propondo)
+1 - Quais as contribuições?
+
+
+2 - Quais as implicações?
+- o objetivo é aumentar o lucro, que nao necessariamente implica em balanço das filas
+- ao considerar recursos para otimizar o case-mix, o problema abrange mais as limitações de "planejar sem ter"
+- não considerar a duração da cirurgia, nao considera overtime nem cancelamento
+
+3 - O que está resolvendo?
+um case-mix otimo, ou seja, conjunto de pacientes a serem "admitidos" de acordo co ma patologia, tempo de duração, finantial reward, LOS, ...
+
+
+4 - Pra que está resolvendo (objetivo)?
+- aumentar os lucros do hospital ao otimizar o match de admissão de pacientes com a quantidade de recursos
+
+
+5 - Quais limitações?
+- duração da cirurgia é determinística
+- não consideram demanda determinística, só tem lower e upper bound deterministicos
+- usam a probabilidade de um paciente de um grupo w ficar internado x dias
+
+
+6 - Quais as semelhanças e diferenças com o nosso?
+SEMELHANÇAS:
+- planeja CMP + MSS de forma que um é input do outro
+- 
+
+DIFERENÇAS:
+- O objetivo é financeiro, então tudo vai girar em torno disso: incluindo a "escolha" do mix de pacientes no nivel estratégico
+- as filas não estão grandes, pelo jeito...
+- no nível tatico, o objetivo é minimizar o total esperado de falta de leitos (eficiencia do uso de recursos)
+- é integrado inclusive no sentido de resolução: é tudo em um modelo só pra resolver o CMP+MSS
+- consideram uso de leitos (que é de onde vem a incerteza)
+
+
+7 - Tem algo que fazem melhor que a gente?
+- integram o nível operacional também (ainda que seja só simulação)
+
+8 - Possíveis citações
+- "Clearly, there exists a loop among the three stages. First, at the case mix planning phase, the optimal case mix pattern is sought, as well as the accompanying capacity allocation scheme is produced. Then, the solved case mix decision is communicated to the MSS phase, in which a ‘balanced’ master surgery schedule is generated with an improved resource utilization. Afterwards, the obtained case mix and capacity decision is translated into the operational performance phase, in which the performance evaluation is carried out in order to advance the health service level"
+- "The determination of how many patients from each pathology group can be treated at a hospital over the course of one year is called the case mix planning problem. Aiming"
+
+9 - Observações:
+- No modelo de case mix, eles consideram recursos (or time, # beds) na forma de restriçã ode capadidade, ou seja, são gargalos
+	- no nosso caso, o importante é "só" a fila, e a gente pressupõe que não temos esses gargalos -- mas a gente ainda assim deixa um lower e upper bound como folga pra isso tbm
+
+
+
+Propuseram uma abordagem multinível integrativa para o planejamento da composição de casos e da capacidade hospitalar. Na primeira fase do planejamento da composição de casos (CMPP), eles determinam de forma ampla a alocação de blocos de salas de cirurgia (ORs) para grupos de cirurgiões e leitos para enfermarias. A solução resultante é então traduzida em um MSS mais detalhado. 
+LIMITAÇÕES EM RELAÇÃO AO NOSSO: Entretanto, XXX o que implica em *não consideram demanda estocástica e nem equilíbrio das filas no longo prazo*, e isso eimplica em YYYY; e tbm nao consideram overtime/idle time e nem cancelamento.

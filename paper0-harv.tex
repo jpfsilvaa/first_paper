@@ -194,21 +194,37 @@ Specifically, the major contributions of this work are:\info[author=Joao]{Só pr
 
 % lembrete: imaginar como um leitor entenderia o que eu escrevi
 % TODO: dá pra aprodundar mais, já falando como costumam resolvar os problemas em cada nivel, como consideram incerteza e onde nosso trabalho se encaixa nesses niveis
-Surgical scheduling decisions are organized into time-based planning levels, and one can consider different uncertainty factors on each of them~\citep{Rahimi2020Review}.
-At the strategic level, long-term decisions define hospital resource capacity and its allocation across medical specialities~\citep{Rahimi2020Review}.
+Our contribution integrates long to medium term decisions in such a way that we ensure balance on the waiting lines while optimising the use related OT resources.
+Formally, these decisions are organized into time-based planning levels, with different uncertainty factors on each of them~\citep{Rahimi2020Review}.
+At the strategic level, long-term decisions (from 6 months to a year) define hospital resource capacity and its allocation across medical specialities~\citep{Rahimi2020Review}.
 Within this level, Case Mix Planning (CMP) specifies the distribution of Operating Theatre (OT) time among specialities to optimise, for instance, long term costs~\citep{Hof2015Casemix}.
 At the tactical level, medium-term decisions establishes weekly or monthly cyclic OT schedules, known as Master Surgery Scheduling (MSS) Problem~\citep{AlAmin2024Review}.
 Finally, the operational level deals with daily decisions on surgery dates and start times, characterizing the Surgical Case Scheduling (SCS) Problem~\citep{Rahimi2020Review}.
 
 % 2 - Na literatura, como tratam o Case Mix integrado ao Master Schedule? Consideram incerteza na demanda? Se sim, qual o impacto e qual a limitação?
-From strategic to operational levels, decisions are inherently interconnected.
-Therefore, CMP must be the first step towards an integrated surgical scheduling framework~\citep{deMello2013Integrated}.
+Decisions across these levels are inherently interconnected~\citep{deMello2013Integrated}. 
+For instance,~\citep{Ma2013Mult} propose a multilevel framework that jointly optimises strategic admission decisions and the tactical allocation of surgical resources. 
+Using a MIP formulation, they determine the optimal CMP defined as the number of patients from each pathology group to admit over a planning horizon, maximizing hospital profit subject to resource bottlenecks such as OT time and bed capacity. 
+The CMP output then feeds into the MSS phase, where the objective is to minimise the total expected shortage of ward beds according to uncertainty in lengths of stay of the admitted patients. 
+However, their model assumes deterministic surgery durations, thereby overlooking potential overtime and cancellations that propagate downstream and influence bed occupancy --- i.e., their MSS objective function would be impacted by these factors.
+Moreover, in contrast to methods focused on queue dynamics~\citep{Siqueira2018INTO}\improvement[author=joao]{adicionar mais citações aqui}, the overall objective is strictly financial, and waiting-list balancing is not considered, limiting the model's ability to address long-term patient-flow management.
 % ---- artigo do FUgener é uma boa fonte (e os artigos que citam ele tbm)
 % ---- o artigo de revisao sobre casemix do Hof (e quem cita ele) também é uma boa fonte
+% ---- o artigo do Liu pode se encaixar aqui porque ele fala da importandia do tamanho da fila
+% ---- o artigo do McRae pode se encaixar por analisar niveis de agregação no case-mix
+% ---- (verificar) artigo do Samudra pode ser citado aqui também
+% ---- artigo do Zhu também
 
 % 3 - Na literatura, como consideram cancelamento e overtime? Qual o impacto de considerar isso e até onde foram nesse sentido? (tentar não fugir de problemas que integram CM e MSS)
+% ---- dá pra citar o artigo do Barz aqui, com as limitações deles
 
 % 4 - Master Surgery Scheduling: levando em conta o input do Case Mix, quais os resultados e limitações nos escalonamentos de salas?
+% ----- citar o trabalho do Bovim
+% ----- citar o trabalho do Calegari
+
+% 5 - Escrever sobre nossas contribuições, conectando tudo que foi dito até aqui, onde a gente se encaixa na literatura, e porque estamos trazendo inovação
+% ----- o trabalho do dellaert pode dar um suporte aqui
+% ----- o trabalho do gonzalez pode dar um suporte aqui
 
 % -----
 % \begin{enumerate}
