@@ -181,3 +181,63 @@ DIFERENÇAS:
 
 Propuseram uma abordagem multinível integrativa para o planejamento da composição de casos e da capacidade hospitalar. Na primeira fase do planejamento da composição de casos (CMPP), eles determinam de forma ampla a alocação de blocos de salas de cirurgia (ORs) para grupos de cirurgiões e leitos para enfermarias. A solução resultante é então traduzida em um MSS mais detalhado. 
 LIMITAÇÕES EM RELAÇÃO AO NOSSO: Entretanto, XXX o que implica em *não consideram demanda estocástica e nem equilíbrio das filas no longo prazo*, e isso eimplica em YYYY; e tbm nao consideram overtime/idle time e nem cancelamento.
+
+
+----------------
+----------------
+NOME: Assessing the impact of uncertainty and the level of aggregation in case mix planning
+AUTORES: McRae, Sebastian; Brunner, Jens O.
+DOI: 10.1016/j.omega.2019.07.002
+
+(perguntas em relação ao que eu estou propondo)
+1 - Quais as contribuições?
+- um framework que valida o impacto da incerteza e do nível de agregação no planejamento do case-mix
+- mostram que considerar incerteza é importante
+- mostram que o nível de agregação é importante
+
+2 - Quais as implicações?
+- considerar incerteza é importante
+- considerar o nível de agregação é importante
+
+3 - O que está resolvendo?
+- o problema do case-mix planning
+
+4 - Pra que está resolvendo (objetivo)?
+- para maximizar o lucro do hospital
+
+5 - Quais limitações?
+- "Further, we consider the same allo-cation for every week of the planning horizon on the assumption that seasonal influences on the demand and the supply of hospital services can be neglected."
+- "For each department, a fixed number of elective surgeries to be scheduled per day is determined." 
+- "Thus, elec-tive patients are usually treated the day they are scheduled."
+	- assumindo que nao tem cancelamento por overtime
+- "The stochastic programs are transformed into deterministic approximations using SAA."
+	- no fim das contas, caem em um problema "deterministico" a ser reolvido e nao consideram toda a distribuição
+
+
+6 - Quais as semelhanças e diferenças com o nosso?
+- ele fala sobre o uso do newsvendor para modelar o case mix (parece ser mais comum do que imaginei...)
+
+
+7 - Tem algo que fazem melhor que a gente?
+- mostram o impacto do nível de agregação, o que é interessante
+- a distribuição de demanda deles é baseada em dados demograficos (censo), o que é interessante
+
+
+8 - Eles resolvem o que propõem?
+- sim, eles mostram que considerar incerteza e nível de agregação é importante (testam vários cenários e mostram o impacto)
+	- porém, não mostram o impacto na fila, só no lucro
+	- as validações são feitas via simulação e não via dados reais de aplicação em hospital
+
+
+9 - O numero de cirurgias planejado é de fato executado?
+- a tabela 6 mostra que, praticamente, sim, pois os erros de precicao sao baixos
+- as validações são feitas via simulação e não via dados reais de aplicação em hospital
+
+10 - Possíveis citações
+- "The case mix planning problem with stochastic demand can be interpreted as a multi-product newsvendor problem with lim-ited capacity."
+- "Aggregating patient demand and resource requirements over the whole period and thereby neglecting fluctuations within the planning period can give rise to problems on an operational level"
+- "Roth and Van Dierdonck [26] suggest aggregating patients at the level of MDCs for aggregated planning purposes arguing that this enables the coordination with other strategic activities such as marketing"
+- "Demand for hospital services is naturally highly variable. Con-sequently, stochastic demand is considered in different papers on case mix planning."
+- Freeman assume a mesmaduraçã ode cirurgias para todos os pacientes de um grupo
+ -"Thus, when planning the case mix using basic deterministic formulations, one should be aware that highly aggregated planning approaches often constitute overestimations of achievable results."
+ - "Stochastic influences on the demand proved worthy when planning the case mix."
