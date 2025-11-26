@@ -241,3 +241,54 @@ DOI: 10.1016/j.omega.2019.07.002
 - Freeman assume a mesmaduraçã ode cirurgias para todos os pacientes de um grupo
  -"Thus, when planning the case mix using basic deterministic formulations, one should be aware that highly aggregated planning approaches often constitute overestimations of achievable results."
  - "Stochastic influences on the demand proved worthy when planning the case mix."
+
+----------------
+----------------
+NOME: Mitigating overtime risk in tactical surgical scheduling
+AUTORES: Zhang, Yu; Wang, Yu; Tang, Jiafu; Lim, Andrew
+DOI: 10.1016/J.OMEGA.2019.01.002
+
+(perguntas em relação ao que eu estou propondo)
+1 - Quais as contribuições?
+- um modelo estocástico para o escalonamento tático de cirurgias que minimiza o overtime esperado e o risco de overtime
+- 
+
+2 - Quais as implicações?
+- se eles estao usando o "CVaR-tunado" pra minimizar o risco de overtime, isso implica que eles estao considerando nao so a media, mas a distribuicao completa da duracao das cirurgias (o que é bom)
+	- Na verdade não é bem um CVaR, é uma funcao sobre o valor esperado (funcao que precisa ser crescente e ter as propriedades descritas para poder servir como risk-averse measure)
+- 
+
+
+3 - O que está resolvendo?
+- o problema de escalonamento cirúrgico tático com o objetivo de mitigar o risco de overtime
+
+
+4 - Pra que está resolvendo (objetivo)?
+- para minimizar o overtime esperado e o risco de overtime
+
+
+5 - Quais limitações?
+- se baseiam em SAA, ou seja, não consideram a distribuição completa
+	- isso tem a ver com o que o Edilson disse: querem fazer tudo em um modelo só, então acabam simplificando a incerteza, mas a gente decompõe e considera a distribuição completa
+- não consideram cancelamentos explicitamente
+- nao tem integracao com o case-mix planning (nivel estratégico)
+
+
+6 - Quais as semelhanças e diferenças com o nosso?
+SEMELHANÇAS:
+- consideram uma fila de pacietes eletivos a serem agendados
+- consideram duração de cirurgia estocástica
+- consideram overtime e idle time
+- trabalham no nível tático
+
+DIFERENÇAS:
+- lidam SOMENTE com o nivel tatico (e chamam de Surgical Scheduling Problem, que geralmente é tratado no operacional)
+- o objetivo deles é PRINCIPALMENTE minimizar overtime e o risco de overtime, enquanto o nosso envolve, também, balancear as filas
+- estocasticidade: as distribuicoes de probabilidade sao estimadas e nâo empiricas como o nosso
+
+
+7 - Tem algo que fazem melhor que a gente?
+
+8 - citações possiveis
+- Overtime has an adverse effect on the hospital, the physicians, and the patients. From a profit perspective, overtime could result in a financial loss for hospitals because overtime staffing costs are expensive [1,15,33] . From an efficiency viewpoint, overtime leads to stress and dissatisfaction in physicians and patients, further de- creasing the surgical efficiency. Sometimes the scheduled surgical work is even cancelled due to excessive overtime [7,43] . By and large, overtime is inevitable without dramatically underutilizing the ORs but can be mitigated by effective scheduling. Hence, man- agers continue to seek methodologies for mitigating overtime in surgical scheduling.
+- To mitigate overtime, the related literature can typically be categorized into two classes: the first controls the probability of overtime and the second minimizes the magnitude of overtime

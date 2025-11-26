@@ -17,7 +17,7 @@
 %% Template article for Elsevier's document class `elsarticle'
 %% with harvard style bibliographic references
 
-\documentclass[review,12pt,authoryear]{elsarticle}
+\documentclass[review,3p,authoryear]{elsarticle}
 
 %% Use the option review to obtain double line spacing
 %% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
@@ -203,51 +203,52 @@ At the tactical level, medium-term decisions establishes weekly or monthly cycli
 Finally, the operational level deals with daily decisions on surgery dates and start times, characterizing the Surgical Case Scheduling (SCS) Problem~\citep{Vieira2025, Harris2022}.
 
 % 2 - Na literatura, como tratam o Case Mix integrado ao Master Schedule? Consideram incerteza na demanda? Se sim, qual o impacto e qual a limitação?
-Decisions across these levels are inherently interconnected~\citep{Melo2025}. 
-For instance,~\citet{Ma2013Mult} propose a multilevel framework that jointly optimises strategic admission decisions and the tactical allocation of surgical resources. 
-Using a Mixed Integer Programming (MIP) formulation, they determine the optimal CMP defined as the number of patients from each pathology group to admit over a planning horizon, maximizing hospital profit subject to resource bottlenecks such as OT time and bed capacity. 
-The CMP output then feeds into the MSS phase, where the objective is to minimise the total expected shortage of ward beds according to uncertainty in lengths of stay of the admitted patients. 
-Their model assumes deterministic surgery durations, thereby overlooking potential overtime and cancellations that propagate downstream and influence bed occupancy --- i.e., their MSS objective function would be impacted by these factors.
-Moreover, in contrast to methods focused on queue dynamics~\citep{Siqueira2018INTO, Kayvanfar2025}, the overall objective is strictly financial, and waiting-list balancing is not considered, limiting the model's ability to address long-term patient-flow management.
-
-Similarly,~\citet{Fugener2015} integrates strategic and tactical decisions with the aim of maximising hospital revenues. 
-He formulates the problem as a MIP model supported by a stochastic patient-flow model that captures variability in postoperative resource use. 
-The focus, however, lies primarily on ward-bed demand variability, so stochasticity is incorporated only at this downstream stage. 
-Yet, uncertainty in surgery durations should also be considered, as it directly affects operating-room utilisation, subsequent ward occupancy, and ultimately the associated costs included in the objective function they propose.
-
-% ---- o artigo do Liu pode se encaixar aqui porque ele fala da importandia do tamanho da fila
-Also building on the need to integrate decision levels,~\citet{Liu2019} address an integrated capacity planning and scheduling problem in a two-stage hospital system.
-Their goal is to determine dynamic daily admission levels for elective patients so as to minimize long-run expected costs, balancing waitlist delays against idling and overtime costs at both stages. 
-The authors formulate the problem as a Markov Decision Process (MDP) and develop an analytically tractable transformation that reveals structural properties that characterize the optimal admission policy. 
-% TODO: DETALHAR UM POUCO MAIS COMO TRATAM AS FILAS
-Although comprehensive in modeling patient flow and stage interdependencies, the approach abstracts important real-world constraints, such as surgeon availability, case-mix heterogeneity, block scheduling structures, or hard capacity limits.
-Thus, despite offering valuable insights on how waitlist size should guide admission decisions in an integrated framework, the model does not capture key sources of variability that arise in realistic strategic-tactical integration settings.
-
-% ---- o artigo do McRae pode se encaixar por analisar niveis de agregação no case-mix
-\citet{Mcrae2020} examine the strategic CMP problem and assess how uncertainty and the level of aggregation influence long-term capacity-allocation decisions. 
-CMP is linked to the MSS problem through one of the authors' proposed extensions: when this extension is enabled, CMP and MSS are solved jointly; otherwise, they are addressed sequentially. 
+Decisions across these levels are inherently interconnected~\citep{Melo2025}, and several studies have attempted to integrate CMP with MSS.
+For instance,~\citet{Ma2013Mult} propose a multilevel framework that jointly optimises strategic admission quantities and the tactical allocation of surgical resources. 
+Their Mixed Integer Programming (MIP) formulation determines the CMP by maximising profit under OT and bed-capacity constraints, after which the resulting mix feeds into an MSS model that minimises expected bed shortages under length-of-stay uncertainty.
+However, the framework assumes deterministic surgery durations and focuses solely on financial performance, leaving overtime risk, cancellations and long-term waiting-list dynamics out of scope --- factors that potentially affect the MSS objective in a realistic setting~\citep{Siqueira2018INTO, Kayvanfar2025}.
+Similarly,~\citet{Fugener2015} integrate strategic and tactical decisions through a stochastic patient-flow model using a MIP formulation, aiming to maximise hospital profit.
+Though, their treatment of uncertainty is limited to downstream ward-bed variability, neglecting randomness in surgery durations that directly affects theatre utilisation and downstream occupancy --- i.e., impacting costs included in their objective function.
+Extending this line of work,~\citet{Liu2019} develop an integrated framework for determining elective-admission levels using a Markov Decision Process (MDP). 
+Although offering valuable insights on how waiting-list size should guide admission decisions in an integrated framework, the model omits key operational constraints (e.g., surgeon availability, case-mix heterogeneity and block scheduling) thereby limiting its applicability to real hospital settings. 
+More recently,~\citet{Mcrae2020} evaluate how uncertainty and aggregation levels affect CMP decisions and provide an extension that enables joint CMP-MSS optimisation.
 Their objective, similarly to the works discussed above, is to maximise hospital profit by determining the optimal mix of elective patients while accounting for three sources of uncertainty (stochastic demand, variability in resource use, and fluctuations in resource availability). 
-These factors are evaluated under different aggregation levels, and the simulation results show that modelling uncertainty and selecting an appropriate level of aggregation can substantially improve planning outcomes. 
-Nonetheless, uncertainty is incorporated via Sample Average Approximation (SAA), which converts the stochastic programme into a deterministic approximation and may therefore fail to reflect the full underlying distributions. 
-In addition, the framework does not provide the possibility of optimise waiting times of patients, which is crucial for equitable healthcare delivery.
+% These factors are evaluated under different aggregation levels, and the simulation results show that modelling uncertainty and selecting an appropriate level of aggregation can substantially improve planning outcomes. 
+Their results demonstrate the value of modelling uncertainty, yet reliance on Sample Average Approximation (SAA) yields deterministic approximations that may under-represent distributional variability, and the framework does not account for waiting-list management.
 
-% ---- (verificar) artigo do Samudra pode ser citado aqui também
-% ---- artigo do Zhu também
-% ---- FINALZIA A IDEIA LIGANDO COM O NOSSO TRABALHO: "
-% Other similar integrations include X, Y, Z.
-% Though, the above works lack an even more realistic treatment of uncertainty, so that the proposed models match the number of resources at the strategic level with the actual demand and surgery durations observed at the tactical level in a real-world hospital setting.
-
+Taken together, these studies show that integrating CMP and MSS is both feasible and beneficial, but current approaches\improvement[author=joao]{ainda dá pra incluir mais artigos pra sustentar essa ideia} address only part of the underlying complexity. 
+Important opportunities remain to develop models that more fully capture uncertainty across planning levels, explicitly represent waiting-list dynamics, and incorporate operational constraints crucial to practical implementation.
 
 % 3 - Na literatura, como consideram cancelamento e overtime? Qual o impacto de considerar isso e até onde foram nesse sentido? (tentar não fugir de problemas que integram CM e MSS)
 % ---- dá pra citar o artigo do Barz aqui, com as limitações deles
+Still on the uncertainty treatment, overtime, and cancellations directly related to it, are not deeply contemplated in the literature, neglecting that they are critical factors affecting OT scheduling~\citep{Harris2022, Kayvanfar2025}.
+For instance,~\citet{Barz2015} address a tactical patient-admission and scheduling problem in which the hospital decides how many elective patients to accept and on which day to schedule them under multiple resource constraints and stochastic clinical progression. 
+The authors model patients' health evolution as a Markov process, where each clinical state deterministically defines daily resource consumption, solve it via Approximate Dynamic Programming (ADP), complemented by a newsvendor-based heuristic to determine capacity reservations for emergency arrivals. 
+Their objective is to maximise hospital revenue by admitting high-contribution elective patients while preventing excessive overtime.
+However, several assumptions limit the model's realism: waiting-list dynamics are not stabilised; and, crucially, once a patient is admitted, the hospital is assumed to always provide the required resources, excluding the possibility of cancellations or postponements driven by overtime. 
+Moreover, by treating resource consumption within each state as deterministic, the framework effectively ignores uncertainty in surgery duration --- one of the main drivers of operational instability. 
+As a result, the model underestimates the practical interplay between stochastic surgery durations, cancellations and overtime, limiting its applicability to integrated CMP-MSS decision-making.
+% ---- Zhu (mitigating ovetime)
+\citet{Zhang2020} study a tactical surgery planning with the specific aim of mitigating overtime risk when allocating elective patients to OTs over an upcoming planning horizon. 
+They model stochastic surgery durations and introduce a risk-averse decision criterion which captures not only the probability of overtime events~\citep{Shylo2013} or the expected magnitude of it~\citep{Rath2017}, but both simultaneously.
+These surgery durations are empirical, derived from historical data, but as the other works cited above, eventually they approximate it through a set of discrete scenarios, limiting the full distributional representation.
+Essentially, their model aims to mitigate overtime and it does so effectively, but it is myopic in that it does not consider possible cancellations in scenarios where overtime occurs.
+This can lead to suboptimal scheduling decisions, as the model does not account for the potential trade-offs between overtime risk and cancellation costs.
+
+% comparar mais trabalhos que tentam lidar com cancelamento/overtime e afunilar para a forma com que lidamos com isso
+% ---- finalizar a ideia de cancelamento e overtime falando sobre as consequencias disso
+(working on it... see commented code)
+
 
 
 % 4 - Master Surgery Scheduling: levando em conta o input do Case Mix, quais os resultados e limitações nos escalonamentos de salas?
+% (talvez esse paragrafo já vai estar integrado aos outros, e não um só sobre isso)
 % ----- citar o trabalho do Bovim
 % ----- citar o trabalho do Calegari
 
 
 % 5 - Quando consideram incerteza, como consideram? Cenários? Valor esperado? (se sim, dá pra mostrar os problemas disso e como a gent eresolve isso considerando a distribuição toda)
+% !!!  cuidado pra nao conflitar com o que falei sobre SAA em um paragrafo anterior !!! 
 % ----- citar Cadeias de Markov aqui (Meyn2009)
 
 
