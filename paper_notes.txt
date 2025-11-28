@@ -6,12 +6,27 @@ DOI:
 
 (perguntas em relação ao que eu estou propondo)
 1 - Quais as contribuições?
+
+
+
 2 - Quais as implicações?
+
+
 3 - O que está resolvendo?
+
+
 4 - Pra que está resolvendo (objetivo)?
+
+
 5 - Quais limitações?
+
+
 6 - Quais as semelhanças e diferenças com o nosso?
-7 - Tem algo que fazem melhor uqe a gente?
+
+
+7 - Tem algo que fazem melhor que a gente?
+
+
 
 ----------------
 ----------------
@@ -292,3 +307,83 @@ DIFERENÇAS:
 8 - citações possiveis
 - Overtime has an adverse effect on the hospital, the physicians, and the patients. From a profit perspective, overtime could result in a financial loss for hospitals because overtime staffing costs are expensive [1,15,33] . From an efficiency viewpoint, overtime leads to stress and dissatisfaction in physicians and patients, further de- creasing the surgical efficiency. Sometimes the scheduled surgical work is even cancelled due to excessive overtime [7,43] . By and large, overtime is inevitable without dramatically underutilizing the ORs but can be mitigated by effective scheduling. Hence, man- agers continue to seek methodologies for mitigating overtime in surgical scheduling.
 - To mitigate overtime, the related literature can typically be categorized into two classes: the first controls the probability of overtime and the second minimizes the magnitude of overtime
+
+----------------
+----------------
+NOME: Stochastic optimization approaches for elective surgery scheduling with downstream capacity constraints: Models, challenges, and opportunities
+AUTORES: Karmel Shehadeh; Rema Padman
+DOI: 10.1016/j.cor.2021.105523
+
+(perguntas em relação ao que eu estou propondo)
+1 - Quais as contribuições?
+- estado da arte sobre o uso de incerteza no escalonamento de cirurgias eletivas
+- mostram os desafios e oportunidades para pesquisas futuras
+- desafios no que envolve incerteza em durações de cirurgias e LOS
+	- aplicar SAA em larga escala (pra ter alta representacao probabilistica) faz o MIP ficar pesado pra rodar e resolver
+	- problemas de simetria nas soluções
+	distributional ambiguity: é dificil estimar a distribuição correta com dados limitados
+
+2 - Quais as implicações?
+- DRO parece ser uma boa abordagem para lidar com incerteza em durações de cirurgias e LOS
+- O que a gent efez com o clustering pode ser usado com DRO?
+
+3 - O que está resolvendo?
+- é um artigo de revisao sobre o uso de incerteza no escalonamento de cirurgias eletivas (explicando os desafios e oportunidades)
+
+4 - Pra que está resolvendo (objetivo)?
+- é uma revisao, mas parece ser uma grande propaganda de DRO (e autocitacao com o trabalho deles)
+
+5 - Quais limitações?
+- nao fala nada sobre a importancia da estocasticidade de demanda que tambem afeta tudo o que foi dito
+
+
+6 - Quais as semelhanças e diferenças com o nosso?
+- nao se aplica
+
+7 - Tem algo que fazem melhor que a gente?
+- nao se aplica
+
+
+8 - Possíveis citações
+- nao necessariamente preciso começar uma seção (artigo, projeto) sobre cirurgia... lembre do seu foco no que esta escrevendo e seja criativo já no começo
+
+- "Most of the existing literature on elective surgery scheduling, however, focuses on OR rooms alone"
+- " most studies assume that surgery duration and postoperative LOS follow fully known uni-modal distributions, typically lognormal (Bai et al., 2017; Min and Yih, 2010; Varmazyar et al., 2020; Zhang et al., 2019). In reality, it is challenging, if not impossible, to predict surgery durations and LOS in any of the downstream units in advance, particularly at the time when the surgery is scheduled (Shehadeh and Padman, 2021; Wang et al., 2019)."
+- "Different types of surgeries require different surgery durations. Even surgeries of the same type have significant variability in their durations."
+- "Ignoring the uncertainty in surgery duration often contributes to unpredictable idle time and overtime for OR and surgery delays, among others. OR overtime is costly and may lead to surgery cancellation and thus compromised quality of care, and idle time implies poor utilization of OR capacity (Bartek et al., 2019; Fügener et al., 2014; May et al., 2011; Shehadeh et al., 2019)"
+- "Shehadeh and Padman (2021)’s results and managerial implications also suggest that incorporating the cost of OR idle time leads to better OR time utilization and better access to surgery."
+- "For example, the cost of OR overtime can be approximated by the cost of keeping OR open, surgeon and OR staff overtime cost, among others. As mentioned earlier, OR overtime may lead to the cancellation of one or multiple surgeries, which incurs extra costs (e.g., ∼$1700–$2000 per case as reported by Argo et al. (2009) and impacts patient health."
+
+DUVIDAS:
+- Preciso entender melhor as notacoes de probabilidade que eles usam, principalmente pra entender DRO
+- data-driven: é no sentido de usar dados reais, certo?
+- 
+
+
+----------------
+----------------
+NOME: Operating Room-to-downstream elective surgery planning under uncertainty
+AUTORES: Karmel Shehadeh; Man Yiu Tsang; Rema Padman; Arman Kilic
+DOI: 10.1016/j.ejor.2025.07.006
+
+(perguntas em relação ao que eu estou propondo)
+1 - Quais as contribuições?
+
+
+2 - Quais as implicações?
+
+
+3 - O que está resolvendo?
+
+
+4 - Pra que está resolvendo (objetivo)?
+
+
+5 - Quais limitações?
+
+
+6 - Quais as semelhanças e diferenças com o nosso?
+
+
+7 - Tem algo que fazem melhor que a gente?
+

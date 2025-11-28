@@ -221,8 +221,10 @@ Important opportunities remain to develop models that more fully capture uncerta
 
 % 3 - Na literatura, como consideram cancelamento e overtime? Qual o impacto de considerar isso e até onde foram nesse sentido? (tentar não fugir de problemas que integram CM e MSS)
 % ---- dá pra citar o artigo do Barz aqui, com as limitações deles
-Still on the uncertainty treatment, overtime, and cancellations directly related to it, are not deeply contemplated in the literature, neglecting that they are critical factors affecting OT scheduling~\citep{Harris2022, Kayvanfar2025}.
-For instance,~\citet{Barz2015} address a tactical patient-admission and scheduling problem in which the hospital decides how many elective patients to accept and on which day to schedule them under multiple resource constraints and stochastic clinical progression. 
+Still on the uncertainty treatment, disregarding it in the duration of surgeries often results in idle time and unpredictable overtime in operating rooms, as well as delays in procedures, among other effects~\citep{shehadeh2022stochastic}. 
+Overtime is costly and can lead to the cancellation of surgeries, compromising the quality of care, while idle time reflects an inadequate use of operating room capacity~\citep{shehadeh2022stochastic, Harris2022, Kayvanfar2025}.
+{\color{red} Relendo, aqui abaixo meio que se perdeu um pouco do foco sobre falar de over/idle time... Vou rever}
+Works such as from~\citet{Barz2015} address a tactical patient admission and scheduling problem in which the hospital decides a CMP under multiple resource constraints and stochastic clinical progression. 
 The authors model patients' health evolution as a Markov process, where each clinical state deterministically defines daily resource consumption, solve it via Approximate Dynamic Programming (ADP), complemented by a newsvendor-based heuristic to determine capacity reservations for emergency arrivals. 
 Their objective is to maximise hospital revenue by admitting high-contribution elective patients while preventing excessive overtime.
 However, several assumptions limit the model's realism: waiting-list dynamics are not stabilised; and, crucially, once a patient is admitted, the hospital is assumed to always provide the required resources, excluding the possibility of cancellations or postponements driven by overtime. 
