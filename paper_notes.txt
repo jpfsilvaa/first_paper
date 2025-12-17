@@ -371,7 +371,9 @@ DOI: 10.1016/j.ejor.2025.07.006
 
 
 2 - Quais as implicações?
-
+- O bloco é o dia todo
+- "The hospital implements a closed block scheduling policy to construct the master OR schedule, where each OR can be dedicated to one or multiple surgical specialties."
+	- estranho isso... se é bloco fechado, como que pode ser alocado a multiplas especialidades
 
 3 - O que está resolvendo?
 
@@ -380,6 +382,7 @@ DOI: 10.1016/j.ejor.2025.07.006
 
 
 5 - Quais limitações?
+- sub-otimo no sentido de nao integrar o case-mix planning (nivel estrategico)
 
 
 6 - Quais as semelhanças e diferenças com o nosso?
@@ -387,3 +390,6 @@ DOI: 10.1016/j.ejor.2025.07.006
 
 7 - Tem algo que fazem melhor que a gente?
 
+
+These limitations, particularly regarding the integration of overtime management and its associated cancellation risks into surgical planning frameworks, highlight important research gaps. 
+There remains a need for models that explicitly incorporate cancellation dynamics induced by overtime and that provide a more thorough representation of surgery-duration uncertainty beyond scenario-based approximations—ideally capturing full distributional characteristics.
