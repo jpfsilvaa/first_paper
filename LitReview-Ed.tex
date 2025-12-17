@@ -13,7 +13,7 @@
 % TODO: dá pra aprodundar mais, já falando como costumam resolvar os problemas em cada nivel, como consideram incerteza e onde nosso trabalho se encaixa nesses niveis
 
 Surgery scheduling problems have traditionally been classified into three planning levels with different sources of uncertainty: strategic, tactical, and operational~\citep{Rahimi2020Review, Cardoen2010, wang2021operating, Melo2025}. 
-At the strategic level, long-term decisions define the desired split of the capacity into specific surgical specialities (Case Mix) and specify patient volumes of different medical specialties to be admitted over the planning horizon~\citep{Burdett2023}.
+At the strategic level, long-term decisions define the desired split of the capacity into specific surgical specialities and specify patient volumes of different medical specialties to be admitted over the planning horizon~\citep{Burdett2023}. 
 This process is commonly referred to as Case Mix Planning (CMP).
 Different objectives have been introduced at this level, such as maximizing profit~\citep{Fugener2015} or minimizing long-term costs~\citep{Hof2015Casemix, Mcrae2020}. 
 The tactical level~\citep{Bovim2020,Siqueira2018INTO,Carneiro2025} defines a cyclic schedule (often weekly) commonly known as Master Surgery Schedule (MSS). 
@@ -29,24 +29,20 @@ This is probably due to the complex propagation of uncertainty over different pl
 %Formally, these decisions are organized into three time-based planning levels, with different uncertainty factors on each of them~\citep{Rahimi2020Review, Cardoen2010, wang2021operating, Melo2025}. At the strategic level, long-term decisions (from 6 months to a year) define hospital resource capacity and its allocation across medical specialities~\citep{Fugener2015}. Within this level, Case Mix Planning (CMP) specifies patient volumes of different medical specialties to be admitted over the planning horizon, aiming to optimise, for instance, long term costs~\citep{Hof2015Casemix, Mcrae2020}. At the tactical level, medium-term decisions establishes weekly or monthly cyclic OT schedules, known as Master Surgery Scheduling (MSS) Problem~\citep{AlAmin2024Review, Carneiro2025}. Finally, the operational level deals with daily decisions on surgery dates and start times, characterizing the Surgical Case Scheduling (SCS) Problem~\citep{Vieira2025, Harris2022}.
 
 % 2 - Na literatura, como tratam o Case Mix integrado ao Master Schedule? Consideram incerteza na demanda? Se sim, qual o impacto e qual a limitação?
-Decisions across these levels are inherently interconnected~\citep{Melo2025}, and several studies have attempted to integrate, for instance, CMP with MSS.
-\citet{Ma2013Mult} propose a multilevel framework that jointly optimises strategic admission quantities and the tactical allocation of surgical resources. 
-Their Mixed Integer Programming (MIP) formulation determines the CMP by maximising profit under OT and bed-capacity constraints, after which the resulting mix feeds into an MSS model that minimises expected bed shortages under length-of-stay uncertainty.
-However, the framework assumes deterministic surgery durations and focuses solely on financial performance, leaving overtime risk, cancellations and long-term waiting-list dynamics out of scope --- factors that potentially affect the MSS objective in a realistic setting~\citep{Siqueira2018INTO, Kayvanfar2025}.
+In fact, decisions across the decision levels are inherently interconnected~\citep{Melo2025}, and several studies attempt to integrate, for instance, CMP with MSS.
+Early and representative contributions formulate joint or sequential optimisation frameworks in which admissions decisions determine the input to surgical scheduling models~\citet{Ma2013Mult, Fugener2015}.
+These studies typically rely on Mixed Integer Programming (MIP) formulations and focus on maximising hospital profit subject to Operating Theatre (OT) and bed capacity constraints.
+Uncertainty is partially addressed, most often through stochastic modelling of Length-Of-Stay (LOS) or ward occupancy.
+However, key sources of variability that directly affect surgical schedules (e.g., surgery durations, overtime risk and cancellations) are either treated deterministically or omitted altogether, despite their known impact on a realistic setting~\citep{Siqueira2018INTO, Kayvanfar2025}.
 
-Similarly,~\citet{Fugener2015} integrate strategic and tactical decisions through a stochastic patient-flow model using a MIP formulation, aiming to maximise hospital profit.
-Though, their treatment of uncertainty is limited to downstream ward-bed variability, neglecting randomness in surgery durations that directly affects theatre utilisation and downstream occupancy --- i.e., impacting costs included in their objective function.
+More recent work broadens this perspective by incorporating additional uncertainty sources and dynamic elements.
+For instance,~\citet{Liu2019} model elective admissions through a Markov Decision Process (MDP), highlighting the role of waiting-list size in guiding strategic decisions.
+While conceptually insightful, their framework abstracts away essential operational constraints, such as surgeon availability, block scheduling and case-mix heterogeneity, thereby limiting practical applicability.
+Similarly,~\citet{Mcrae2020} demonstrate that explicitly modelling uncertainty and selecting appropriate aggregation levels can significantly improve CMP outcomes and enable joint CMP-MSS optimisation.
+Nevertheless, their reliance on Sample Average Approximation (SAA) leads to representations that may understate distributional variability; and waiting-list dynamics remain outside of the modelling scope, implying no full integration of strategic and tactical decisions.
 
-Extending this line of work,~\citet{Liu2019} develop an integrated framework for determining elective-admission levels using a Markov Decision Process (MDP). 
-Although offering valuable insights on how waiting-list size should guide admission decisions in an integrated framework, the model omits key operational constraints (e.g., surgeon availability, case-mix heterogeneity and block scheduling) thereby limiting its applicability to real hospital settings. 
-
-More recently,~\citet{Mcrae2020} evaluate how uncertainty and aggregation levels affect CMP decisions and provide an extension that enables joint CMP-MSS optimisation.
-Their objective, similarly to the works discussed above, is to maximise hospital profit by determining the optimal mix of elective patients while accounting for three sources of uncertainty (stochastic demand, variability in resource use, and fluctuations in resource availability). 
-% These factors are evaluated under different aggregation levels, and the simulation results show that modelling uncertainty and selecting an appropriate level of aggregation can substantially improve planning outcomes. 
-Their results demonstrate the value of modelling uncertainty, yet reliance on Sample Average Approximation (SAA) yields deterministic approximations that may under-represent distributional variability, and the framework does not account for waiting-list management.
-
-Taken together, these studies show that integrating CMP and MSS is both feasible and beneficial, but current approaches address only part of the underlying complexity. 
-Important opportunities remain to develop models that more fully capture uncertainty across planning levels, explicitly represent waiting-list dynamics, and incorporate operational constraints crucial to practical implementation.
+Taken together, these studies confirm the value of integrating CMP and MSS, but also reveal persistent limitations.
+Uncertainty is only partially represented across planning levels, waiting-lists are rarely modelled explicitly, and key operational constraints required for real-world implementation are often neglected.
 
 % 3 - Na literatura, como consideram cancelamento e overtime? Qual o impacto de considerar isso e até onde foram nesse sentido? (tentar não fugir de problemas que integram CM e MSS)
 % ---- dá pra citar o artigo do Barz aqui, com as limitações deles
