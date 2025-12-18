@@ -69,16 +69,25 @@ These limitations regarding the integration of overtime management and its assoc
 There remains a need for models that explicitly incorporate cancellation dynamics induced by overtime and that provide a more thorough representation of surgery-duration uncertainty beyond scenario-based approximations.
 It is rather possible to capture full distributional characteristics to build a planning model and use its output to feed an integrated CMP-MSS approach --- i.e., not solving an entire model at once.
 
-% pensando nas contribuicoes, é bom discutir até onde foram sobre restricoes especificas no MSS (no nosso caso, contribuimos com a de transplante por exemplo); e também sobre aplicabilidade em um hospital de alta complexidade publico brasileiro (contrastando com trabalhos europeus em hospitais menores).
 An additional and often underexplored dimension in integrated surgical planning concerns the incorporation of practical constraints inherent to real-world healthcare settings. 
 Certain surgical activities, such as organ transplantation, impose rigid scheduling requirements that are difficult to reconcile with standard optimisation assumptions~\citep{Silva2025}. 
 Furthermore, public hospitals in developing countries (e.g., Brazil) operate under severe resource constraints, high and volatile demand, and heterogeneous case mixes, all of which exacerbate the complexity of surgical planning~\citep{Carneiro2025, Siqueira2018INTO, Silva2025}. 
 These contextual factors challenge the scalability and transferability of many optimisation-based approaches, which often presume stable resources, predictable demand and homogeneous patient populations. 
-Indeed, as noted by~\citet{Melo2025Integr}, much of the existing literature is calibrated to relatively small hospitals in developed regions, limiting its relevance for large, resource-constrained systems. 
+Indeed, as noted by~\citet{Melo2025}, much of the existing literature is calibrated to relatively small hospitals in developed regions, limiting its relevance for large, resource-constrained systems. 
 Ignoring such operational realities risks producing models that are theoretically stable but difficult to implement in practice, underscoring the need for scheduling frameworks that explicitly accommodate institutional, organisational and contextual constraints.
 
-% 6 - Escrever sobre nossas contribuições, conectando tudo que foi dito até aqui, onde a gente se encaixa na literatura, e porque estamos trazendo inovação
-% ----- o trabalho do dellaert pode dar um suporte aqui
-% ----- o trabalho do gonzalez pode dar um suporte aqui
 
-(almost there...)
+% 6 - Escrever sobre nossas contribuições, conectando tudo que foi dito até aqui, onde a gente se encaixa na literatura, e porque estamos trazendo inovação
+This paper addresses the identified gaps in the surgical planning literature by proposing an integrated framework that jointly links strategic and tactical decision levels while explicitly accounting for key sources of uncertainty. 
+The framework captures dynamic surgical demand through explicit waiting-list modelling, enabling the enforcement of waiting-time requirements and long-term queue stability, and incorporates stochastic surgery durations to manage overtime, idle time and cancellation risk. 
+The proposed approach is grounded in a real-world application at the Clinical Hospital of the University of Campinas (Brazil), a high-complexity public hospital that provides detailed operational data and a challenging planning environment~\citep{hc_unicamp_historia}.
+
+The main contributions of this work are as follows:
+\begin{itemize}
+    \item A stochastic waiting-list management strategy based on an $(R,Q)$ control policy~\citep{Axsater2015Inv} that ensures compliance with waiting-time targets while maintaining long-term queue stability across surgical specialties;
+    \item A cancellation and overtime management mechanism based on a Newsvendor formulation that determines optimal time buffers for the last surgery in each session under duration uncertainty;
+    \item A Mixed Integer Linear Programming (MILP) model for operating theatre allocation that incorporates practical constraints, including those associated with transplant surgeries, while remaining computationally tractable; and
+    \item An empirical validation of the integrated framework in a large, resource-constrained public hospital, demonstrating its operational relevance and implementability.
+\end{itemize}
+
+By addressing those uncertainty factors within a unified framework, this work advances in the literature with an innovative integrated surgical planning and provides a practically grounded contribution for complex healthcare settings.
