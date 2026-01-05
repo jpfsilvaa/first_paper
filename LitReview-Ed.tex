@@ -2,60 +2,45 @@
 \section{Related Works\label{sec:lit_review}}
 % ********************************************* %
 
-% RASCUNHO da estrutura:
-% lembrete: imaginar como um leitor entenderia o que eu escrevi
-
-% 1 - parágrafo que introduz, de forma mais concreta, os níveis de planejamento e as nomenclaturas usadas na literatura (case mix, master schedule, surgical case)
-%   - ainda nesse paragrafo: enfatizar como a integração dos níveis é importante (e o que a falta dessa integração causa)
-%   - ainda mais: interação dos níveis incluindo incerteza na demanda, duração e cancelamento
-%   - brevemente destacar a nossa contribuição com base no que foi dito no paragrafo, pra daí começar a comparar a literatura em relação ao que estamos propondo
-
-% TODO: dá pra aprodundar mais, já falando como costumam resolvar os problemas em cada nivel, como consideram incerteza e onde nosso trabalho se encaixa nesses niveis
-
 Surgery scheduling problems have traditionally been classified into three planning levels with different sources of uncertainty: strategic, tactical, and operational~\citep{Rahimi2020Review, Cardoen2010, wang2021operating, Melo2025}. 
 At the strategic level, long-term decisions define the desired split of the capacity into specific surgical specialities and specify patient volumes of different medical specialties to be admitted over the planning horizon~\citep{Burdett2023} --- a process commonly referred to as Case Mix Planning (CMP).
 Different objectives have been introduced at this level, such as maximizing profit~\citep{Fugener2015, Ma2013Mult} or minimizing long-term costs~\citep{Hof2015Casemix, Mcrae2020}. 
 The tactical level defines a cyclic schedule (often weekly) commonly known as Master Surgery Schedule (MSS)~\citep{Bovim2020,Siqueira2018INTO,Carneiro2025}. 
-This MSS step allocates time blocks in operating theatres to surgical teams and is reviewed in a medium-term horizon (e.g., monthly or quarterly). 
-Finally, the operational level focuses on the daily operation and derives a Surgical Case Schedule (SCS), which assigns specific patients to time blocks previously allocated to specific surgical teams at the tactical level~\citep{Vieira2025, Harris2022}.
+The MSS step allocates time blocks in operating theatres to surgical teams and is reviewed in a medium-term horizon (e.g., monthly or quarterly). 
+Finally, the operational level focuses on the daily operation and derives a Surgical Case Schedule (SCS), which assigns individual patients to time blocks previously allocated to specific surgical teams at the tactical level~\citep{Vieira2025, Harris2022}.
 
 Despite the large body of literature in surgery scheduling, inter-level integration remains limited in scope, often focusing on short-term alignment between surgeries and post-surgical bed occupation and generally relying on deterministic approaches~\citep{Melo2025,wang2021operating, Siqueira2018INTO}. 
 Furthermore, regardless of the planning level, strategies with a focus on guaranteeing waiting time requirements for patients still remain to be proposed. 
 This is probably due to the complex propagation of uncertainty over different planning levels, which demands hybrid approaches that combine mathematical programming, stochastic modelling and queuing theory.
 
-
-%Our contribution integrates long to medium term decisions in such a way that we ensure balance on the waiting queues while optimising the use related OT resources.
-%Formally, these decisions are organized into three time-based planning levels, with different uncertainty factors on each of them~\citep{Rahimi2020Review, Cardoen2010, wang2021operating, Melo2025}. At the strategic level, long-term decisions (from 6 months to a year) define hospital resource capacity and its allocation across medical specialities~\citep{Fugener2015}. Within this level, Case Mix Planning (CMP) specifies patient volumes of different medical specialties to be admitted over the planning horizon, aiming to optimise, for instance, long term costs~\citep{Hof2015Casemix, Mcrae2020}. At the tactical level, medium-term decisions establishes weekly or monthly cyclic OT schedules, known as Master Surgery Scheduling (MSS) Problem~\citep{AlAmin2024Review, Carneiro2025}. Finally, the operational level deals with daily decisions on surgery dates and start times, characterizing the Surgical Case Scheduling (SCS) Problem~\citep{Vieira2025, Harris2022}.
-
 % 2 - Na literatura, como tratam o Case Mix integrado ao Master Schedule? Consideram incerteza na demanda? Se sim, qual o impacto e qual a limitação?
-In fact, hospital planning levels are inherently interconnected~\citep{Melo2025}.
-Although limited in scope, it has motivated efforts to integrate CMP and MSS within unified frameworks.
-Early and representative contributions adopt joint or sequential optimisation frameworks in which admissions decisions determine the input to surgical scheduling models~\citep{Ma2013Mult, Fugener2015}.
-These studies typically rely on Mixed Integer Programming (MIP) formulations and focus on maximising hospital profit subject to Operating Theatre (OT) and bed capacity constraints.
-While these approaches acknowledge uncertainty, it is generally confined to downstream elements such as length of stay or ward occupancy.
-Although modelling recovery-unit congestion is relevant, such partial treatments remain short-sighted when not complemented by uncertainty in surgery durations and, crucially, by explicit modelling of dynamic waiting lists, which constitute the starting point of the entire planning process.
+The inherent interconnection between the strategic (CMP) and tactical (MSS) levels has motivated unified frameworks that link CMP and MSS decisions~\citep{Melo2025}. 
+These often adopt sequential or joint optimisation approaches where case mix decisions act as the input to surgery scheduling models \citep{Ma2013Mult, Fugener2015}.
+Modelling approaches typically consist of Mixed Integer Programming (MIP) formulations that focus on maximising hospital profit subject to Operating Theatre (OT) and bed capacity constraints.
+While these frameworks acknowledge uncertainty, it is generally confined to downstream elements such as length of stay or ward occupancy.
+Although modelling post-surgical congestion is relevant, such partial treatments remain short-sighted when not complemented by uncertainty in surgery durations and, crucially, by an explicit modelling of dynamic waiting lists across surgical specialities, which constitute the starting point of the entire planning process.
 
-More recent work broadens this perspective by incorporating additional uncertainty sources and dynamic elements.
+This perspective can be broadened by incorporating additional uncertainty sources and dynamic elements.
 For instance,~\citet{Liu2019} model elective admissions through a Markov Decision Process (MDP), highlighting the role of waiting-list size in guiding strategic decisions.
-Despite its conceptual value, the framework abstracts away essential practical constraints, such as surgeon availability, block scheduling and case-mix heterogeneity, thereby limiting practical applicability.
+Despite its conceptual value, the framework disregards essential practical constraints, such as surgeon availability, block scheduling and case-mix heterogeneity, thereby limiting practical applicability.
 Similarly,~\citet{Mcrae2020} demonstrate that explicitly modelling uncertainty and selecting appropriate aggregation levels can significantly improve CMP outcomes and enable joint CMP-MSS optimisation.
-Nevertheless, waiting-list dynamics remain outside of the modelling scope, implying no full integration of strategic and tactical decisions; and their reliance on Sample Average Approximation (SAA) leads to representations that may understate distributional variability
-
-Taken together, these studies confirm the value of integrating CMP and MSS, yet they also reveal persistent shortcomings.
+Nevertheless, waiting-list dynamics remain outside of the modelling scope, implying no full integration of strategic and tactical decisions. 
+Furthermore, their reliance on Sample Average Approximation (SAA) leads to representations that may understate distributional variability. 
+%Taken together, 
+These studies underscore the value of integrating CMP and MSS, yet they also reveal persistent shortcomings.
 Uncertainty is represented only selectively across planning levels, waiting-list requirements are rarely modelled explicitly, and key operational constraints required for real-world implementation remain overlooked.
 
 % 3 - Na literatura, como consideram cancelamento e overtime? Qual o impacto de considerar isso e até onde foram nesse sentido? (tentar não fugir de problemas que integram CM e MSS)
-% ---- dá pra citar o artigo do Barz aqui, com as limitações deles
-Still on the uncertainty treatment, overlooking surgery durations often results in unpredictable idle or overtime in operating rooms~\citep{shehadeh2022stochastic}. 
-Overtime is costly and can lead to the cancellation of surgeries, compromising the quality of care, while idle time reflects an inadequate use of operating theatre capacity~\citep{shehadeh2022stochastic, Harris2022, Kayvanfar2025}.
-
-We looked for recent works on the literature on surgery planning that try to deal with these overtime issues.
-For instance,~\citet{Barz2015} address a tactical patient admission and scheduling problem in which the hospital decides a CMP under multiple resource constraints and stochastic clinical progression. 
-The authors model patients' health evolution as a MDP, where each clinical state deterministically defines daily resource consumption, solve it via Approximate Dynamic Programming (ADP), complemented by a newsvendor-based heuristic to determine capacity reservations for emergency arrivals. 
-Their objective is to maximise hospital revenue by admitting high-contribution elective patients while preventing excessive overtime.
-However, once a patient is admitted, the hospital is assumed to always provide the required resources. 
-This assumption excludes the possibility of cancellations or postponements driven by overtime. 
-Moreover, by treating resource consumption within each state as deterministic, the framework effectively ignores uncertainty in surgery duration --- one of the main drivers of operational instability. 
+Uncertainty in surgery duration is another important issue that, when disregarded, may result in unpredictable idle or overtime in operating theatres~\citep{shehadeh2022stochastic}. Whilst overtime is costly and can lead to  cancellations that compromise the quality of care, idle time reflects an inadequate use of operating theatre capacity~\citep{shehadeh2022stochastic, Harris2022, Kayvanfar2025}. 
+Works that explicitly consider overtime generally seek to maximise the use of the available operating hours whilst somehow mitigating the risk of overtime. 
+With the aim of maximising hospital revenue while preventing excessive overtime, \citet{Barz2015} propose a tactical patient admission and scheduling problem that derives a CMP under multiple resource constraints and stochastic clinical progression. 
+The approach utilises a newsvendor heuristic to reserve capacity for emergency arrivals, and an MDP model to select the patient cohort to be admitted whilst considering probabilistic transitions between clinical states. 
+The model, however, excludes the possibility of cancellations or postponements driven by overtime, as it assumes that the hospital always disposes of the resources to treat each admitted patient. 
+%The authors model patients' health evolution as a MDP, where each clinical state deterministically defines daily resource consumption, solve it via Approximate Dynamic Programming (ADP), complemented by a newsvendor-based heuristic to determine capacity reservations for emergency arrivals. 
+%Their objective is to maximise hospital revenue by admitting high-contribution elective patients while preventing excessive overtime.
+%However, once a patient is admitted, the hospital is assumed to always provide the required resources. 
+%This assumption excludes the possibility of cancellations or postponements driven by overtime. 
+Moreover, by treating resource consumption as deterministic, the framework effectively ignores uncertainty in surgery duration --- one of the main drivers of operational instability. 
 As a result, the model underestimates the practical interplay between stochastic surgery durations, cancellations and overtime, limiting its applicability to integrated CMP-MSS decision-making.
 
 Furthermore,~\citet{Zhang2020} study a tactical surgery planning with the explicit aim of mitigating overtime risk when allocating elective patients to OTs over an upcoming planning horizon. 
@@ -76,11 +61,10 @@ These contextual factors challenge the scalability and transferability of many o
 Indeed, as noted by~\citet{Melo2025}, much of the existing literature is calibrated to relatively small hospitals in developed regions, limiting its relevance for large, resource-constrained systems. 
 Ignoring such operational realities risks producing models that are theoretically stable but difficult to implement in practice, underscoring the need for scheduling frameworks that explicitly accommodate institutional, organisational and contextual constraints.
 
-
 % 6 - Escrever sobre nossas contribuições, conectando tudo que foi dito até aqui, onde a gente se encaixa na literatura, e porque estamos trazendo inovação
 This paper addresses the identified gaps in the surgical planning literature by proposing an integrated framework that jointly links strategic and tactical decision levels while explicitly accounting for key sources of uncertainty. 
-The framework captures dynamic surgical demand through explicit waiting-list modelling, enabling the enforcement of waiting-time requirements and long-term queue stability, and incorporates stochastic surgery durations to manage overtime, idle time and cancellation risk. 
-The proposed approach is grounded in a real-world application at the Clinical Hospital of the University of Campinas (Brazil), a high-complexity public hospital that provides detailed operational data and a challenging planning environment~\citep{hc_unicamp_historia}.
+The framework captures dynamic surgical demand through explicit waiting-list modelling, enabling the enforcement of waiting-time requirements and long-term queue stability, and incorporates stochastic surgery durations to manage idle and overtime with cancellation risk. 
+The proposed approach is grounded in a real-world application at the Clinical Hospital of the University of Campinas (HC-Unicamp) in Brazil, a high-complexity public hospital that provides detailed operational data and a challenging planning environment~\citep{hc_unicamp_historia}.
 
 The main contributions of this work are as follows:
 \begin{itemize}
