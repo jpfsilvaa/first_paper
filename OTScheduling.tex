@@ -1,0 +1,132 @@
+\subsection{Operating Theatre Scheduling Model\label{sec:ot}}
+\info[author=Joao]{Depois preciso ``sincronizar'' essa seção com o todo que estamos produzindo, i.e., essa etapa de alocação vem depois das etapas de gerenciamento de filas e etc.}
+We modeled a deterministic MILP\info[author=Joao]{Depois preciso garantir a introdução dessa sigla em seções anteriores.} formulation for the Operating Theatre Scheduling Problem (OTSP), which focuses on the tactical allocation of operating theatre blocks to medical subspecialities.
+
+To formulate the OTSP, we use the Table~\ref{tab:symb} notation.
+Note that the variable $\blockvar$ is a variable that indicates whether the theatre $\roomidx$ in the block $\blockidx$ is allocated to the subspeciality $\specialtyidx$.\unsure[author=Joao]{Isso bate com o comentario que ja fiz la em cima: preciso sincronizar no texto o que é bloco e o que é alocação!}
+Therefore, throughout the text, we will use the term \textit{allocation} to refer to an allocated speciality.
+
+\begin{table}
+    \centering
+    \caption{\label{tab:symb}Table of Symbols.}
+    \scriptsize
+    \begin{tabular}{cl}
+    \toprule
+    \textbf{Set}                    & \textbf{Description}                                                                       \\
+    \midrule
+        $\roomset$                       & Operating theatres (both elective and outpatient)                       \\
+        $\planninghorizonset$            & Planning horizon days, such that $\planninghorizonset = \{1, 2, ..., \days\}$  \\
+        $\timeperiodset$                 & Time periods (morning or afternoon), such that $\timeperiodset = \{\text{morning}, \text{afternoon}\}$          \\
+        $\blockset$                      & Blocks, such that $\blockset = \planninghorizonset \times \timeperiodset$     \\
+        $\specialtyset$                  & Surgical subspecialities                                                                \\
+        $\specialtymset$                 & Surgical subspecialities that must have two sequential blocks allocated,\\
+                                         & such that $\specialtymset \subseteq \specialtyset$          \\
+        $\specialtycset$                 & Circumstantial surgical subspecialities (do not occur every month),                      \\
+                                         & but have high priority, such that $\specialtycset \subseteq \specialtyset$              \\
+        $\specialtyprset$                & Priority surgical subspecialities, such that $\specialtyprset \subseteq \specialtyset$  \\
+        $\specialtytxset$                & Organ transplant surgical subspecialities, such that $\specialtytxset \subseteq \specialtyset$                                                                                                              \\
+    \midrule
+    \textbf{Index}                           & \textbf{Description}                                                                  \\
+    \midrule
+        $\roomidx$                            & Operating theatre, with $\roomidx \in \roomset$                                       \\
+        $\planninghorizonidx$                 & Planning horizon day, with $\planninghorizonidx \in \planninghorizonset$ \\
+        $\timeperiodidx$                      & Time period (morning or afternoon), with $\timeperiodidx \in \timeperiodset$           \\
+        $\blockidx$                           & Surgery block, with $\blockidx \in \blockset$                                    \\
+        $\specialtyidx$                       & Surgical subspeciality, with $\specialtyidx \in \specialtyset$                      \\
+    \midrule
+    \textbf{Parameter}                        & \textbf{Description}                                                                  \\
+    \midrule
+        $\allowedrooms_{\roomidx\blockidx\specialtyidx}$   & 1 if theatre $\roomidx \in \roomset$ in block $\blockidx \in \blockset$ can              \\
+                                                           & be used by subspeciality $\specialtyidx \in \specialtyset$; 0 otherwise          \\
+        $\demand_{\specialtyidx}$                          & Number of surgeries demanded for subspeciality $\specialtyidx \in \specialtyset$                       \\
+        $\specteams_{\blockidx\specialtyidx}$              & Number of teams from subspeciality $\specialtyidx \in \specialtyset$ available in block  $\blockidx \in \blockset$ \\
+        $\numbersanests_{\blockidx}$                       & Number of anesthesiologists available in block $\blockidx \in \blockset$                         \\
+        $\needanest_{\specialtyidx}$                       & 1 if subspeciality $\specialtyidx \in \specialtyset$ requires an anesthesiologist; 0 otherwise         \\    
+        $\mindeficit_{\specialtyidx}$                      & Minimum number of blocks required for subspeciality $\specialtyidx \in \specialtyset$            \\
+        $\ub$                                              & Upper bound on the number of blocks to allocate, relative to each subspeciality $\specialtyidx \in \specialtyset$   \\
+    \bottomrule
+    \textbf{Variable}                         & \textbf{Description}                                                                  \\
+    \midrule
+        $\blockvar$                                        & 1 if theatre $\roomidx \in \roomset$ in block $\blockidx \in \blockset$ is allocated to subspeciality $\specialtyidx \in \specialtyset$; 0 otherwise                \\
+        $\precvar$                                         & 1 if theatre $\roomidx \in \roomset$ on day $\planninghorizonidx \in \planninghorizonset$ is allocated exclusively to subspeciality $\specialtyidx \in \specialtyset$;\\
+                                                           & 0 otherwise                                  \\
+        $\integervar$                                      & Number of transplants to be performed in block $\blockidx \in \blockset$ by subspeciality $\specialtyidx \in \specialtyset$ \\
+        $\balancevar$                                      & Minimum proportion of allocations per demand among all subspecialities   \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+The Objective Functions (OFs) are organised according to the priority levels established by the hospital's guidelines.
+To reflect these priorities, we adopt a hierarchical optimisation strategy, as proposed in~\citet{Aringhieri2022Hierarchical}.
+Each OF is optimised sequentially, while respecting the optimal values obtained in the previous stages.
+
+Formally, the first OF is defined as
+\begin{align}
+\text{Max } \displaystyle F_1 & = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyprset} \blockvar, \label{eq:f0}
+\end{align}
+which aims to maximise the number of allocations for priority subspecialities ($\specialtyprset$).
+The second function is given by
+\begin{align}
+\text{Max } \displaystyle F_2 & = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyset} \blockvar, \label{eq:f1}
+\end{align}
+which seeks to maximise the total number of allocations, i.e., to increase theatre occupancy.
+The third objective function is defined as
+\begin{align}
+\text{Max } \displaystyle F_3 & = \balancevar, \label{eq:f2}
+\end{align}
+and its purpose is to promote balance in the distribution of allocations across subspecialities.
+This function works in conjunction with a model constraint that enforces that, for each $\specialtyidx \in \specialtyset$, the ratio between the number of allocations and the corresponding demand must be greater than or equal to $\balancevar$.
+Hence, OF~\eqref{eq:f2} maximises the lowest allocation-to-demand ratio among all subspecialities, ensuring a balanced allocation and avoiding over-concentration in a few subspecialities to the detriment of others.
+
+Finally, the fourth OF is given by
+\begin{align}
+\text{Max } \displaystyle F_4 & = \sum_{\roomidx \in \roomset} \sum_{\planninghorizonidx \in \planninghorizonset} \sum_{\specialtyidx \in \specialtyset} \precvar, \label{eq:f3}
+\end{align}
+which aims to maximise the number of subspecialities allocated sequentially on the same day in the same theatre.
+This is particularly important for improving the logistics of the surgical process, reducing the need for equipment and team transfers between theatres.
+
+With this, we formulate the theatre planning problem at HC - Unicamp by the $\modelname$ model, incorporating these OFs and constraints based on the hospital's current operational framework.\change[author=Joao]{O MODELO VAI MUDAR! De acordo com o que vai vir como input do RQ}
+
+{\footnotesize
+\linespread{1}\selectfont
+\begin{alignat}{4}
+    (\modelname) \quad & \omit\rlap{Maximize OFs~\eqref{eq:f0}-\eqref{eq:f3}}\nonumber\\
+    & \mbox{subject to} && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar  & \geq \mindeficit_{\specialtyidx}                    &\qquad & \forall\, \specialtyidx \in \specialtyset  \label{eq:m2-2}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar  & \leq (1 + \ub) \cdot \demand_{\specialtyidx}   &\qquad & \forall\, \specialtyidx \in \specialtyset \label{eq:m2-3}\\
+    &                  && \quad & \sum_{\specialtyidx \in \specialtyset} \blockvar                       & \leq 1     &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset \label{eq:m2-4}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\specialtyidx \in \specialtyset} \needanest_{\specialtyidx} \cdot \blockvar   & \leq \numbersanests_{\blockidx}                    &\qquad & \forall\, \blockidx \in \blockset \label{eq:m2-5}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \blockvar   & \leq \specteams_{\blockidx\specialtyidx}   &\qquad & \forall\, \,\blockidx \in \blockset,\,\specialtyidx \in \specialtyset \label{eq:m2-6}\\
+    &                  && \quad & \blockvar   & = 0    &\qquad & \forall\, \roomidx \in \roomset,\,\blockidx \in \blockset,\,\specialtyidx \in \specialtyset : \nonumber\\
+    &                  &&       &                                                          &                 &\qquad &\allowedrooms_{\roomidx\blockidx\specialtyidx} = 0 \label{eq:m2-7}\\
+    &                  && \quad & \blockvar + x_{\roomidx(\blockidx+1)\specialtyidx} - 1   & \leq \precvar   &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset,\,\specialtyidx \in \specialtyset, \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \planninghorizonidx \in \planninghorizonset :\,\text{ $\blockidx$ and $\blockidx+1$ are blocks} \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \text{ of the same day $\planninghorizonidx$}\label{eq:m2-8}\\
+    &                  && \quad & \blockvar + x_{\roomidx(\blockidx+1)\specialtyidx}       & \geq 2 \cdot \precvar   &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset,\,\specialtyidx \in \specialtyset, \planninghorizonidx \in \planninghorizonset : \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \planninghorizonidx \in \planninghorizonset : \text{ $\blockidx$ and $\blockidx+1$ are blocks} \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \text{ of the same day $\planninghorizonidx$}\label{eq:m2-9}\\
+    &                  && \quad & \blockvar       & = x_{\roomidx(\blockidx+1)\specialtyidx}   &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockmset,\,\specialtyidx \in \specialtymset,\, \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \planninghorizonidx \in \planninghorizonset : \text{ $\blockidx$ and $\blockidx+1$ are blocks} \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \text{ of the same day $\planninghorizonidx$}\label{eq:m2-10}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \blockvar   & = 2 \cdot \integervar  & \qquad & \forall\, \blockidx \in \blockset,\,\specialtyidx \in \specialtytxset  \label{eq:m2-11}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar      & = \demand_{\specialtyidx}     &\qquad & \forall\,\specialtyidx \in \specialtycset  \label{eq:m2-12}\\    
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \frac{\blockvar}{\demand_{\specialtyidx}}   & \geq \balancevar     &\qquad & \forall\,\specialtyidx \in \specialtyset  \label{eq:m2-13}\\ 
+    &                  &&       & \blockvar                           & \in \{0,1\}                 &        & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset,\, \specialtyidx \in \specialtyset\nonumber \\
+    &                  &&       & \precvar                            & \in \{0,1\}                 &        & \forall\, \roomidx \in \roomset,\, \planninghorizonidx \in \planninghorizonset,\, \specialtyidx \in \specialtyset\nonumber \\
+    &                  &&       & \integervar                         & \in \mathbb{Z_{+}}          &        & \forall\, \blockidx \in \blockset,\, \specialtyidx \in \specialtyset\nonumber\\
+    &                  &&       & \balancevar                         & \in \mathbb{R_{+}}.         &        &\nonumber
+\end{alignat}
+}
+
+Constraints~\eqref{eq:m2-2} and~\eqref{eq:m2-3} impose minimum and maximum bounds on the allocation of each subspeciality.
+The parameter $\mindeficit_{\specialtyidx}$, typically set to low values (between 1 and 3), ensures that no subspeciality is left completely unattended.
+The upper bound, governed by $\ub \in [0,1]$, restricts allocations to at most $(1+\ub)$ times the demand $\demand_{\specialtyidx}$, avoiding over-allocation beyond a reasonable limit.\change[author=Joao]{Essas restrições vão mudar, de acordo com os inputs do gerenciamento de filas}
+
+Constraint~\eqref{eq:m2-4} ensures that each theatre and time block receives at most one subspeciality.
+Constraint~\eqref{eq:m2-5} limits the number of allocations that require anaesthetists according to their availability $\numbersanests_{\blockidx}$ in each block.
+Constraint~\eqref{eq:m2-6} restricts the allocation of each subspeciality based on the availability of $\specteams_{\blockidx\specialtyidx}$ medical teams representing it in block $\blockidx$.
+
+Compatibility between theatre, block, and subspeciality is ensured by constraint~\eqref{eq:m2-7}, while constraints~\eqref{eq:m2-8} and~\eqref{eq:m2-9} together guarantee sequential allocation of blocks on the same day when $\precvar = 1$.
+Subspecialities requiring two consecutive blocks are specifically addressed by constraint~\eqref{eq:m2-10}.
+
+Constraint~\eqref{eq:m2-11} imposes that the number of allocations for transplants must be even, reflecting the need for two theatres for the procedure -- one for the donor and one for the recipient.
+Finally, constraint~\eqref{eq:m2-12} requires full service provision for circumstantial subspecialities $\specialtycset$, and equation~\eqref{eq:m2-13} promotes proportional allocation balancing in conjunction with OF~\eqref{eq:f2}.

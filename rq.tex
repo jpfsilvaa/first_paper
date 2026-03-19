@@ -1,0 +1,248 @@
+% ********************************************
+\section{Long-Term Waiting List Management\label{sec:waitinglist}}
+% *******************************************
+
+As discussed in Section~\ref{sec:lit_review}, CMP constitutes the strategic decision layer responsible for determining the volumes of elective patients to be admitted over a given planning horizon.
+In contrast to much of the existing literature, which primarily selects these volumes to optimise financial or capacity-related objectives, this work adopts a stability-oriented perspective.
+We aim to enable decision-makers to impose maximum acceptable waiting times (e.g., six months) and to guarantee, in the long run, that such targets are met without allowing waiting lists to grow unboundedly. \textcolor{red}{and why is that? Is this because this is a public health system that is legally bound to serve everyone? Some concise justification would be in order!}
+
+In line with this objective, this section introduces the theoretical foundations of the modified $(R,Q)$ control policy proposed to manage elective surgery waiting lists under stochastic demand.
+We first characterise the dynamics of the underlying stochastic process and analyse its long-run behaviour. 
+Subsequently, we derive analytical upper and lower bounds on the batch size $Q$ that ensure compliance with prescribed waiting-time requirements, thereby establishing the strategic input for the integrated planning framework.
+
+% *******************************************
+\subsection{$(R,Q)$ surgery scheduling policy: long-term distributions\label{sec:rqtheory}}
+% *******************************************
+
+Let $X_t, \, t \ge 0$ be a stochastic process representing an elective surgery queue with stationary and independent increments over discrete planning periods, with $X_t$ representing the number of patients in the system at period $t \ge 0$. Assume that the queue is controlled via a modified $(R,Q)$ policy \citep[e.g.,][]{Axsater2015Inv} whereby a batch of $Q \in \mathbb N$ surgeries is processed at time period $t$ whenever $X_t \ge R, \, R \ge Q$ at the start of the period, where $\mathbb N$ is the set of positive integers. In contrast to the classical $(R,Q)$ policy, which processes as many batches as necessary to bring the inventory below the reorder point ($R$), our policy can only process a batch at a time and relies on long-term properties to ensure that the process $X_t, \, t \ge 0$ is stable and guarantees prescribed waiting time requirements.
+
+Let $D$ be a non-negative integer random variable representing the overall demand between two consecutive planning periods, with probability distribution $f_D: \Omega \to [0,1), \, \Omega \subset \mathbb Z_+$, and cumulative distribution $F_D: \mathbb Z_+ \to [0,1]$ given by
+%
+\[
+F_D(d) = \sum_{l=0}^d f_D(l),
+\]
+%
+where $\mathbb Z_+$ denotes the set of non-negative integers. This implies that the dynamics of process $X_t, \, t \ge 0$ can be expressed as:
+%
+\begin{equation} \label{eq:dynamics}
+X_{t+1} = X_t + d - Q \1_{\{X_t \ge R\}},
+\end{equation}
+%
+where $\1_{\{A\}}$ is the indicator function, which is equal to $1$ if $A$ holds and is nil otherwise, and $d$ is a value drawn from $f_D$ that represents the surgical demand in period $t$. The state space of process $X_t, \, t \ge 0$ is given by $S = \{ 0, \, 1 , \, 2, \, \ldots \}$, where $X_t=i$ indicates that there are $R-Q + i$ patients waiting for elective surgery.
+
+Letting 
+%
+\begin{equation} \label{eq:defYZ}
+Y_t = \left \lfloor \dfrac{X_t}{Q} \right \rfloor, \qquad Z_t = X_t \, \% \,  Q,
+\end{equation}
+%
+where $\%$ represents the modulus operator, we can write:
+%
+\[
+X_t = Q Y_t + Z_t,
+\]
+% 
+where $Y_t, \, t \ge 0$ is the integer number of batches required to bring the queue instantaneously below $R$ and $Z_t \in \{0, 1, \ldots, Q-1\}$ is the number of patients that would remain in excess of the minimum allowed queue of $(R-Q)$ patients after removing $Y_t$ batches of $Q$ patients instantaneously.
+
+Note that, from the definitions above, the state space of process $Y_t, t \ge 0$ is $S_Y = \mathbb Z_+$, while $S_Z = \{0, \, 1, \, \ldots, \, Q-1\}$ is the state space of process $Z_t, \, t \ge 0$. In the next result, we will derive the long-term distribution of process $Z_t, \, t \ge 0$.
+
+\begin{prop} \label{prop:steadystate}
+Let $\pi_Z: S_z \to [0,1]$ be the steady state distribution of process $X_t, \, t \ge 0$. Then, it holds that 
+%
+\begin{equation} \label{eq:steadyZ}
+\pi_Z(z) = \dfrac{1}{Q}, \forall z \in S_Z.
+\end{equation}
+%
+\end{prop}
+%
+\begin{proof}
+The proof closely follows that of \citet[Proposition 5.1]{Axsater2015Inv}. Let $P_Z$ be the transition matrix describing the dynamics of process $Z_t, \, t \ge 0$. Assume that $Z_t = z, \, z \in S_Z$ at the start of period $t \ge 0$, and let and $D=k$ be the number of new patient arrivals in period $t$. Hence, it follows that 
+%
+\[
+Z_{t+1} =  (z + k) \,\%\, Q  = (z + k + Q Y_t) \,\%\, Q  = (X_t + k) \,\%\, Q,
+\] 
+%
+where the last equality come from the definitions in \eqref{eq:defYZ}. Therefore, given $D=k$, it is evident that ${p}_{zz'}^Z(k) := P( Z_{t+1} = z' | Z_t = z, D=k )$ equals one for exactly one value of $z$ and zero otherwise. Consequently, we can write:
+%
+\[
+\sum_{z=0}^{Q-1} p_{zz'}^Z = \sum_{z=0}^{Q-1} E_{k} \left\{ p_{zz'}^Z(k) \right\} = E_k \left\{  \sum_{z=0}^{Q-1} p_{zz'}^Z(k) \right\} = E_k \{ 1 \} = 1.
+\]
+%
+The expression above  implies that the Markov chain describing the dynamics of process $Z_t, \, t \ge 0$ is doubly stochastic, and therefore has a uniform steady state distribution. Indeed, substituting \eqref{eq:steadyZ} in the steady state equations:
+%
+\[
+\pi^Z(z) = \sum_{z'=0}^{Q-1} \pi^Z(z') p^Z_{z'z},
+\]
+%
+one can easily see that the steady state distribution satisfies Eq. \eqref{eq:steadyZ}.
+%
+\end{proof}
+
+The result in Proposition \ref{prop:steadystate} is very important, as it shows that the steady state distribution of process $Z_t, \, t \ge 0$, is uniform regardless of the distribution of patient arrivals. Next, we will use this fact to derive the steady state distribution of process $Y_t, \, t \ge 0$. 
+
+% ********************************************
+\subsection{The dynamics of process $Y_t, \, t \ge 0$\label{sec:batchprocess}}
+% *******************************************
+
+Assume that process $Z_t, \, t \ge 0$ has reached equilibrium, which is also equivalent to supposing that $P(Z_0 = z) = \pi_Z(z) = \dfrac{1}{Q}$ \citep[e.g.,][]{Bremaud2020}. We can describe the dynamics of process $Y_t, \, t \ge 0$ as:
+%
+\begin{equation} \label{eq:dynY}
+Y_{t+1} = \begin{cases}
+Y_t - 1 + A, & \text{if} \; Y_t \ge 0, \\
+A; \; & \text{if} \; Y_t = 0,
+\end{cases}
+\end{equation}
+%
+where $A$ is the round number of batch arrivals at time $t$. To fully characterize the random variable $A$, it is necessary to define
+%
+\begin{equation} \label{eq:Az}
+A(z) = \left \lfloor \dfrac{D + z}{Q} \right \rfloor,
+\end{equation}
+%
+which represents the round number of batch arrivals at time $t$, given that $Z_t = z$. Then, in view of Proposition \ref{prop:steadystate}, it follows that:
+%
+\begin{equation} \label{eq:batcharr}
+P(A = k ) = \dfrac{1}{Q} \sum_{z=0}^{Q-1} P(A(z) = k ).    
+\end{equation}
+
+Therefore, from \eqref{eq:dynY} we have:
+%
+\begin{equation} \label{eq:ydynamicY}
+p^Y_{ij} = P(Y_{t+1} = j | Y_{t} = i ) = \begin{cases}
+    P\left( A = j  \right), & \text{if} \; Y_t = 0, \\
+    P\left( A = j-i + 1 \right),  & \text{if} \; Y_t \ge 1.
+\end{cases}
+\end{equation}
+%
+
+Note that Eq. \eqref{eq:dynY}-\eqref{eq:ydynamicY} correspond to the dynamics in \citet[Section 6.1.2]{Shortle2018}. Similarly to \citet{Shortle2018}, the transition matrix of process $Y_t, \, t \ge 0$ can be written as:
+%
+\begin{equation}
+P^Y = [p_{ij}] = \left[
+\begin{array}{cccccccc}
+k_0 & k_1 & k_2 & \ldots & k_M & 0 & 0 & \ldots \\
+k_0 & k_1 & k_2 & \ldots & k_M & 0 & 0 & \ldots \\
+0 & k_0 & k_1 & k_2 & \ldots & k_M & 0 & \ldots \\
+0 & 0 & k_0 & k_1 & k_2 & \ldots & k_M & \ldots \\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & 
+\end{array}
+\right],
+\end{equation}
+%
+where $M$ is the maximum number of new batch arrivals, i.e., the maximum value that random variable $A$ can assume.
+
+The steady state probabilities of process $Y_t, \, t \ge 0$ can then be recursively evaluated by solving:
+\begin{equation} \label{eq:ssY}
+\pi_Y^T = \pi_Y^T P,
+\end{equation}
+%
+with the contour condition that $\pi_Y(0) = 1 - \rho $ \citep[Eq. (6.12)]{Shortle2018}, 
+%
+%\begin{equation} \label{eq:ssY}
+%\pi_Y(i) = \begin{cases}
+%1 - \rho, & \text{if} \; i = 0, \\
+%(1 - \rho) k_i + \displaystyle \sum_{j=1}^{i+1} \pi_Y(j) k_{i-j+1}, \, i \ge 0
+%\end{cases}
+%\end{equation}
+%
+where $\rho = E(A)$. Observe that, to guarantee stability, we must have $E(A) < 1$. Note also that the steady state probabilities up to a given state $j$ can be recursively calculated using the first $j$ equations in \eqref{eq:ssY}.
+
+% ********************************************
+\subsection{Upper and lower bounds on the batch size $Q$ under waiting time requirements} \label{sec:bounds}
+% *******************************************
+
+Let $\omega$ be the waiting time of a patient joining the queue, and assume that the healthcare system requires that:
+%
+\begin{equation} \label{eq:waitthreshold}
+P( \omega > \tau ) < \alpha,
+\end{equation}
+%
+for some target waiting time $\tau >0$ and probability threshold $\alpha \in (0,1)$. Now, if a patient arrives and encounters $Y_t > 0$ batches of patients in the queue, their turn will only arrive once these $Y_t$ batches are processed, which will take $Y_t$ time periods. This means that the patient will have to wait $\tau = Y_t$ periods for their turn. Therefore, Eq. \eqref{eq:waitthreshold} can be equivalently stated as:
+%
+\begin{equation} \label{eq:waitthresholdy}
+\sum_{i = 0}^\tau \pi_Y(i) > 1 - \alpha,
+\end{equation}
+%
+where $\pi_Y : S_Y \to (0,1)$ satisfies Eq. \eqref{eq:ssY}. Therefore, to limit the waiting time according to the prescribed requirements, we can establish a lower bound ($\underline Q$) on the batch size $Q > 0$ as follows:
+%
+\begin{equation} \label{eq:under}
+\underline Q = \min \{ Q \in \mathbb N : \sum_{i = 0}^\tau \pi_Y(i) > 1- \alpha \}.
+\end{equation}
+
+When $Y_t = 0$, on the other hand, the next batch will only be processed when the system leaves this state, therefore by applying the strong Markov property \citep{Bremaud2020}, we have:
+%
+\[
+\omega = \min \{\delta > 0 : Y_{\delta} > 0 | Y_0 = 0 \}.
+\]
+%
+Considering the transition matrix in \eqref{eq:ydynamicY}, it follows that $\omega$ will be a geometrically distributed variable and:
+%
+\begin{equation} \label{eq:upperbound}
+P( \omega > \tau | Y_0 = 0 )  = k_0^\tau.
+\end{equation}
+
+One can intuitively see that the value of $k_0$ will increase as $Q$ increases, since in this case we will need more patient arrivals until we are able to process a full batch of patients. Hence, from Eq. \eqref{eq:upperbound}, we can set up an upper bound $\overline Q$ for the batch size such that:
+%
+\begin{equation} \label{eq:overbound}
+\overline Q = \max \{ Q \in \mathbb N : k_0^\tau < \alpha \}.
+\end{equation}
+
+\begin{ex}[Deriving lower and upper bounds for $Q$]
+Consider an elective surgery queue with monthly demand $D$ that satisfies the distribution in Table \ref{tab:demprob}.
+%
+\begin{center}
+\begin{table}[h!]
+\caption{Monthly demand distribution for surgeries} \label{tab:demprob}
+\scriptsize{
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|} \hline \hline
+\textbf{Demand ($d$)} & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\ \hline
+$P(D=d)$ & 0.0308 & 0.0393 & 0.1179 & 0.2096 & 0.2445 & 0.1956 & 0.1086 & 0.0414 & 0.0103 & 0.0015 & 0.0005 \\ \hline
+\end{tabular}
+}
+\end{table}
+\end{center}
+%
+The expected monthly demand is therefore $E(D) = 3.9022$. Setting $Q = 4$, which ensures long-term stability, we have $S_Z = \{0, 1, 2, 3\}$. This allows us to evaluate the individual distributions of $A(z), \, z \in S_Z$ as defined in Eq. \eqref{eq:Az}, which we depict in the Table \ref{tab:dembatches}, along with the distribution of variable $A$ from Eq. \eqref{eq:batcharr}.
+
+
+\begin{table}[h!]
+\centering \caption{Monthly demand distribution for surgeries} \label{tab:dembatches}
+\scriptsize{
+\begin{tabular}{|l|c|c|c|c|} \hline \hline
+$P(A(z) = d) $ & \multicolumn{4}{|c|}{\textbf{Batch demand ($d$)}} \\ \cline{2-5}
+  & 0 & 1 & 2 & 3 \\ \hline
+$z=0$   & 0.3976 & 0.5901 & 0.0123 & 0 \\ \hline
+$z=1$   & 0.1880 & 0.7583 & 0.0537 & 0 \\ \hline
+$z=2$   & 0.0701 & 0.7676 & 0.1618 & 0.0005 \\ \hline
+$z=3$   & 0.0308 & 0.6113 & 0.3559 & 0.002 \\ \hline
+\textbf{$P(A=d)$} & \textbf{0.171625} &  \textbf{0.681825} & \textbf{0.145925} &  \textbf{0.000625} \\ \hline
+\end{tabular}
+}
+\end{table}
+
+The distributions in Table \ref{tab:dembatches} follow directly from Eq. \eqref{eq:Az} and Eq. \eqref{eq:batcharr}. For example, when $z=0$, we know that the queue comprises an integer number of batches. Therefore, $P(A(0) = 0) = p_D(0) + p_d(1) + p_D(2) + p_D(3)$ (Table \ref{tab:demprob}) as up to 3 new arrivals will not suffice to generate a new batch of $Q=4$ patients. Analogously, $A(0)=1$ if we observe from 5 to 7 arrivals and $A(0)=2$ when 8 to 10 patients arrive in the period, as these will suffice for 2 new batches. 
+
+Conversely, when $z=3$, we have three patients in excess of a discrete number of batches, which means that $P(A(3) = 0) = p_D(0)$ as new batches will be formed whenever one or more patients arrive. One new batch will form if $D  \in [1,4]$, two new batches if $D \in [5,8]$ and three new batches when $D\in [8,10]$. Specifically, when 10 patients arrive, they will form a set of 13 patients when joined to the $z=3$ remaining patients from the start of the period. These 3 patients will then suffice to form three batches of $Q=4$ patients, with one remaining batchless for the following period.
+
+Note that $E(A) = 0.9755$, and that this value is equal to $\rho = \dfrac{E(D)}{Q} = \dfrac{3.9022}{4} = 0.9755$. This is expected, as the dynamics of process $Y_t$ describes the original system, only looking at it in terms of batches of patients. Note that $E(A)$ is simply the expected number of batches of $Q$ patients arriving and since we process $\mu=1$ batch per time period, we have $\rho = E(A)$ when looking at the evolution of the batch process $Y_t, \, t \ge 0$.
+
+Now, let us suppose that $\tau = 6$ and $\alpha = 0.05$ in \eqref{eq:waitthreshold}, which means that the system requires 95\% of the patients to be operated in up to six months. To verify whether that is satisfied, we need firstly to solve Eq. \eqref{eq:ssY} for the steady state distribution of $Y_t, \, t \ge 0$ and then use it to verify \eqref{eq:waitthresholdy}. From Table \ref{tab:dembatches}, we obtain $k_0=0.171625$,  $k_1=0.681825$, $k_2 = 0.145925$ and $k_3=0.000625$, which can be applied in Eq. \eqref{eq:ssY} to find $\pi_Y(0) = 0.02445$, $\pi_Y(1) = 0.1182$, $\pi_Y(2) = 0.1219$, $\pi_Y(3) = 0.1046$, $\pi_Y(4) = 0.0898$, $\pi_Y(5) = 0.077$, $\pi_Y(6) = 0.0661$. This yields:
+\[
+P(\omega \le 6 | Y_t \ge 1) \approx 0.602 < 0.95 = 1 - \alpha.
+\]
+%
+This implies that $\underline Q > 4$ in Eq. \eqref{eq:under} and we should, therefore, recalculate the probability above for increasing values of $Q$ until we find the first value that satisfies the waiting time criterion - which will give us the lower bound $\underline Q$.
+
+To verify the waiting time requirements when $Y_t=0$, one can apply \eqref{eq:upperbound}, which implies that $P(\omega \le 6 | Y_t = 0) = 0.171625^6 \approx 2.5 \cdot 10^{-5} < 0.05$. Therefore, to find the bound $\overline Q$ in Eq. \eqref{eq:overbound}.
+
+When verifying Eq.~\eqref{eq:under} with $Q = 10$, it implies $P(\omega \le 6 | Y_t = 0) = 0.609780^6 \approx 0.05114 > 0.05$. Then, if one set $Q = 9$, it implies $P(\omega \le 6 | Y_t = 0) = 0.566478^6 \approx 0.03304 < 0.05$. Thus, we can set $\overline Q = 9$.
+
+For the $\underline Q$, one can verify $Q = 5$, which implies $k_0=0.265720$,  $k_1=0.688120$, $k_2 = 0.046160$ and $k_3=0$, which can be applied in Eq. \eqref{eq:ssY} to find $\pi_Y(0) = 0.21956$, $\pi_Y(1) = 0.606723$, $\pi_Y(2) = 0.143539$, $\pi_Y(3) = 0.024935$, $\pi_Y(4) = 0.004332$, $\pi_Y(5) = 0.000752$, $\pi_Y(6) = 0.000131$. This yields:
+\[
+P(\omega \le 6 | Y_t \ge 1) \approx 0.999973 > 0.95 = 1 - \alpha.
+\]
+%
+Thus, we can set $\underline Q = 5$.
+
+
+\end{ex}

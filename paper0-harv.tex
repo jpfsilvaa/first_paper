@@ -52,6 +52,35 @@
 \newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
 
 
+\usepackage{amssymb}
+
+%% The line no packages add line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers.
+% \usepackage{lineno}
+\usepackage{amssymb,amsthm}
+\usepackage{optidef}
+\usepackage{multirow}
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
+\usepackage{hyperref}
+\usepackage{placeins}
+\newtheorem{defn}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{ex}{Example}
+\newtheorem{hypo}{Hypothesis}
+\newtheorem{theo}{Theorem}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+%% The amsthm package provides extended theorem environments
+%% \usepackage{amsthm}
+
+\usepackage{booktabs}
+\def\1{{1\kern-.3468em{ 1}}}
+
+%\usepackage{graphicx, color, soul}
+\usepackage{xcolor}
+
 %% tabelas mais bonitas
 \usepackage{booktabs}
 
@@ -169,9 +198,21 @@ Abstract text.
 
 \end{frontmatter}
 
-% \listoftodos
+% \include{intro}
 
 \include{LitReview-Ed}
+
+\include{ProblemDescr}
+
+\include{rq}
+
+\include{overtime}
+
+\include{OTScheduling}
+
+% \include{experiments}
+
+% \include{conclusions}
 
 % *******************************************
 \bibliographystyle{elsarticle-harv}
