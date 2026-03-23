@@ -1,0 +1,69 @@
+\usepackage{amsfonts, amsmath, amssymb, mathtools, latexsym, bbm}
+
+% Teoremas, definições, proposições, lemas, corolários e conjecturas
+% Pode dar conflito com outros pacotes
+\usepackage{amsthm}
+
+% conjuntos e indices
+\newcommand{\blockset}{\mathcal{B}}
+\newcommand{\blockcset}{\mathcal{B}_{c}}
+\newcommand{\blockmset}{\mathcal{B'}}
+\newcommand{\blockidx}{b}
+\newcommand{\blocki}{b_i}
+\newcommand{\blockj}{b_j}
+
+\newcommand{\roomsete}{\mathcal{T}_{e}}
+\newcommand{\roomseta}{\mathcal{T}_{a}}
+\newcommand{\roomset}{\mathcal{T}}
+\newcommand{\roomidx}{t}
+\newcommand{\roomidxalt}{\ell}
+
+\newcommand{\specialtyset}{\mathcal{S}}
+\newcommand{\specialtymset}{\mathcal{S}_{seq}} % especialidades que precisam de dois blocos
+\newcommand{\specialtycset}{\mathcal{S}_{circ}} % especialidades circunstanciais
+\newcommand{\specialtyprset}{\mathcal{S}_{prio}} % especialidades prioritárias
+\newcommand{\specialtytxset}{\mathcal{S}_{trans}} % especialidades de transplante
+\newcommand{\specialtyidx}{s}
+
+\newcommand{\planninghorizonset}{\mathcal{D}}
+\newcommand{\planninghorizonidx}{d}
+
+\newcommand{\timeperiodset}{\mathcal{M}}
+\newcommand{\timeperiodidx}{m}
+
+% --------------------------------------------------
+
+% variaveis
+\newcommand{\blockvar}{x_{\roomidx\blockidx\specialtyidx}}
+\newcommand{\blockivar}{x_{\roomidx\blocki\specialtyidx}}
+\newcommand{\blockjvar}{x_{\roomidx\blockj\specialtyidx}}
+\newcommand{\deficitvar}{z_{\specialtyidx}}
+\newcommand{\precvar}{y_{\roomidx\planninghorizonidx\specialtyidx}}
+\newcommand{\integervar}{w_{\blockidx\specialtyidx}}
+\newcommand{\balancevar}{L}
+\newcommand{\teamslackvar}{z_{\specialtyidx\blockidx}}
+\newcommand{\anestslackvar}{a_{\blockidx}}
+
+% --------------------------------------------------
+
+% parametros
+\newcommand{\roomtospecialty}{\psi}
+\newcommand{\demand}{\delta}
+\newcommand{\numbersurgeons}{N}
+\newcommand{\numbersanests}{A}
+\newcommand{\needanest}{\alpha}
+\newcommand{\revenue}{P}
+\newcommand{\specteams}{\eta}
+\newcommand{\mindeficit}{\beta}
+\newcommand{\ub}{\kappa}
+\newcommand{\days}{|\planninghorizonset|}
+\newcommand{\eps}{\epsilon}
+\newcommand{\allowedrooms}{\lambda}
+\newcommand{\entiredayroom}{\phi}
+\newcommand{\upperq}{\overline{Q}_{\specialtyidx}}
+\newcommand{\lowerq}{\underline{Q}_{\specialtyidx}}
+\newcommand{\anestconstant}{C}
+
+\newcommand{\modelname}{MILP-OT}
+\newcommand{\hcunicamp}{HC - Unicamp}
+
