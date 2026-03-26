@@ -2,6 +2,8 @@
 \section{Operating Theatre Scheduling\label{sec:ot}}
 % ********************************************* %
 
+\textcolor{red}{TODO: EXPLAIN PREPROCESSING STEP (CONVOLUTIONS) THAT OUTPUTS THE Q VALUES IN BLOCK UNITS WITH AN ALPHA CONFIDENCE LEVEL}
+
 Following the proposed integrated framework, the final step is a MIP formulation for the Operating Theatre Scheduling Problem (OTSP), which addresses the tactical allocation of subspecialties to operating theatre blocks. 
 This model receives as input both the admission volumes determined by the $(R,Q)$ waiting-list control policy and the effective number of surgeries per block derived from the cancellation and overtime management stage. 
 By integrating these inputs, the formulation ensures that the resulting schedules are consistent with long-term waiting-list stability while explicitly accounting for the possibility of cancellations at the operational level.
@@ -15,7 +17,7 @@ To formulate the problem, we use the the notation in Table~\ref{tab:symb}.
     \toprule
     \textbf{Set}                    & \textbf{Description}                                                                       \\
     \midrule
-        $\roomset$                       & Operating rooms (both elective and outpatient)                       \\
+        $\roomset$                       & Operating theatres (both elective and outpatient)                       \\
         $\planninghorizonset$            & Days of the planning horizon, such that $\planninghorizonset = \{1, 2, ..., \days\}$  \\
         $\timeperiodset$                 & Periods (morning or afternoon), such that $\timeperiodset = \{\text{morning}, \text{afternoon}\}$          \\
         $\blockset$                      & Blocks, such that $\blockset = \planninghorizonset \times \timeperiodset$     \\
@@ -29,7 +31,7 @@ To formulate the problem, we use the the notation in Table~\ref{tab:symb}.
     \midrule
     \textbf{Index}                           & \textbf{Description}                                                                  \\
     \midrule
-        $\roomidx$                            & Operating room, with $\roomidx \in \roomset$                                       \\
+        $\roomidx$                            & Operating theatre, with $\roomidx \in \roomset$                                       \\
         $\planninghorizonidx$                 & Planning horizon day, with $\planninghorizonidx \in \planninghorizonset$ \\
         $\timeperiodidx$                      & Period (morning or afternoon), with $\timeperiodidx \in \timeperiodset$           \\
         $\blockidx$                           & Surgery block, with $\blockidx \in \blockset$                                    \\
@@ -43,15 +45,15 @@ To formulate the problem, we use the the notation in Table~\ref{tab:symb}.
         $\numbersanests_{\blockidx}$                       & Number of anesthesiologists available in block $\blockidx \in \blockset$                         \\
         $\needanest_{\specialtyidx}$                       & 1 if subspecialty $\specialtyidx \in \specialtyset$ requires an anesthesiologist; 0 otherwise         \\    
         $\mindeficit_{\specialtyidx}$                      & Minimum number of blocks for subspecialty $\specialtyidx \in \specialtyset$            \\
-        $\anestconstant$                                  & Constant to penalize the anesthesiologist slack variable $\anestslackvar$ in the objective function ($\anestconstant = |\blockset|\cdot|\specialtyset|\cdot|\roomset|$) \\
+        $\anestconstant$                                   & Constant to penalize the anesthesiologist slack variable $\anestslackvar$ in the objective function ($\anestconstant = |\blockset|\cdot|\specialtyset|\cdot|\roomset|$) \\
         $\allowedrooms_{\roomidx\blockidx\specialtyidx}$   & 1 if room $\roomidx \in \roomset$, in block $\blockidx \in \blockset$, can              \\
                                                            & be used by subspecialty $\specialtyidx \in \specialtyset$; 0 otherwise          \\
     \bottomrule
     \textbf{Variable}                         & \textbf{Description}                                                                  \\
     \midrule
-        $\blockvar$                                        & 1 if room $\roomidx \in \roomset$, in block $\blockidx \in \blockset$, is allocated to subspecialty $\specialtyidx \in \specialtyset$; 0 otherwise                \\
-        $\precvar$                                         & 1 when room $\roomidx \in \roomset$, on day $\planninghorizonidx \in \planninghorizonset$, is allocated only to subspecialty $\specialtyidx \in \specialtyset$;\\
-                                                           & 0 otherwise                                  \\
+        $\blockvar$                                        & 1 if room $\roomidx \in \roomset$, in block $\blockidx \in \blockset$, is allocated to subspecialty $\specialtyidx \in \specialtyset$; 0 otherwise. \\
+                                                           & This variable is only created if the allocation is feasible (i.e., specialty $\specialtyidx$ is compatible with the theatre $\roomidx$).                \\
+        $\precvar$                                         & 1 when room $\roomidx \in \roomset$, on day $\planninghorizonidx \in \planninghorizonset$, is allocated only to subspecialty $\specialtyidx \in \specialtyset$; 0 otherwise  \\
         $\integervar$                                      & Number of transplants to be performed in block $\blockidx \in \blockset$ by subspecialty $\specialtyidx \in \specialtyset$ \\
         % $\balancevar$                                      & Minimum allocation proportion by demand among all subspecialties   \\
         $\anestslackvar$                                   & Slack variable for the number of anesthesiologists available in block $\blockidx \in \blockset$ \\

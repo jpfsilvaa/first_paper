@@ -52,35 +52,6 @@
 \newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
 
 
-\usepackage{amssymb}
-
-%% The line no packages add line numbers. Start line numbering with
-%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
-%% for the whole article with \linenumbers.
-% \usepackage{lineno}
-\usepackage{amssymb,amsthm}
-\usepackage{optidef}
-\usepackage{multirow}
-\usepackage[normalem]{ulem}
-\useunder{\uline}{\ul}{}
-\usepackage{hyperref}
-\usepackage{placeins}
-\newtheorem{defn}{Definition}
-\newtheorem{lemma}{Lemma}
-\newtheorem{prop}{Proposition}
-\newtheorem{ex}{Example}
-\newtheorem{hypo}{Hypothesis}
-\newtheorem{theo}{Theorem}
-\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
-%% The amsthm package provides extended theorem environments
-%% \usepackage{amsthm}
-
-\usepackage{booktabs}
-\def\1{{1\kern-.3468em{ 1}}}
-
-%\usepackage{graphicx, color, soul}
-\usepackage{xcolor}
-
 %% tabelas mais bonitas
 \usepackage{booktabs}
 
@@ -198,22 +169,332 @@ Abstract text.
 
 \end{frontmatter}
 
-% \include{intro}
+% \listoftodos
 
-\include{LitReview-Ed}
+\section{Introduction\label{sec:intro}}
 
-\include{ProblemDescr}
+(...)
 
-\include{rq}
+Thus, we propose an integrated framework that: (i) manages waiting lists and determines the number of surgeries to be scheduled in each session at the strategic level; and (ii) based on the parameters defined in the strategic planning, allocates surgical specialities to operating theatre sessions at the tactical level.
+Specifically, the major contributions of this work are:\info[author=Joao]{Só pra eu ter em mente, mas, na versão ``final'' dessa sessão, isso aqui pode ficar mais elaborado.}
+\begin{itemize}
+    \item Waiting list management through $(R,Q)$ control policy considering non-deterministic demand. This policy guarantees waiting time requirements while ensuring long-term stability of each speciality queue.
+    \item Cancellation and overtime management through a Newsvendor model that determines an optimal time budget for the last surgery in a session, based on the random duration of this surgery. That way, we can estimate the number of surgeries to happen in the session by an inventory model
+    \item Operating Theatre allocation MILP model that includes transplant constraints and can be solved optimally in an efficient manner.
+    \item Real-world application in a Brazilian public high-complexity hospital
+\end{itemize}
 
-\include{overtime}
+% ********************************************* %
+\section{Related Works\label{sec:lit_review}}
+% ********************************************* %
 
-\include{OTScheduling}
+% RASCUNHO da estrutura:
+% lembrete: imaginar como um leitor entenderia o que eu escrevi
 
-% \include{experiments}
+% 1 - parágrafo que introduz, de forma mais concreta, os níveis de planejamento e as nomenclaturas usadas na literatura (case mix, master schedule, surgical case)
+%   - ainda nesse paragrafo: enfatizar como a integração dos níveis é importante (e o que a falta dessa integração causa)
+%   - ainda mais: interação dos níveis incluindo incerteza na demanda, duração e cancelamento
+%   - brevemente destacar a nossa contribuição com base no que foi dito no paragrafo, pra daí começar a comparar a literatura em relação ao que estamos propondo
 
-% \include{conclusions}
+% TODO: dá pra aprodundar mais, já falando como costumam resolvar os problemas em cada nivel, como consideram incerteza e onde nosso trabalho se encaixa nesses niveis
+Our contribution integrates long to medium term decisions in such a way that we ensure balance on the waiting queues while optimising the use related OT resources.
+Formally, these decisions are organized into three time-based planning levels, with different uncertainty factors on each of them~\citep{Rahimi2020Review, Cardoen2010, wang2021operating, Melo2025}.
+At the strategic level, long-term decisions (from 6 months to a year) define hospital resource capacity and its allocation across medical specialities~\citep{Fugener2015}.
+Within this level, Case Mix Planning (CMP) specifies patient volumes of different medical specialties to be admitted over the planning horizon, aiming to optimise, for instance, long term costs~\citep{Hof2015Casemix, Mcrae2020}.
+At the tactical level, medium-term decisions establishes weekly or monthly cyclic OT schedules, known as Master Surgery Scheduling (MSS) Problem~\citep{AlAmin2024Review, Carneiro2025}.
+Finally, the operational level deals with daily decisions on surgery dates and start times, characterizing the Surgical Case Scheduling (SCS) Problem~\citep{Vieira2025, Harris2022}.
 
+% 2 - Na literatura, como tratam o Case Mix integrado ao Master Schedule? Consideram incerteza na demanda? Se sim, qual o impacto e qual a limitação?
+Decisions across these levels are inherently interconnected~\citep{Melo2025}, and several studies have attempted to integrate CMP with MSS.
+For instance,~\citet{Ma2013Mult} propose a multilevel framework that jointly optimises strategic admission quantities and the tactical allocation of surgical resources. 
+Their Mixed Integer Programming (MIP) formulation determines the CMP by maximising profit under OT and bed-capacity constraints, after which the resulting mix feeds into an MSS model that minimises expected bed shortages under length-of-stay uncertainty.
+However, the framework assumes deterministic surgery durations and focuses solely on financial performance, leaving overtime risk, cancellations and long-term waiting-list dynamics out of scope --- factors that potentially affect the MSS objective in a realistic setting~\citep{Siqueira2018INTO, Kayvanfar2025}.
+
+Similarly,~\citet{Fugener2015} integrate strategic and tactical decisions through a stochastic patient-flow model using a MIP formulation, aiming to maximise hospital profit.
+Though, their treatment of uncertainty is limited to downstream ward-bed variability, neglecting randomness in surgery durations that directly affects theatre utilisation and downstream occupancy --- i.e., impacting costs included in their objective function.
+
+Extending this line of work,~\citet{Liu2019} develop an integrated framework for determining elective-admission levels using a Markov Decision Process (MDP). 
+Although offering valuable insights on how waiting-list size should guide admission decisions in an integrated framework, the model omits key operational constraints (e.g., surgeon availability, case-mix heterogeneity and block scheduling) thereby limiting its applicability to real hospital settings. 
+
+More recently,~\citet{Mcrae2020} evaluate how uncertainty and aggregation levels affect CMP decisions and provide an extension that enables joint CMP-MSS optimisation.
+Their objective, similarly to the works discussed above, is to maximise hospital profit by determining the optimal mix of elective patients while accounting for three sources of uncertainty (stochastic demand, variability in resource use, and fluctuations in resource availability). 
+% These factors are evaluated under different aggregation levels, and the simulation results show that modelling uncertainty and selecting an appropriate level of aggregation can substantially improve planning outcomes. 
+Their results demonstrate the value of modelling uncertainty, yet reliance on Sample Average Approximation (SAA) yields deterministic approximations that may under-represent distributional variability, and the framework does not account for waiting-list management.
+
+Taken together, these studies show that integrating CMP and MSS is both feasible and beneficial, but current approaches address only part of the underlying complexity. 
+Important opportunities remain to develop models that more fully capture uncertainty across planning levels, explicitly represent waiting-list dynamics, and incorporate operational constraints crucial to practical implementation.
+
+% 3 - Na literatura, como consideram cancelamento e overtime? Qual o impacto de considerar isso e até onde foram nesse sentido? (tentar não fugir de problemas que integram CM e MSS)
+% ---- dá pra citar o artigo do Barz aqui, com as limitações deles
+Still on the uncertainty treatment, overlooking surgery durations often results in unpredictable idle or overtime in operating rooms~\citep{shehadeh2022stochastic}. 
+Overtime is costly and can lead to the cancellation of surgeries, compromising the quality of care, while idle time reflects an inadequate use of operating room capacity~\citep{shehadeh2022stochastic, Harris2022, Kayvanfar2025}.
+
+Recent works on surgery planning tries to deal with these overtime issues.
+For instance,~\citet{Barz2015} address a tactical patient admission and scheduling problem in which the hospital decides a CMP under multiple resource constraints and stochastic clinical progression. 
+The authors model patients' health evolution as a Markov process, where each clinical state deterministically defines daily resource consumption, solve it via Approximate Dynamic Programming (ADP), complemented by a newsvendor-based heuristic to determine capacity reservations for emergency arrivals. 
+Their objective is to maximise hospital revenue by admitting high-contribution elective patients while preventing excessive overtime.
+However, several assumptions limit their model's realism: waiting-list dynamics are not stabilised; and, crucially, once a patient is admitted, the hospital is assumed to always provide the required resources, excluding the possibility of cancellations or postponements driven by overtime. 
+Moreover, by treating resource consumption within each state as deterministic, the framework effectively ignores uncertainty in surgery duration --- one of the main drivers of operational instability. 
+As a result, the model underestimates the practical interplay between stochastic surgery durations, cancellations and overtime, limiting its applicability to integrated CMP-MSS decision-making.
+
+Furthermore,~\citet{Zhang2020} study a tactical surgery planning with the specific aim of mitigating overtime risk when allocating elective patients to OTs over an upcoming planning horizon. 
+They model stochastic surgery durations and introduce a risk-averse decision criterion which captures not only the probability of overtime events~\citep{Shylo2013} or the expected magnitude of it~\citep{Rath2017}, but both simultaneously.
+These surgery durations are empirical, derived from historical data, but as the other works cited above, eventually they approximate it through a set of discrete scenarios, limiting the full distributional representation.
+Essentially, their model aims to mitigate overtime and it does so effectively, but it is myopic in that it does not consider possible cancellations in scenarios where overtime occurs.
+
+A recent study by~\citet{Shehadeh2026} introduces a Distributionally Robust Optimisation (DRO) approach to address uncertainty in surgery durations within tactical surgery scheduling. 
+The model minimises the worst-case expected cost over an ambiguity set of probability distributions characterised by known means and support, thereby hedging against distributional uncertainty. 
+This framework offers a broader and more flexible treatment of uncertainty by neither committing to a single distribution, as in classical Stochastic Programming, nor concentrating solely on deterministic worst-case scenarios, as in Robust Optimisation~\citep{shehadeh2022stochastic}. 
+By considering a set of plausible distributions, the approach yields solutions that are less sensitive to distributional misspecification and conceptually situated between stochastic and robust optimisation. 
+Nevertheless, the proposed model still depends on scenario-based approximations to represent uncertainty. 
+Capturing surgery-duration distributions with sufficient accuracy requires a large number of scenarios, which substantially increases computational complexity and may limit even the practical benefits typically associated with DRO.
+
+These limitations regarding the integration of overtime management and its associated cancellation risks into surgical planning frameworks highlight important research gaps.
+There remains a need for models that explicitly incorporate cancellation dynamics induced by overtime and that provide a more thorough representation of surgery-duration uncertainty beyond scenario-based approximations.
+It is rather possible to capture full distributional characteristics to build a planning model and use its output to feed an integrated CMP-MSS approach --- i.e., not solving an entire model at once.
+
+% pensando nas contribuicoes, é bom discutir até onde foram sobre restricoes especificas no MSS (no nosso caso, contribuimos com a de transplante por exemplo); e também sobre aplicabilidade em um hospital de alta complexidade publico brasileiro (contrastando com trabalhos europeus em hospitais menores).
+
+% 6 - Escrever sobre nossas contribuições, conectando tudo que foi dito até aqui, onde a gente se encaixa na literatura, e porque estamos trazendo inovação
+% ----- o trabalho do dellaert pode dar um suporte aqui
+% ----- o trabalho do gonzalez pode dar um suporte aqui
+
+(almost there...)
+
+
+\section{Problem Description\label{sec:descr}}
+
+\subsection{Hospital Setting\label{sec:hosp_set}}
+\improvement[author=Joao, inline]{Nessa seção, falta pensar melhor em como descrever a forma que o hospital funciona em relação ao gerenciamento de filas (um dos problemas que vamos tratar no trabalho -- RQ) e como o hospital trata da alocação de pacientes nos blocos (outro problema que vamos tratar -- newsvendor. Do jeito em que está, es tou focando mais na parte de alocaçã ode salas, somente.}
+HC - Unicamp is a university hospital located in the city of Campinas, São Paulo, Brazil~\citep{hc_unicamp_historia}. 
+It is a high-complexity hospital that serves around $6.5$ million patients from all over the region of Campinas and other regions of Brazil, handling around $500,000$ cases per year. 
+Of these, about $10,000$ are elective surgeries, while the remainder involve ambulatory consultations and emergency care~\citep{hc_unicamp_dados}.
+In addition, it is a teaching hospital, where doctors, nurses, and other health professionals are trained. 
+It is also a research hospital, where research is conducted in various areas of medicine, as well as interdisciplinary research in collaboration with other research institutions.
+
+This hospital serves an elective surgery patient by a complex flow that involves multiple stages, from the pre-operative to post-operative care.
+This process is illustrated in Figure~\ref{fig:patient_flow}, which shows the main steps in the patient journey through the hospital.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/patient_flow.png}
+    \caption{Patient flow at HC - Unicamp.\label{fig:patient_flow}}
+\end{figure}
+\unsure[author=Joao]{Talvez eu deva remover o upstream e downstream do fluxo por não envolvermos isso nesse paper?}
+
+This flow begins with queueing management, which starts at the patient's local consultation and proceeds through the regional bed regulation centre -- a government institution responsible for managing hospital beds in the region. 
+The entry into HC - Unicamp most likely occurs in scheduled appointments with institutional physicians. 
+However, there are emergency cases that eventually become elective, and those are also included in this process.
+Once referred, patients are assigned to queues according to medical speciality. 
+Efficient management at this stage is essential\improvement[author=Joao]{Enfatizar que o trabalho trata esse gerenciamento de filas com o (R,Q)}, as it directly impacts waiting times and determines the load distribution across surgical services, influencing the long-term planning of operating theatre usage~\citep{Siqueira2018INTO}.
+
+In the upstream units management phase\improvement[author=Joao]{out of our scope. Preciso informar o leitoer que não trataremos up/downstream}, the patient arrives at the scheduled surgery day and undergoes clinical assessment. 
+If ICU support is required before (or even post-surgery), a bed must be secured in advance; otherwise, a ward bed must also be available after the surgery. 
+They then undergo a pre-anaesthetic evaluation, preoperative tests, and surgical checklist procedures. 
+Should any exam contraindicate surgery, the case is suspended and the patient may return home or wait in a ward bed until the next available surgery date according to the complexity of their condition.
+Otherwise, the patient is transferred to the operating theatre, where the surgery and post-operative cleaning take place.
+This phase plays a critical role in minimising last-minute cancellations and maximising surgical theatre throughput.
+
+After confirmation of the surgery, the patient enters the operating theatre.
+At this point, the patient is under the care of a surgical team and an anaesthetist.
+Tasks included in this stage are another surgical checklist, the procedure, and the post-operative cleaning of the theatre.
+This step directly affects the utilisation of operating theatres and the overall throughput of surgical procedures.
+
+The final stage, downstream units management, begins with transfer to the Post-Anaesthesia Recovery Unit (PARU). 
+There is a rare case when the patient is transferred directly to the ICU depending on the clinical status, but this is not the norm.
+Following stabilisation, the patient is either moved from PARU to the ward or the ICU, and eventually discharged. 
+There are cases in which the patient has complications and needs to be readmitted to the ICU, which are also illustrated in Figure~\ref{fig:patient_flow}.
+Finally, the patient is discharged from the hospital, completing the surgical journey.
+This stage determines the turnover rate of surgical patients and influences how quickly new procedures can be scheduled. 
+Therefore, effective downstream management is important for optimising operating theatre availability. 
+
+The hospital has $15$ theatres for elective surgeries: $13$ in the Elective Surgery Centre (ESE), and $2$ in the Ambulatorial Surgery Centre (ASC), which works only in the morning.
+These theatres are heterogeneous in terms of infrastructure and equipment, with compatibilities across the specialities that may vary.
+
+Each month, the set of theatres must be allocated to the $41$ possible medical subspecialities.
+We also define relevant subsets in relation to them: (i) subspecialities that require two consecutive blocks; (ii) subspecialities with circumstantial demands, which do not occur every month but are mandatory; (iii) priority subspecialities that take precedence over others in the allocation choice; and (iv) transplant subspecialities.
+
+The planning horizon covers approximately $20$ working days per month, each divided into two shifts (morning and afternoon) -- in this case, the day and shift define a time block of $6$ hours.
+The hospital's scheduling policy is to allocate each block to a single subspeciality, with the possibility of assigning the same subspeciality to multiple blocks in the same theatre.
+This approach allows for sequential scheduling of blocks, meaning that if a subspeciality is allocated to a theatre in the morning, it can also be allocated to the same theatre in the afternoon, provided that the subspeciality is compatible with the theatre and the respective time block.
+
+The allocation of subspecialities depends on the availability of medical teams and anaesthetists. 
+For a subspeciality to occupy a block\change[author=Joao]{Preciso definir bem o que é ``block'' e o que é ``allocation'', porqur às vezes trato como se fosse a mesma coisa e as vezes não...}, there must be a team available on the respective day and shift. 
+In addition, allocations that require an anaesthetist cannot exceed the number of professionals available in each period. 
+For example, if there are $15$ anaesthetists on a given morning, the number of allocations requiring anaesthesia must be at most $15$.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/trecho_escala.png}
+    \caption{Excerpt from a week's operating theatre schedule.\label{fig:ex_escala}}
+\end{figure}
+
+Figure~\ref{fig:ex_escala} illustrates an excerpt from the surgical schedule.
+Each row represents a time block, and each column represents a theatre; allocations to subspecialities are highlighted by colour (blue for procedures that require an anaesthetist, grey for those that do not).
+The significant number of unallocated slots (blank positions) reflects the complexity of the constraints in this case study.
+Note that the allocations written in red indicate the transplant surgeries, which require two theatres allocated in the same time block.
+
+Schedules such as the one in Figure~\ref{fig:ex_escala} were entirely prepared manually in electronic spreadsheets, requiring more than a day of work. 
+Therefore, automating this process optimises the time spent, freeing up human resources for other hospital activities.
+Additionally, our approach finds an optimal schedule solution according to the hospital's policy, which is not guaranteed by manual scheduling.
+\improvement[author=Joao, inline]{Preciso dizer qual problema estamos resolvendo (alocação de salas), e que ele é parte de todo um esquema que inclui: gerenciamento de filas, alocação de pacientes das filas, alocação de salas}
+
+\section{Mathematical Formulation\label{sec:math_form}}
+
+\subsection{Preliminaries Concepts\label{sec:pre}}
+
+\subsection{$(R,Q)$ surgery scheduling policies: long-term distributions\label{sec:rq_pol}}
+
+\subsection{Managing Surgery Cancellations via a Newsvendor-Based Model\label{sec:nv_model}}
+
+\subsection{Operating Theatre Scheduling Model\label{sec:ot}}
+\info[author=Joao]{Depois preciso ``sincronizar'' essa seção com o todo que estamos produzindo, i.e., essa etapa de alocação vem depois das etapas de gerenciamento de filas e etc.}
+We modeled a deterministic MILP\info[author=Joao]{Depois preciso garantir a introdução dessa sigla em seções anteriores.} formulation for the Operating Theatre Scheduling Problem (OTSP), which focuses on the tactical allocation of operating theatre blocks to medical subspecialities.
+
+To formulate the OTSP, we use the Table~\ref{tab:symb} notation.
+Note that the variable $\blockvar$ is a variable that indicates whether the theatre $\roomidx$ in the block $\blockidx$ is allocated to the subspeciality $\specialtyidx$.\unsure[author=Joao]{Isso bate com o comentario que ja fiz la em cima: preciso sincronizar no texto o que é bloco e o que é alocação!}
+Therefore, throughout the text, we will use the term \textit{allocation} to refer to an allocated speciality.
+
+\begin{table}
+    \centering
+    \caption{\label{tab:symb}Table of Symbols.}
+    \scriptsize
+    \begin{tabular}{cl}
+    \toprule
+    \textbf{Set}                    & \textbf{Description}                                                                       \\
+    \midrule
+        $\roomset$                       & Operating theatres (both elective and outpatient)                       \\
+        $\planninghorizonset$            & Planning horizon days, such that $\planninghorizonset = \{1, 2, ..., \days\}$  \\
+        $\timeperiodset$                 & Time periods (morning or afternoon), such that $\timeperiodset = \{\text{morning}, \text{afternoon}\}$          \\
+        $\blockset$                      & Blocks, such that $\blockset = \planninghorizonset \times \timeperiodset$     \\
+        $\specialtyset$                  & Surgical subspecialities                                                                \\
+        $\specialtymset$                 & Surgical subspecialities that must have two sequential blocks allocated,\\
+                                         & such that $\specialtymset \subseteq \specialtyset$          \\
+        $\specialtycset$                 & Circumstantial surgical subspecialities (do not occur every month),                      \\
+                                         & but have high priority, such that $\specialtycset \subseteq \specialtyset$              \\
+        $\specialtyprset$                & Priority surgical subspecialities, such that $\specialtyprset \subseteq \specialtyset$  \\
+        $\specialtytxset$                & Organ transplant surgical subspecialities, such that $\specialtytxset \subseteq \specialtyset$                                                                                                              \\
+    \midrule
+    \textbf{Index}                           & \textbf{Description}                                                                  \\
+    \midrule
+        $\roomidx$                            & Operating theatre, with $\roomidx \in \roomset$                                       \\
+        $\planninghorizonidx$                 & Planning horizon day, with $\planninghorizonidx \in \planninghorizonset$ \\
+        $\timeperiodidx$                      & Time period (morning or afternoon), with $\timeperiodidx \in \timeperiodset$           \\
+        $\blockidx$                           & Surgery block, with $\blockidx \in \blockset$                                    \\
+        $\specialtyidx$                       & Surgical subspeciality, with $\specialtyidx \in \specialtyset$                      \\
+    \midrule
+    \textbf{Parameter}                        & \textbf{Description}                                                                  \\
+    \midrule
+        $\allowedrooms_{\roomidx\blockidx\specialtyidx}$   & 1 if theatre $\roomidx \in \roomset$ in block $\blockidx \in \blockset$ can              \\
+                                                           & be used by subspeciality $\specialtyidx \in \specialtyset$; 0 otherwise          \\
+        $\demand_{\specialtyidx}$                          & Number of surgeries demanded for subspeciality $\specialtyidx \in \specialtyset$                       \\
+        $\specteams_{\blockidx\specialtyidx}$              & Number of teams from subspeciality $\specialtyidx \in \specialtyset$ available in block  $\blockidx \in \blockset$ \\
+        $\numbersanests_{\blockidx}$                       & Number of anesthesiologists available in block $\blockidx \in \blockset$                         \\
+        $\needanest_{\specialtyidx}$                       & 1 if subspeciality $\specialtyidx \in \specialtyset$ requires an anesthesiologist; 0 otherwise         \\    
+        $\mindeficit_{\specialtyidx}$                      & Minimum number of blocks required for subspeciality $\specialtyidx \in \specialtyset$            \\
+        $\ub$                                              & Upper bound on the number of blocks to allocate, relative to each subspeciality $\specialtyidx \in \specialtyset$   \\
+    \bottomrule
+    \textbf{Variable}                         & \textbf{Description}                                                                  \\
+    \midrule
+        $\blockvar$                                        & 1 if theatre $\roomidx \in \roomset$ in block $\blockidx \in \blockset$ is allocated to subspeciality $\specialtyidx \in \specialtyset$; 0 otherwise                \\
+        $\precvar$                                         & 1 if theatre $\roomidx \in \roomset$ on day $\planninghorizonidx \in \planninghorizonset$ is allocated exclusively to subspeciality $\specialtyidx \in \specialtyset$;\\
+                                                           & 0 otherwise                                  \\
+        $\integervar$                                      & Number of transplants to be performed in block $\blockidx \in \blockset$ by subspeciality $\specialtyidx \in \specialtyset$ \\
+        $\balancevar$                                      & Minimum proportion of allocations per demand among all subspecialities   \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+The Objective Functions (OFs) are organised according to the priority levels established by the hospital's guidelines.
+To reflect these priorities, we adopt a hierarchical optimisation strategy, as proposed in~\citet{Aringhieri2022Hierarchical}.
+Each OF is optimised sequentially, while respecting the optimal values obtained in the previous stages.
+
+Formally, the first OF is defined as
+\begin{align}
+\text{Max } \displaystyle F_1 & = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyprset} \blockvar, \label{eq:f0}
+\end{align}
+which aims to maximise the number of allocations for priority subspecialities ($\specialtyprset$).
+The second function is given by
+\begin{align}
+\text{Max } \displaystyle F_2 & = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyset} \blockvar, \label{eq:f1}
+\end{align}
+which seeks to maximise the total number of allocations, i.e., to increase theatre occupancy.
+The third objective function is defined as
+\begin{align}
+\text{Max } \displaystyle F_3 & = \balancevar, \label{eq:f2}
+\end{align}
+and its purpose is to promote balance in the distribution of allocations across subspecialities.
+This function works in conjunction with a model constraint that enforces that, for each $\specialtyidx \in \specialtyset$, the ratio between the number of allocations and the corresponding demand must be greater than or equal to $\balancevar$.
+Hence, OF~\eqref{eq:f2} maximises the lowest allocation-to-demand ratio among all subspecialities, ensuring a balanced allocation and avoiding over-concentration in a few subspecialities to the detriment of others.
+
+Finally, the fourth OF is given by
+\begin{align}
+\text{Max } \displaystyle F_4 & = \sum_{\roomidx \in \roomset} \sum_{\planninghorizonidx \in \planninghorizonset} \sum_{\specialtyidx \in \specialtyset} \precvar, \label{eq:f3}
+\end{align}
+which aims to maximise the number of subspecialities allocated sequentially on the same day in the same theatre.
+This is particularly important for improving the logistics of the surgical process, reducing the need for equipment and team transfers between theatres.
+
+With this, we formulate the theatre planning problem at HC - Unicamp by the $\modelname$ model, incorporating these OFs and constraints based on the hospital's current operational framework.\change[author=Joao]{O MODELO VAI MUDAR! De acordo com o que vai vir como input do RQ}
+
+{\footnotesize
+\linespread{1}\selectfont
+\begin{alignat}{4}
+    (\modelname) \quad & \omit\rlap{Maximize OFs~\eqref{eq:f0}-\eqref{eq:f3}}\nonumber\\
+    & \mbox{subject to} && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar  & \geq \mindeficit_{\specialtyidx}                    &\qquad & \forall\, \specialtyidx \in \specialtyset  \label{eq:m2-2}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar  & \leq (1 + \ub) \cdot \demand_{\specialtyidx}   &\qquad & \forall\, \specialtyidx \in \specialtyset \label{eq:m2-3}\\
+    &                  && \quad & \sum_{\specialtyidx \in \specialtyset} \blockvar                       & \leq 1     &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset \label{eq:m2-4}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\specialtyidx \in \specialtyset} \needanest_{\specialtyidx} \cdot \blockvar   & \leq \numbersanests_{\blockidx}                    &\qquad & \forall\, \blockidx \in \blockset \label{eq:m2-5}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \blockvar   & \leq \specteams_{\blockidx\specialtyidx}   &\qquad & \forall\, \,\blockidx \in \blockset,\,\specialtyidx \in \specialtyset \label{eq:m2-6}\\
+    &                  && \quad & \blockvar   & = 0    &\qquad & \forall\, \roomidx \in \roomset,\,\blockidx \in \blockset,\,\specialtyidx \in \specialtyset : \nonumber\\
+    &                  &&       &                                                          &                 &\qquad &\allowedrooms_{\roomidx\blockidx\specialtyidx} = 0 \label{eq:m2-7}\\
+    &                  && \quad & \blockvar + x_{\roomidx(\blockidx+1)\specialtyidx} - 1   & \leq \precvar   &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset,\,\specialtyidx \in \specialtyset, \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \planninghorizonidx \in \planninghorizonset :\,\text{ $\blockidx$ and $\blockidx+1$ are blocks} \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \text{ of the same day $\planninghorizonidx$}\label{eq:m2-8}\\
+    &                  && \quad & \blockvar + x_{\roomidx(\blockidx+1)\specialtyidx}       & \geq 2 \cdot \precvar   &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset,\,\specialtyidx \in \specialtyset, \planninghorizonidx \in \planninghorizonset : \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \planninghorizonidx \in \planninghorizonset : \text{ $\blockidx$ and $\blockidx+1$ are blocks} \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \text{ of the same day $\planninghorizonidx$}\label{eq:m2-9}\\
+    &                  && \quad & \blockvar       & = x_{\roomidx(\blockidx+1)\specialtyidx}   &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockmset,\,\specialtyidx \in \specialtymset,\, \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \planninghorizonidx \in \planninghorizonset : \text{ $\blockidx$ and $\blockidx+1$ are blocks} \nonumber\\
+    &                  &&       &                                                          &                 &\qquad & \text{ of the same day $\planninghorizonidx$}\label{eq:m2-10}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \blockvar   & = 2 \cdot \integervar  & \qquad & \forall\, \blockidx \in \blockset,\,\specialtyidx \in \specialtytxset  \label{eq:m2-11}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar      & = \demand_{\specialtyidx}     &\qquad & \forall\,\specialtyidx \in \specialtycset  \label{eq:m2-12}\\    
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \frac{\blockvar}{\demand_{\specialtyidx}}   & \geq \balancevar     &\qquad & \forall\,\specialtyidx \in \specialtyset  \label{eq:m2-13}\\ 
+    &                  &&       & \blockvar                           & \in \{0,1\}                 &        & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset,\, \specialtyidx \in \specialtyset\nonumber \\
+    &                  &&       & \precvar                            & \in \{0,1\}                 &        & \forall\, \roomidx \in \roomset,\, \planninghorizonidx \in \planninghorizonset,\, \specialtyidx \in \specialtyset\nonumber \\
+    &                  &&       & \integervar                         & \in \mathbb{Z_{+}}          &        & \forall\, \blockidx \in \blockset,\, \specialtyidx \in \specialtyset\nonumber\\
+    &                  &&       & \balancevar                         & \in \mathbb{R_{+}}.         &        &\nonumber
+\end{alignat}
+}
+
+Constraints~\eqref{eq:m2-2} and~\eqref{eq:m2-3} impose minimum and maximum bounds on the allocation of each subspeciality.
+The parameter $\mindeficit_{\specialtyidx}$, typically set to low values (between 1 and 3), ensures that no subspeciality is left completely unattended.
+The upper bound, governed by $\ub \in [0,1]$, restricts allocations to at most $(1+\ub)$ times the demand $\demand_{\specialtyidx}$, avoiding over-allocation beyond a reasonable limit.\change[author=Joao]{Essas restrições vão mudar, de acordo com os inputs do gerenciamento de filas}
+
+Constraint~\eqref{eq:m2-4} ensures that each theatre and time block receives at most one subspeciality.
+Constraint~\eqref{eq:m2-5} limits the number of allocations that require anaesthetists according to their availability $\numbersanests_{\blockidx}$ in each block.
+Constraint~\eqref{eq:m2-6} restricts the allocation of each subspeciality based on the availability of $\specteams_{\blockidx\specialtyidx}$ medical teams representing it in block $\blockidx$.
+
+Compatibility between theatre, block, and subspeciality is ensured by constraint~\eqref{eq:m2-7}, while constraints~\eqref{eq:m2-8} and~\eqref{eq:m2-9} together guarantee sequential allocation of blocks on the same day when $\precvar = 1$.
+Subspecialities requiring two consecutive blocks are specifically addressed by constraint~\eqref{eq:m2-10}.
+
+Constraint~\eqref{eq:m2-11} imposes that the number of allocations for transplants must be even, reflecting the need for two theatres for the procedure -- one for the donor and one for the recipient.
+Finally, constraint~\eqref{eq:m2-12} requires full service provision for circumstantial subspecialities $\specialtycset$, and equation~\eqref{eq:m2-13} promotes proportional allocation balancing in conjunction with OF~\eqref{eq:f2}.
+
+\section{Computational Experiments\label{sec:exp}}
+
+\section{Conclusion\label{sec:conc}}
+
+
+\begin{color}{red}
+\section{Exerpt to help on aspects of the planning. Note the literature about case mix, which you need to start reading}
+
+Surgery scheduling problems have traditionally been classified into three planning levels: strategic, tactical, and operational \citep{Cardoen2010,Calegari2025}. The strategic level defines the desired split of the capacity into specific surgical specialities (case mix) \cite{Burdett2023}. The tactical level \citep{Bovim2020,Siqueira2018INTO,Carneiro2025} defines a cyclic schedule (often weekly), revised in relatively short time frames (e.g., monthly or quarterly), and the operational level maps patients to operating theatre slots within the next days \citep{Vieira2025}. The disconnect is evident, as the objectives of different planning levels are not necessarily aligned \citep{Melo2025} and there is no guarantee that the capacity prescribed at a given planning level, often via a deterministic approach \citep{Mcrae2020,Burdett2023}, is sufficient to holistically hedge against the propagation of uncertainty in the system and maintain the surgical queues within reasonable limits. Crucially, however, approaches to holistically ensure stochastic stability \citep{Meyn2009} for all surgical specialities remain lacking, despite the existence of some models to evaluate the propagation of uncertainty under fixed capacity and within limited settings \citep{Dellaert2016,Freeman2018,Calegari2025}.
+
+In terms of objectives, case mix planning seeks to balance capacity among specialities, master surgery scheduling allocates time blocks in theatres to surgical teams and patient allocation assigns patients to surgical blocks \citep{wang2021operating,Melo2025}. The propagation of uncertainty at the different levels, however, renders it very unlikely that the distinct objectives can be attained at all levels. 
+%
+%this completely excludes controlling waiting times or ensuring long-term stochastic stability\citeB{Meyn2009} of the waiting queues for each individual sub-speciality, thereby ensuring that the queues do not grow uncontrollably over time. 
+Furthermore, inter-level integration remains limited in scope, often focusing on short-term alignment between surgeries and post-surgical bed occupation and generally relying on deterministic approaches \citep{Melo2025,Siqueira2018INTO}. Occasionally, deterministic approaches respond reactively to uncertainty to minimise deviations with respect to the original planning \citep{VanHuele2015,Calegari2025} or prioritise individual patients in the short term \citep{Mashkani2023}. Stochastic approaches, on the other hand, focus on quantifying and reacting to the effect of uncertainty on the system's operation via probabilistic queuing models \citep{Fugener2015,Dellaert2016}, artificially generated scenarios \citep{shehadeh2022stochastic,zhang2021two} or simulation \citep{Samudra2017,Freeman2018,Bovim2020}, under fixed capacity. To mitigate capacity mismatch, Markov decision processes are utilised for admission control \citep{Barz2015,zhang2021two,Zhu2022}.
+
+\end{color}
 % *******************************************
 \bibliographystyle{elsarticle-harv}
 \bibliography{ref}

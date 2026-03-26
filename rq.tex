@@ -4,11 +4,13 @@
 
 As discussed in Section~\ref{sec:lit_review}, CMP constitutes the strategic decision layer responsible for determining the volumes of elective patients to be admitted over a given planning horizon.
 In contrast to much of the existing literature, which primarily selects these volumes to optimise financial or capacity-related objectives, this work adopts a stability-oriented perspective.
-We aim to enable decision-makers to impose maximum acceptable waiting times (e.g., six months) and to guarantee, in the long run, that such targets are met without allowing waiting lists to grow unboundedly. \textcolor{red}{and why is that? Is this because this is a public health system that is legally bound to serve everyone? Some concise justification would be in order!}
+We aim to enable decision-makers to impose maximum acceptable waiting times (e.g., six months) and to guarantee, in the long run, that such targets are met without allowing waiting lists to grow unboundedly. 
+This is particularly relevant in the context of public healthcare systems, such as Brazil's Unified Health System (SUS), where there is a legal obligation to provide care to all patients in need.
+Thus, ensuring equitable access to care and adherence to waiting time standards is paramount.
 
 In line with this objective, this section introduces the theoretical foundations of the modified $(R,Q)$ control policy proposed to manage elective surgery waiting lists under stochastic demand.
 We first characterise the dynamics of the underlying stochastic process and analyse its long-run behaviour. 
-Subsequently, we derive analytical upper and lower bounds on the batch size $Q$ that ensure compliance with prescribed waiting-time requirements, thereby establishing the strategic input for the integrated planning framework.
+Subsequently, we derive analytical upper and lower bounds on the batch size $Q$ that ensures compliance with prescribed waiting-time requirements, thereby establishing the strategic input for the integrated planning framework.
 
 % *******************************************
 \subsection{$(R,Q)$ surgery scheduling policy: long-term distributions\label{sec:rqtheory}}
@@ -243,6 +245,6 @@ P(\omega \le 6 | Y_t \ge 1) \approx 0.999973 > 0.95 = 1 - \alpha.
 \]
 %
 Thus, we can set $\underline Q = 5$.
-
-
+%
+%
 \end{ex}

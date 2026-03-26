@@ -1,0 +1,232 @@
+%% 
+%% Copyright 2007-2024 Elsevier Ltd
+%% 
+%% This file is part of the 'Elsarticle Bundle'.
+%% ---------------------------------------------
+%% 
+%% It may be distributed under the conditions of the LaTeX Project Public
+%% License, either version 1.3 of this license or (at your option) any
+%% later version.  The latest version of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 1999/12/01 or later.
+%% 
+%% The list of all files belonging to the 'Elsarticle Bundle' is
+%% given in the file `manifest.txt'.
+%% 
+%% Template article for Elsevier's document class `elsarticle'
+%% with harvard style bibliographic references
+
+\documentclass[review,3p,authoryear]{elsarticle}
+
+%% Use the option review to obtain double line spacing
+%% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
+
+%% Use the options 1p,twocolumn; 3p; 3p,twocolumn; 5p; or 5p,twocolumn
+%% for a journal layout:
+%% \documentclass[final,1p,times,authoryear]{elsarticle}
+%% \documentclass[final,1p,times,twocolumn,authoryear]{elsarticle}
+%% \documentclass[final,3p,times,authoryear]{elsarticle}
+%% \documentclass[final,3p,times,twocolumn,authoryear]{elsarticle}
+%% \documentclass[final,5p,times,authoryear]{elsarticle}
+%% \documentclass[final,5p,times,twocolumn,authoryear]{elsarticle}
+
+%% For including figures, graphicx.sty has been loaded in
+%% elsarticle.cls. If you prefer to use the old commands
+%% please give \usepackage{epsfig}
+
+%% The amssymb package provides various useful mathematical symbols
+\usepackage{amssymb}
+%% The amsmath package provides various useful equation environments.
+\usepackage{amsmath}
+%% The amsthm package provides extended theorem environments
+%% \usepackage{amsthm}
+
+%% Commands for TODO notes
+\usepackage{xargs}                      % Use more than one optional parameter in a new commands
+\usepackage[pdftex,dvipsnames]{xcolor}  % Coloured text etc.
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+
+
+\usepackage{amssymb}
+
+%% The line no packages add line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers.
+% \usepackage{lineno}
+\usepackage{amssymb,amsthm}
+\usepackage{optidef}
+\usepackage{multirow}
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
+\usepackage{hyperref}
+\usepackage{placeins}
+\newtheorem{defn}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{prop}{Proposition}
+\newtheorem{ex}{Example}
+\newtheorem{hypo}{Hypothesis}
+\newtheorem{theo}{Theorem}
+% \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+%% The amsthm package provides extended theorem environments
+%% \usepackage{amsthm}
+
+\usepackage{booktabs}
+\def\1{{1\kern-.3468em{ 1}}}
+
+%\usepackage{graphicx, color, soul}
+\usepackage{xcolor}
+
+%% tabelas mais bonitas
+\usepackage{booktabs}
+
+% Para adicionar espaços após comandos
+\usepackage{xspace}
+
+\input{symbols/symb_otsp}
+
+% para pseudocódigo
+\usepackage{algorithm}
+% \usepackage{algorithmic}
+\usepackage{algpseudocode}
+
+%% The lineno packages adds line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers.
+%% \usepackage{lineno}
+
+\journal{European Journal of Operational Research}
+
+\setlength {\marginparwidth}{2cm} % para os TODOs
+\begin{document}
+
+\begin{frontmatter}
+
+%% Title, authors and addresses
+
+%% use the tnoteref command within \title for footnotes;
+%% use the tnotetext command for theassociated footnote;
+%% use the fnref command within \author or \affiliation for footnotes;
+%% use the fntext command for theassociated footnote;
+%% use the corref command within \author for corresponding author footnotes;
+%% use the cortext command for theassociated footnote;
+%% use the ead command for the email address,
+%% and the form \ead[url] for the home page:
+%% \title{Title\tnoteref{label1}}
+%% \tnotetext[label1]{}
+%% \author{Name\corref{cor1}\fnref{label2}}
+%% \ead{email address}
+%% \ead[url]{home page}
+%% \fntext[label2]{}
+%% \cortext[cor1]{}
+%% \affiliation{organization={},
+%%            addressline={}, 
+%%            city={},
+%%            postcode={}, 
+%%            state={},
+%%            country={}}
+%% \fntext[label3]{}
+
+\title{Integrated Framework for Surgery Scheduling Management under Uncertainty: From Strategic to Tactical Planning} %% Article title
+
+%% use optional labels to link authors explicitly to addresses:
+%% \author[label1,label2]{}
+%% \affiliation[label1]{organization={},
+%%             addressline={},
+%%             city={},
+%%             postcode={},
+%%             state={},
+%%             country={}}
+%%
+%% \affiliation[label2]{organization={},
+%%             addressline={},
+%%             city={},
+%%             postcode={},
+%%             state={},
+%%             country={}}
+
+\author[1]{João P. F. da Silva} \ead{joao.silva@ic.unicamp.br} %% Author name
+\author[1]{Lucas Bortoletto} \ead{l173422@dac.unicamp.br}
+\author[1]{Rafael C. S. Schouery} \ead{rcss@unicamp.br}
+\author[2]{Edilson F. Arruda \corref{cor1}} \ead{e.f.arruda@southampton.ac.uk}
+
+\cortext[cor1]{Corresponding author. Tel.: (+44)(0)2380 597146.}
+
+%% Author affiliation
+\affiliation[1]{organization={Institute of Computing, University of Campinas},%Department and Organization
+            addressline={}, 
+            city={Campinas},
+            postcode={13083–852}, 
+            state={SP},
+            country={Brazil}}
+
+\affiliation[2]{organization={Centre for Healthcare Analytics, Southampton Business School, University of Southampton},%Department and Organization
+            addressline={}, 
+            city={Southampton},
+            postcode={}, 
+            state={},
+            country={UK}}
+
+
+
+%% Abstract
+\begin{abstract}
+%% Text of abstract
+Abstract text.
+\end{abstract}
+
+%%Graphical abstract
+\begin{graphicalabstract}
+    \includegraphics[width=0.8\textwidth]{images/diagram.png}
+\end{graphicalabstract}
+
+%%Research highlights
+% \begin{highlights}
+% \item Research highlight 1
+% \item Research highlight 2
+% \end{highlights}
+
+%% Keywords
+\begin{keyword}
+%% keywords here, in the form: keyword \sep keyword
+
+%% PACS codes here, in the form: \PACS code \sep code
+
+%% MSC codes here, in the form: \MSC code \sep code
+%% or \MSC[2008] code \sep code (2000 is the default)
+
+\end{keyword}
+
+\end{frontmatter}
+
+% \include{intro}
+
+\include{LitReview-Ed}
+
+\include{ProblemDescr}
+
+\include{rq}
+
+\include{overtime}
+
+\include{OTScheduling}
+
+% \include{experiments}
+
+% \include{conclusions}
+
+% *******************************************
+\bibliographystyle{elsarticle-harv}
+\bibliography{ref}
+% *******************************************
+\end{document}
+
+\endinput
+%%
+%% End of file `elsarticle-template-harv.tex'.
+
+

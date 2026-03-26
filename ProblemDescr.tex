@@ -2,14 +2,14 @@
 \section{Problem Description\label{sec:problem}}
 % ********************************************* %
 
-HC-Unicamp is a university hospital located in Campinas, Brazil~\citep{hc_unicamp_historia}. 
+Hospital das Cl\'inicas Unicamp (\hcunicamp) is a university hospital located in Campinas, Brazil~\citep{hc_unicamp_historia}. 
 It is a high-complexity public hospital serving approximately $6.5$ million inhabitants from the Campinas metropolitan area and other regions of Brazil, handling around $500{,}000$ patient cases per year. 
 Of these, roughly $10{,}000$ correspond to elective surgical procedures, with the remainder involving outpatient consultations and emergency care~\citep{hc_unicamp_dados}. 
-In addition to providing healthcare services, HC-Unicamp operates as a teaching and research hospital, training healthcare professionals and conducting medical and interdisciplinary research.
+In addition to providing healthcare services, \hcunicamp~operates as a teaching and research hospital, training healthcare professionals and conducting medical and interdisciplinary research.
 
-Elective surgical patients follow a complex, multi-stage care pathway, illustrated in Figure~\ref{fig:patient_flow}, encompassing pre-operative, intra-operative and post-operative phases.
+Elective surgical patients follow a complex, multi-stage care pathway (see Figure~\ref{fig:patient_flow}), encompassing pre-operative, intra-operative and post-operative phases.
 This process begins with waiting-list management, initiated at local medical consultations and coordinated through the regional bed regulation centre, a government agency responsible for regulating hospital access across Campinas Metropolitan Region.
-Patient entry into HC-Unicamp typically occurs via scheduled outpatient appointments, although some emergency cases subsequently become elective and are incorporated into the same planning process.
+Patient entry into \hcunicamp~typically occurs via scheduled outpatient appointments, although some emergency cases subsequently become elective and are incorporated into the same planning process.
 Once referred, patients are assigned to waiting lists according to medical subspecialty.
 Decisions at this stage directly determine the CMP, influencing waiting times, speciality-level demand balance and the long-term utilisation of operating theatre capacity~\citep{Siqueira2018INTO}.
 This decision layer corresponds to the strategic component addressed in this study.
@@ -17,7 +17,7 @@ This decision layer corresponds to the strategic component addressed in this stu
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.9\textwidth]{images/patient_flow.png}
-    \caption{Patient flow at HC - Unicamp.\label{fig:patient_flow}}
+    \caption{Patient flow at \hcunicamp.\label{fig:patient_flow}}
 \end{figure}
 
 On the day of surgery, patients enter the upstream unit management phase, where clinical reassessment is performed.
@@ -35,7 +35,7 @@ Consequently, surgery duration variability has a significant impact on operating
 Following surgery, patients are transferred to the Post-Anaesthesia Recovery Unit (PARU), with direct ICU transfer occurring only in exceptional cases.
 After stabilisation, patients are admitted to a ward or ICU bed and subsequently discharged.
 
-HC-Unicamp has $15$ operating theatres dedicated to elective surgeries: $13$ located in the Elective Surgery Centre (ESC) and $2$ in the Ambulatory Surgery Centre (ASC), which operates exclusively during morning shifts.
+\hcunicamp~has $15$ operating theatres dedicated to elective surgeries: $13$ located in the Elective Surgery Centre (ESC) and $2$ in the Ambulatory Surgery Centre (ASC), which operates exclusively during morning shifts.
 These theatres are heterogeneous with respect to infrastructure and equipment, leading to compatibility restrictions across medical subspecialties.
 
 The planning horizon comprises approximately $20$ working days per month, each divided into two shifts (morning and afternoon), defining $6$-hour time blocks.
@@ -66,5 +66,5 @@ Historically, schedules such as those shown in Figure~\ref{fig:ex_escala} have b
 This manual process is time-consuming and does not guarantee optimality with respect to institutional policies.
 Automating the scheduling process therefore reduces administrative burden and enables the generation of optimal solutions under complex constraints.
 
-In this context, proposing an integrated planning framework for elective surgery at HC-Unicamp directly addresses the limitations identified in the literature.
+In this context, proposing an integrated planning framework for elective surgery at \hcunicamp~directly addresses the limitations identified in the literature.
 By jointly managing waiting-list dynamics, surgery duration uncertainty and operating theatre allocation, our proposed approach provides a coherent and practically grounded solution capable of satisfying waiting-time requirements while mitigating idle time, overtime and cancellation risks.
