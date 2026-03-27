@@ -18,19 +18,56 @@ We then present the MILP formulation of the OTSP, detailing the decision variabl
 
 \subsection{Preprocessing strategic input}
 
-The OTSP requires demand to be expressed in block units, which match the operational granularity of theatre scheduling. 
+The OTSP requires demand to be expressed in block units, as these correspond to the operational granularity of theatre scheduling. 
 To this end, we preprocess the strategic outputs of the $(R,Q)$ policy together with the effective capacity information obtained from the cancellation and overtime management stage.
 
-Specifically, we convert subspecialty demand into the number of blocks required to meet target activity levels. 
-This conversion accounts for both the stochastic nature of surgical durations and the effective capacity of each block.
+% More specifically, we convert subspecialty demand into the number of blocks required to meet the lower and upper activity targets. 
+% This conversion accounts for both the stochastic nature of surgical durations and the effective capacity of each block.
 
-The overtime and cancellation stage provides the probability mass function $\blocksurgpmf_{\specialtyidx}$ of the number of surgeries that can be performed within a single block. 
+The overtime and cancellation stage provides the probability mass function $\blocksurgpmf_{\specialtyidx}$ of the number of surgeries that can be completed within a single block for subspecialty $\specialtyidx$. 
 To determine the block requirements associated with targets $\lowerq$ and $\upperq$ at confidence level $\conflevel$, we iteratively convolve this distribution. 
-For each target, the procedure stops when the probability of completing at least the required number of surgeries reaches $\conflevel$. 
-The corresponding number of convolutions then defines the required number of blocks.
-Algorithm \ref{alg:blockdemand} summarises the approach.
 
-\textcolor{red}{finalizar latex do algoritmo e escrever uma breve descrição do processo}
+Let $F^{(r)}_{\specialtyidx}$ denote the cumulative distribution function associated with the PMF obtained after convolving $\blocksurgpmf_{\specialtyidx}$ with itself $r$ times.
+Then, for a generic target $\targetq \in \{\lowerq,\upperq\}$, the minimum number of blocks required is the smallest integer $r$ such that
+\[
+1 - F^{(r)}_{\specialtyidx}[\targetq - 1] \geq \conflevel.
+\]
+In other words, we seek the smallest number of blocks $r$ such that the probability of completing at least $\targetq$ surgeries is at least $\conflevel$.
+Algorithm \ref{alg:blockdemand} summarises this procedure.
+
+\begin{algorithm}[H]
+\caption{Block demand estimation via successive convolutions\label{alg:blockdemand}}
+\begin{algorithmic}[1]
+\State \textbf{Input:} set of subspecialties $\specialtyset$, targets $(\lowerq,\upperq)$, confidence level $\conflevel$, PMF $\blocksurgpmf_{\specialtyidx}$ of surgeries per block for each $\specialtyidx \in \specialtyset$
+\State \textbf{Output:} block requirements $(\lowerblockdemand,\upperblockdemand)$ for each $\specialtyidx \in \specialtyset$
+
+\For{each subspecialty $\specialtyidx \in \specialtyset$}
+    \If{$\lowerq = 0$ and $\upperq = 0$}
+        \State $\lowerblockdemand \gets 0$, $\upperblockdemand \gets 0$
+    \Else
+        \For{each $\targetq \in \{\lowerq,\upperq\}$}
+            \State $\convidx \gets 1$
+            \State $\blocksurgpmf_{\specialtyidx}^{(\convidx)} \gets \blocksurgpmf_{\specialtyidx}$
+            \State $F \gets \calccdf\!\left(\blocksurgpmf_{\specialtyidx}^{(\convidx)}\right)$
+            \While{$1 - F[\targetq - 1] < \conflevel$}
+                \State $\blocksurgpmf_{\specialtyidx}^{(\convidx+1)} \gets \convolve\!\left(\blocksurgpmf_{\specialtyidx}^{(\convidx)}, \blocksurgpmf_{\specialtyidx}\right)$
+                \State $\convidx \gets \convidx + 1$
+                \State $F \gets \calccdf\!\left(\blocksurgpmf_{\specialtyidx}^{(\convidx)}\right)$
+            \EndWhile
+            \If{$\targetq = \lowerq$}
+                \State $\lowerblockdemand \gets \convidx$
+            \Else
+                \State $\upperblockdemand \gets \convidx$
+            \EndIf
+        \EndFor
+    \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+This step is essential for the OTSP phase of the framework, since the problem is formulated at the block level and the monthly operating theatre schedule is constructed by allocating blocks rather than individual surgeries. 
+Moreover, this preprocessing step enables the uncertainty captured in the strategic layer to be incorporated into the framework without introducing stochastic elements directly into the scheduling model. 
+This simplifies both the model formulation and the solution process (i.e., the OTSP is solved as a deterministic MILP), while ensuring that the resulting schedules remain aligned with demand targets that reflect both variability in surgical durations and the effective capacity of blocks.
 
 \subsection{MILP Formulation}
 
