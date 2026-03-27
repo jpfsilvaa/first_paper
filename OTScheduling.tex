@@ -103,8 +103,8 @@ To formulate the problem, we use the the notation in Table~\ref{tab:symb}.
     \midrule
     \textbf{Parameter}                        & \textbf{Description}                                                                  \\
     \midrule
-        $\upperq$                                         & Maximum number of blocks allocated to each subspecialty $\specialtyidx \in \specialtyset$            \\
-        $\lowerq$                                         & Minimum number of blocks allocated to each subspecialty $\specialtyidx \in \specialtyset$            \\
+        $\upperblockdemand$                                         & Maximum number of blocks allocated to each subspecialty $\specialtyidx \in \specialtyset$            \\
+        $\lowerblockdemand$                                         & Minimum number of blocks allocated to each subspecialty $\specialtyidx \in \specialtyset$            \\
         $\specteams_{\blockidx\specialtyidx}$              & Number of teams of subspecialty $\specialtyidx \in \specialtyset$ available in block  $\blockidx \in \blockset$ \\
         $\numbersanests_{\blockidx}$                       & Number of anesthesiologists available in block $\blockidx \in \blockset$                         \\
         $\needanest_{\specialtyidx}$                       & 1 if subspecialty $\specialtyidx \in \specialtyset$ requires an anesthesiologist; 0 otherwise         \\    
@@ -161,8 +161,8 @@ With this, we formulate the theatre planning problem at \hcunicamp with the mode
 
 \begin{alignat}{4}
     (\modelname) \quad & \omit\rlap{Optimize $F_0$--$F_5$}\nonumber\\
-    & \mbox{subject to} && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar  & \leq \upperq                    &\qquad & \forall\, \specialtyidx \in \specialtyset  \label{eq:c1}\\
-    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar  & \geq \lowerq   &\qquad & \forall\, \specialtyidx \in \specialtyset \label{eq:c2}\\
+    & \mbox{subject to} && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar  & \leq \upperblockdemand                    &\qquad & \forall\, \specialtyidx \in \specialtyset  \label{eq:c1}\\
+    &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \blockvar  & \geq \lowerblockdemand   &\qquad & \forall\, \specialtyidx \in \specialtyset \label{eq:c2}\\
     &                  && \quad & \sum_{\specialtyidx \in \specialtyset} \blockvar                       & \leq 1     &\qquad & \forall\, \roomidx \in \roomset,\, \blockidx \in \blockset \label{eq:c3}\\
     &                  && \quad & \sum_{\roomidx \in \roomset} \sum_{\specialtyidx \in \specialtyset} \needanest_{\specialtyidx} \cdot \blockvar   & \leq \numbersanests_{\blockidx} + \anestslackvar &\qquad & \forall\, \blockidx \in \blockset \label{eq:c4}\\
     &                  && \quad & \sum_{\roomidx \in \roomset} \blockvar   & \leq \specteams_{\blockidx\specialtyidx} + \teamslackvar  &\qquad & \forall\, \,\blockidx \in \blockset,\,\specialtyidx \in \specialtyset \label{eq:c5}\\
