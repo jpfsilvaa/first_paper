@@ -3,7 +3,7 @@
 % *******************************************
 
 To ensure consistency with the waiting-time requirements established by the $(R,Q)$ policy in Section~\ref{sec:waitinglist}, it is necessary to estimate how many elective patients can be accommodated within a single $6$-hour operating theatre block, in accordance with the scheduling regulations at HC-Unicamp. 
-This estimation determines whether the batch size $Q$ defined at the strategic level can be effectively served within the planning horizon.
+This estimation determines whether the batch sizes $\upperq$ and $\lowerq$, for each specialty $\specialtyidx \in \specialtyset$, defined at the strategic level can be effectively served within the planning horizon.
 
 Accurate estimation requires explicit consideration of uncertainty in surgery durations, which varies across subspecialties and directly affects both operating theatre utilisation and the risk of overtime. 
 In particular, a trade-off arises between idle time, resulting from underutilised theatre capacity, and overtime, which may trigger cancellations of scheduled procedures. 
@@ -143,52 +143,55 @@ Theorem \ref{thm:quantile} implies that, whenever the remaining time in a sessio
 % ******************************************************************************************** %
 \subsection{Applying the newsvendor model to the case study\label{sec:applicationnewsvendor}}
 % ******************************************************************************************** %
-Building on the theoretical results of the previous subsection, we address the following question: what is the probability that $\completedsurgsidx+1$ surgeries can be accommodated within a time block of length $\blocklength$?
-This is equivalent to evaluating the probability that, after completing $\completedsurgsidx$ surgeries, the remaining available time exceeds a safety threshold $\safetythreshold$. 
-This probability can be computed using convolutions of the surgery-duration distributions associated with a given subspecialty, as described below.
+Building on the theoretical results of the previous subsection, we evaluate, for a block of length $\blocklength \in \mathbb{Z}_{+}$, the probability that a further surgery can be accommodated after $\completedsurgsidx \in \mathbb{N}$ surgeries have been completed. 
+This is equivalent to assessing whether the residual time in the block exceeds the safety threshold $\safetythreshold$. 
+As described below, this probability is obtained through successive convolutions of the surgery-duration distributions associated with the relevant subspecialty.
 
-Let $\duration_{\surgidx}$ denote the random variable representing the duration of the $i$-th surgery, and let $s_k = \sum_{i=1}^{\completedsurgsidx} \duration_{\surgidx}$ denote the cumulative duration of the first $k$ surgeries. 
+Let $\duration_{\surgidx}$ denote a non-negative the random variable representing the duration of the $i$-th surgery, with probability distribution $f_{\duration_{\surgidx}} : \Omega \to [0,1),\, \Omega \subset \mathbb{R}_{+}$ and cumulative distribution function $F_{\duration_{\surgidx}} : \Omega \to [0,1)$.
+Let $s_k = \sum_{i=1}^{\completedsurgsidx} \duration_{\surgidx}$ denote the cumulative duration of the first $k$ surgeries. 
 The probability that an additional surgery can be performed after $k$ procedures is given by
 \begin{align*}
     P(\blocklength - s_k > \safetythreshold) &= P(s_k < \blocklength - \safetythreshold) \\
                     &= \cumulativedurationcdf(\blocklength - \safetythreshold),
 \end{align*}
-where $\cumulativedurationcdf$ is the cumulative distribution function of $s_k$.
+where $\cumulativedurationcdf : \Omega \to [0,1),\, \Omega \subset \mathbb{R}_{+}$ is the cumulative distribution function of $s_k$.
 
-We define the random variable $X$ as the number of surgeries that can be executed within the block. 
+We also define the random variable $\numcompletedsurgs$ as the non-negative number of surgeries that can be executed within the block, with probability distribution $f_{\numcompletedsurgs} : \Omega \to [0,1),\, \Omega \subset \mathbb{N}_{+}$ and cumulative distribution function $F_{\numcompletedsurgs} : \Omega \to [0,1)$.
 Therefore, the probability that more than $k$ surgeries can be performed is given by
 \[
-P(X > k) = P(s_k < \blocklength - \safetythreshold).
+P(\numcompletedsurgs > k) = P(s_k < \blocklength - \safetythreshold).
 \]
 
 To ensure computational tractability, we define an upper bound $K_{\max}$ as the largest integer such that
 \[
 K_{\max} = \max \left\{ k \geq 0 : \cumulativedurationcdf(\blocklength - \safetythreshold) > \probstoppingthreshold \right\},
 \]
-where $\probstoppingthreshold$ is a pre-specified probability threshold. 
+where $\probstoppingthreshold \in (0,1)$ is a pre-specified probability threshold. 
 This definition avoids ambiguity by directly linking $K_{\max}$ to the stopping criterion used in the algorithm.
 
-Given the model parameters $\blocklength, \safetythreshold, \probstoppingthreshold$, and the discretised probability mass function of surgery durations $\durationpmf$, we compute, for each subspecialty, the probabilities $P(X > k)$ for $k = 0, \ldots, K_{\max}$ iteratively using convolution operations, as described in Algorithm~\ref{alg:newsvendor}.
+Given the model parameters $\blocklength, \safetythreshold, \probstoppingthreshold$, and the discretised probability mass function of surgery durations $\durationpmf_{\specialtyidx}$ for all $\specialtyidx \in \specialtyset$, we compute, for each subspecialty, the probabilities $P(\numcompletedsurgs > k)$ for $k = 0, \ldots, K_{\max}$ iteratively using convolution operations, as described in Algorithm~\ref{alg:newsvendor}.
 
 \begin{algorithm}[H]
-\caption{Computation of $P(X > k)$ via convolutions and the newsvendor model\label{alg:newsvendor}}
+\caption{Computation of $P(\numcompletedsurgs > k)$ via convolutions and the newsvendor model\label{alg:newsvendor}}
 \begin{algorithmic}[1]
-\State \textbf{Input:} $\blocklength$, $\safetythreshold$, $\probstoppingthreshold$, probability vector $\durationpmf$
+\State \textbf{Input:} $\blocklength$, $\safetythreshold$, $\probstoppingthreshold$, specialties $\specialtyidx \in \specialtyset$ and probability vectors $\durationpmf_{\specialtyidx}$ for all $\specialtyidx \in \specialtyset$
 \State \textbf{Output:} vector $\survivalvector$ such that $\survivalvector[\completedsurgsidx] = P(\numcompletedsurgs > \completedsurgsidx)$
-\State Initialise $\survivalvector[0] \gets 1$
-\State Initialise $c^{(0)} \gets \durationpmf$
-\State $k \gets 0$
-\While{$\survivalvector[\completedsurgsidx] > \probstoppingthreshold$}
-    \If{$k > 0$}
-        \State $c^{(k)} \gets \text{Convolve}(c^{(\completedsurgsidx-1)}, \durationpmf)$
-    \EndIf
-    \State $\survivalvector[k+1] \gets \text{RunNewsvendor}(c^{(\completedsurgsidx)}, \blocklength, \safetythreshold)$
-    \State $k \gets \completedsurgsidx + 1$
-\EndWhile
+\For {each $\specialtyidx \in \specialtyset$}
+    \State Initialise $\survivalvector[0] \gets 1$
+    \State Initialise $c^{(0)} \gets \durationpmf_{\specialtyidx}$
+    \State $k \gets 0$
+    \While{$\survivalvector[\completedsurgsidx] > \probstoppingthreshold$}
+        \If{$k > 0$}
+            \State $c^{(k)} \gets \text{Convolve}(c^{(\completedsurgsidx-1)}, \durationpmf_{\specialtyidx})$
+        \EndIf
+        \State $\survivalvector[k+1] \gets \text{RunNewsvendor}(c^{(\completedsurgsidx)}, \blocklength, \safetythreshold)$
+        \State $k \gets \completedsurgsidx + 1$
+    \EndWhile
+\EndFor
 \end{algorithmic}
 \end{algorithm}
 
-In Algorithm~\ref{alg:newsvendor}, the function \texttt{Convolve} computes the distribution of the cumulative duration $s_k$ by convolving the distribution of $s_{\completedsurgsidx-1}$ with the single-surgery duration distribution $\durationpmf$. 
+In Algorithm~\ref{alg:newsvendor}, the function \texttt{Convolve} computes the distribution of the cumulative duration $s_k$ by convolving the distribution of $s_{\completedsurgsidx-1}$ with the single-surgery duration distribution $\durationpmf_{\specialtyidx}$. 
 The function \texttt{RunNewsvendor} evaluates $P(s_k < \blocklength - \safetythreshold)$, i.e., the probability that an additional surgery can be accommodated.
 
 The resulting vector $\survivalvector[\completedsurgsidx]$ provides the survival function $P(\numcompletedsurgs > \completedsurgsidx)$. 
