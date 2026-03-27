@@ -4,9 +4,11 @@
 % Pode dar conflito com outros pacotes
 \usepackage{amsthm}
 
-% conjuntos e indices
+% ==================================================
+% MILP Sets and indices
+% ==================================================
+
 \newcommand{\blockset}{\mathcal{B}}
-\newcommand{\blockcset}{\mathcal{B}_{c}}
 \newcommand{\blockmset}{\mathcal{B'}}
 \newcommand{\blockidx}{b}
 \newcommand{\blocki}{b_i}
@@ -19,10 +21,10 @@
 \newcommand{\roomidxalt}{\ell}
 
 \newcommand{\specialtyset}{\mathcal{S}}
-\newcommand{\specialtymset}{\mathcal{S}_{seq}} % especialidades que precisam de dois blocos
-\newcommand{\specialtycset}{\mathcal{S}_{circ}} % especialidades circunstanciais
+\newcommand{\specialtymset}{\mathcal{S}_{seq}}   % especialidades que precisam de dois blocos
+\newcommand{\specialtycset}{\mathcal{S}_{circ}}  % especialidades circunstanciais
 \newcommand{\specialtyprset}{\mathcal{S}_{prio}} % especialidades prioritárias
-\newcommand{\specialtytxset}{\mathcal{S}_{trans}} % especialidades de transplante
+\newcommand{\specialtytxset}{\mathcal{S}_{trans}}% especialidades de transplante
 \newcommand{\specialtyidx}{s}
 
 \newcommand{\planninghorizonset}{\mathcal{D}}
@@ -31,9 +33,10 @@
 \newcommand{\timeperiodset}{\mathcal{M}}
 \newcommand{\timeperiodidx}{m}
 
-% --------------------------------------------------
+% ==================================================
+% MILP Decision variables
+% ==================================================
 
-% variaveis
 \newcommand{\blockvar}{x_{\roomidx\blockidx\specialtyidx}}
 \newcommand{\blockivar}{x_{\roomidx\blocki\specialtyidx}}
 \newcommand{\blockjvar}{x_{\roomidx\blockj\specialtyidx}}
@@ -44,18 +47,17 @@
 \newcommand{\teamslackvar}{z_{\specialtyidx\blockidx}}
 \newcommand{\anestslackvar}{a_{\blockidx}}
 
-% --------------------------------------------------
+% ==================================================
+% MILP parameters
+% ==================================================
 
-% parametros
 \newcommand{\roomtospecialty}{\psi}
 \newcommand{\demand}{\delta}
 \newcommand{\numbersurgeons}{N}
 \newcommand{\numbersanests}{A}
 \newcommand{\needanest}{\alpha}
-\newcommand{\revenue}{P}
 \newcommand{\specteams}{\eta}
 \newcommand{\mindeficit}{\beta}
-\newcommand{\ub}{\kappa}
 \newcommand{\days}{|\planninghorizonset|}
 \newcommand{\eps}{\epsilon}
 \newcommand{\allowedrooms}{\lambda}
@@ -67,18 +69,19 @@
 \newcommand{\modelname}{MILP-OT}
 \newcommand{\hcunicamp}{HC - Unicamp}
 
-% --------------------------------------------------
-% overtime symbols
+% ==================================================
+% Overtime and cancellation stage
+% ==================================================
 
-% indexes
+% indices
 \newcommand{\surgidx}{i}
 \newcommand{\completedsurgsidx}{k}
-\newcommand{\cancellationsidx}{\ell}
+\newcommand{\cancellationsidx}{u}
 
 % parameters
 \newcommand{\blocklength}{T}
 \newcommand{\safetythreshold}{t^{*}}
-\newcommand{\probstoppingthreshold}{\varepsilon}
+\newcommand{\probstoppingthreshold}{\varepsilon_{\text{stop}}}
 \newcommand{\plannedsurgs}{n}
 \newcommand{\optplannedsurgs}{n^*}
 \newcommand{\durationpmf}{p}
@@ -93,10 +96,30 @@
 \newcommand{\convolve}{\text{Convolve}}
 \newcommand{\runnewsvendor}{\text{RunNewsvendor}}
 \newcommand{\gain}{G}
-\newcommand{\cancellationcost}{C}
+\newcommand{\cancellationcost}{\mathcal{C}}
 \newcommand{\netvalue}{\Delta}
 \newcommand{\marginalvalue}{R}
 \newcommand{\cancellationfunction}{c}
 
-% algorithm
+% auxiliary algorithm output
 \newcommand{\survivalvector}{q}
+
+% ==================================================
+% Preprocessing of strategic input / block-demand conversion
+% ==================================================
+
+% parameters
+\newcommand{\conflevel}{\rho}
+\newcommand{\blocksurgpmf}{p}
+\newcommand{\targetq}{{Q}}
+
+% index for successive convolutions / number of aggregated blocks
+\newcommand{\convidx}{counter}
+
+% random variable
+\newcommand{\totalsurgs}{S}
+
+% outputs in block units
+\newcommand{\blockdemand}{\Phi}
+\newcommand{\lowerblockdemand}{\underline{\blockdemand}_{\specialtyidx}}
+\newcommand{\upperblockdemand}{\overline{\blockdemand}_{\specialtyidx}}

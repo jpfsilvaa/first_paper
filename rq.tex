@@ -189,6 +189,10 @@ One can intuitively see that the value of $k_0$ will increase as $Q$ increases, 
 \overline Q = \max \{ Q \in \mathbb N : k_0^\tau < \alpha \}.
 \end{equation}
 
+Thus, we can ensure that the waiting time requirements are satisfied both when patients arrive to an empty queue and when they encounter batches of patients in the queue. 
+% Then, we further use these bounds as an input for the operating theatre scheduling problem, which is responsible for determining the actual number of surgeries to be performed in each period, while ensuring that the long-term waiting time requirements are met.
+In the example below, we show how to derive the bounds $\underline Q$ and $\overline Q$ for a given demand distribution and waiting time requirements.
+
 \begin{ex}[Deriving lower and upper bounds for $Q$]
 Consider an elective surgery queue with monthly demand $D$ that satisfies the distribution in Table \ref{tab:demprob}.
 %
