@@ -17,16 +17,16 @@
 %% Template article for Elsevier's document class `elsarticle'
 %% with harvard style bibliographic references
 
-\documentclass[review,3p,authoryear]{elsarticle}
+%\documentclass[review,3p,authoryear]{elsarticle}
 
 %% Use the option review to obtain double line spacing
-%% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
+%%\documentclass[authoryear,preprint,review,12pt]{elsarticle}
 
 %% Use the options 1p,twocolumn; 3p; 3p,twocolumn; 5p; or 5p,twocolumn
 %% for a journal layout:
 %% \documentclass[final,1p,times,authoryear]{elsarticle}
 %% \documentclass[final,1p,times,twocolumn,authoryear]{elsarticle}
-%% \documentclass[final,3p,times,authoryear]{elsarticle}
+\documentclass[final,3p,times,authoryear]{elsarticle}
 %% \documentclass[final,3p,times,twocolumn,authoryear]{elsarticle}
 %% \documentclass[final,5p,times,authoryear]{elsarticle}
 %% \documentclass[final,5p,times,twocolumn,authoryear]{elsarticle}
@@ -137,6 +137,7 @@
 %% \author[label1,label2]{}
 %% \affiliation[label1]{organization={},
 %%             addressline={},
+
 %%             city={},
 %%             postcode={},
 %%             state={},
@@ -205,23 +206,22 @@ Abstract text.
 
 % \include{intro}
 
-\include{LitReview-Ed}
-
-\include{ProblemDescr}
-
-\include{rq}
-
-\include{overtime}
-
-\include{OTScheduling}
-
-% \include{experiments}
+\input{LitReview-Ed}
+\input{ProblemDescr}
+%
+\input{rq}
+%
+\input{overtime}
+%
+\input{OTScheduling}
+%
+\input{experiments}
 
 % \include{conclusions}
 
 % *******************************************
 \bibliographystyle{elsarticle-harv}
-\bibliography{ref}
+\scriptsize{\bibliography{ref}}
 % *******************************************
 \end{document}
 

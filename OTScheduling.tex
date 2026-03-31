@@ -36,6 +36,7 @@ In other words, we seek the smallest number of blocks $r$ such that the probabil
 Algorithm \ref{alg:blockdemand} summarises this procedure.
 
 \begin{algorithm}[H]
+\scriptsize{
 \caption{Block demand estimation via successive convolutions\label{alg:blockdemand}}
 \begin{algorithmic}[1]
 \State \textbf{Input:} set of subspecialties $\specialtyset$, targets $(\lowerq,\upperq)$, confidence level $\conflevel$, PMF $\blocksurgpmf_{\specialtyidx}$ of surgeries per block for each $\specialtyidx \in \specialtyset$
@@ -63,6 +64,7 @@ Algorithm \ref{alg:blockdemand} summarises this procedure.
     \EndIf
 \EndFor
 \end{algorithmic}
+}
 \end{algorithm}
 
 This step is essential for the OTSP phase of the framework, since the problem is formulated at the block level and the monthly operating theatre schedule is constructed by allocating blocks rather than individual surgeries. 

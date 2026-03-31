@@ -93,17 +93,20 @@ where $\beta_1 = \min\{ t_b - T_D, \; 0 \}$ is the underused time budget, and $\
 \begin{proof}
 We will start by proving the result for $\beta_1$. Since $\beta_1 \ge 0$, it follows that:
 \begin{align*}
-E(\beta_1) = \int_{t=0}^\infty P ( \beta_1 > t ) dt = \int_{t=0}^{t_{b}} P( t_b - T_D > t ) dt \\
-E(\beta_1) = \int_{t=0}^{t_{b}} P( T_D < t_b - t ) dt = \int_{t=0}^{t_{b}} F_{T_D}(t_b - t) dt \\
-E(\beta_1) = \int_{t=0}^{t_{b}} F_{T_D}(t) dt.
+E(\beta_1) = \int_{t=0}^\infty P ( \beta_1 > t ) dt = \int_{t=0}^{t_{b}} P( t_b - T_D > t ) dt 
+%E(\beta_1) 
+=  \int_{t=0}^{t_{b}} P( T_D < t_b - t ) dt = \int_{t=0}^{t_{b}} F_{T_D}(t_b - t) dt 
+%E(\beta_1)
+= \int_{t=0}^{t_{b}} F_{T_D}(t) dt.
 \end{align*}
 %
 
 Since $\beta_2$ is also non-negative, we can write:
 %
 \begin{align*}
-    E(\beta_2) =  \int_0^\infty P( T_D - t_b > t) dt = \int_0^\infty P( T_D  > t + t_b) dt \\
-    E(\beta_2) = \int_{t_b}^\infty P( T_D  > t ) dt = \int_{t_b}^\infty (1 - F_{T_D}(t) ) dt
+    E(\beta_2) =  \int_0^\infty P( T_D - t_b > t) dt = \int_0^\infty P( T_D  > t + t_b) dt
+    %E(\beta_2) 
+    = \int_{t_b}^\infty P( T_D  > t ) dt = \int_{t_b}^\infty (1 - F_{T_D}(t) ) dt
 \end{align*}
 \end{proof}
 
@@ -173,6 +176,7 @@ This definition avoids ambiguity by directly linking $K_{\max}$ to the stopping 
 Given the model parameters $\blocklength, \safetythreshold, \probstoppingthreshold$, and the discretised probability mass function of surgery durations $\durationpmf_{\specialtyidx}$ for all $\specialtyidx \in \specialtyset$, we compute, for each subspecialty, the probabilities $P(\numcompletedsurgs > k)$ for $k = 0, \ldots, K_{\max}$ iteratively using convolution operations, as described in Algorithm~\ref{alg:newsvendor}.
 
 \begin{algorithm}[H]
+\scriptsize{
 \caption{Computation of $P(\numcompletedsurgs > k)$ via convolutions and the newsvendor model\label{alg:newsvendor}}
 \begin{algorithmic}[1]
 \State \textbf{Input:} $\blocklength$, $\safetythreshold$, $\probstoppingthreshold$, specialties $\specialtyidx \in \specialtyset$ and probability vectors $\durationpmf_{\specialtyidx}$ for all $\specialtyidx \in \specialtyset$
@@ -190,6 +194,7 @@ Given the model parameters $\blocklength, \safetythreshold, \probstoppingthresho
     \EndWhile
 \EndFor
 \end{algorithmic}
+}
 \end{algorithm}
 
 In Algorithm~\ref{alg:newsvendor}, the function \texttt{Convolve} computes the distribution of the cumulative duration $s_k$ by convolving the distribution of $s_{\completedsurgsidx-1}$ with the single-surgery duration distribution $\durationpmf_{\specialtyidx}$. 
