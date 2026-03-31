@@ -15,7 +15,7 @@ The symbols used in this section are defined in Table~\ref{tab:symb_newsvendor}.
 
 \begin{table}
     \centering
-    \caption{Table of Symbols for Overtime and cancellation management process.\label{tab:symb_newsvendor}}
+    \caption{Table of Symbols for Overtime and cancellation management process.\label{tab:symb_newsvendor}\textcolor{red}{notaçao entre seçoes está caótica, vou sincronizar tudo no symb.tex}.}
     \scriptsize
     \begin{tabular}{cl}
     \toprule
@@ -162,6 +162,7 @@ Therefore, the probability that more than $k$ surgeries can be performed is give
 P(\numcompletedsurgs > k) = P(s_k < \blocklength - \safetythreshold).
 \]
 
+\textcolor{red}{Preciso rever a explicacao do criterio de parada, porque do jeito em que está, eu explico o $K_{max}$ mas nem uso ele, só a ideia... Rever a explicação e o pseudocódigo tbm.}
 To ensure computational tractability, we define an upper bound $K_{\max}$ as the largest integer such that
 \[
 K_{\max} = \max \left\{ k \geq 0 : \cumulativedurationcdf(\blocklength - \safetythreshold) > \probstoppingthreshold \right\},
@@ -175,7 +176,7 @@ Given the model parameters $\blocklength, \safetythreshold, \probstoppingthresho
 \caption{Computation of $P(\numcompletedsurgs > k)$ via convolutions and the newsvendor model\label{alg:newsvendor}}
 \begin{algorithmic}[1]
 \State \textbf{Input:} $\blocklength$, $\safetythreshold$, $\probstoppingthreshold$, specialties $\specialtyidx \in \specialtyset$ and probability vectors $\durationpmf_{\specialtyidx}$ for all $\specialtyidx \in \specialtyset$
-\State \textbf{Output:} vector $\survivalvector$ such that $\survivalvector[\completedsurgsidx] = P(\numcompletedsurgs > \completedsurgsidx)$
+\State \textbf{Output:} vector $\survivalvector$ such that $\survivalvector[\completedsurgsidx] = P(\numcompletedsurgs > \completedsurgsidx) = P(s_k < \blocklength - \safetythreshold)$
 \For {each $\specialtyidx \in \specialtyset$}
     \State Initialise $\survivalvector[0] \gets 1$
     \State Initialise $c^{(0)} \gets \durationpmf_{\specialtyidx}$
