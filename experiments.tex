@@ -1,11 +1,50 @@
 % ********************************************
 \section{Computational Study\label{sec:experiments}}
 % *******************************************
+We conducted a computational study to evaluate the performance of the proposed approach. 
+While the theoretical results provide guarantees regarding strategic and operational stability, it is also essential to assess its practical performance in a real-world setting. 
+To this end, we use real data from \hcunicamp to perform a data-driven analysis. 
+This section presents the experimental setup and the results of the computational study.
 
-\subsection{Experimental Setup\label{sec:setup}}
+\subsection{Real-world Data and Instances\label{instances}}
+% Descrever os dados, como foram processados, etc
+
+\subsection{Experimental Setup\label{sec:experimental_setup}}
+% Descrever o computador, linguagem, bibliotecas, etc
+
+The experiments were conducted on a machine equipped with an Intel Core 7 150U processor (5.40 GHz) and 32 GB of RAM. 
+All components of the proposed approach were implemented in Python 3.12. 
+The MILP model for operating theatre scheduling was solved using SCIP 9.2.3 with default parameter settings, interfaced through the Pyomo library.
+
+We simulate the operating theatre scheduling process over a one-year horizon. 
+The parameters obtained in the strategic phase (i.e., the preprocessed block units obtained from $(R,Q)$ values and overtime and cancellation costs) are used to allocate operating blocks to specialties and to evaluate the resulting patient waiting times.
+Figure~\ref{fig:longterm_simulation} illustrates the overall simulation framework.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/experimental_design.png}
+    \caption{Long-term simulation framework.}
+    \label{fig:longterm_simulation}
+\end{figure}
+
+The simulation follows a monthly decision cycle composed of two main stages.
+In the first stage, the queue size of each specialty is updated. 
+Starting from the current queue levels, newly arriving patients are added, yielding the updated queue for each specialty. 
+Each specialty is then evaluated sequentially: if its queue size exceeds the predefined threshold $R$, the specialty is selected for scheduling; otherwise, it is not considered in the current period.
+
+In the second stage, the set of selected specialties, together with resource constraints, are provided as inputs to the MILP allocation model. 
+The model generates a monthly operating theatre schedule, determining the number of patients treated in each specialty.
+Treated patients are subsequently removed from their respective queues, updating the system state for the next period.
+\textcolor{red}{preciso detalhar, ainda que rápidamente, que a simulaçao ``sorteia'' quantos pacientes serão atendidos em cada especialidade, e isso é feito com base na na distribuição de cirurgias planejadas na fase do overtime}
+
+To assess long-term stability, we perform 100 independent simulation runs over the one-year horizon, using different random seeds to capture the stochasticity in surgery durations and patient arrivals.
+\textcolor{red}{continuar a descrever o setup dos experimentos}
+
+
 
 \subsection{Data processing Results\label{sec:longterm_analysis}}
 % Rever esse título, mas quero passar a ideia de ser algo que, no nosso design de experimento, é executado uma vez só
+
 
 \subsubsection{$(R,Q)$ Results}
 % Resultados e analise dos calculos do RQ para cada especialidade
