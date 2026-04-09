@@ -1,66 +1,64 @@
-% ********************************************
 \section{Computational Study\label{sec:experiments}}
-% *******************************************
-We conducted a computational study to evaluate the performance of the proposed approach. 
-While the theoretical results provide guarantees regarding strategic and operational stability, it is also essential to assess its practical performance in a real-world setting. 
-To this end, we use real data from \hcunicamp to perform a data-driven analysis. 
-This section presents the experimental setup and the results of the computational study.
+We conduct a computational study to evaluate the performance of the proposed approach using real-world data from \hcunicamp. 
+While the theoretical results provide guarantees on system stability, it is essential to assess the practical implications in a realistic setting.
+To this end, we simulate the long-term surgery planning process and compare the proposed approach with a baseline policy in terms of patient waiting times and resource utilisation.
 
 \subsection{Real-world Data\label{instances}}
-
-The data used in this study were obtained from the \hcunicamp, which serves as the case study of this paper. 
-The dataset comprises detailed information on surgery durations, operating theatre availability, team constraints, and specialty schedules over a one-year period (2025).
-
-We consider each month as an individual instance of the operating theatre scheduling problem, while the full year is used to assess the long-term behaviour of the system.
+The dataset comprises detailed information on surgery durations, operating theatre availability, team constraints, and specialty schedules over a one-year period (2025). 
+Each month is treated as an individual instance of the operating theatre scheduling problem, while the full year is used to evaluate long-term system behaviour.
 
 \subsection{Derivation of Model Inputs}
+The data are processed to derive the inputs required for the strategic and operational components of the proposed approach.
 
-The data were processed to derive the inputs required for both the strategic and operational components of the proposed approach.
+\paragraph{\textbf{Surgery duration distributions}}
+For each subspecialty, empirical distributions of surgery durations are estimated from historical data. 
+These distributions are used in the Overtime and Cancellation module to evaluate the newsvendor model and determine the number of surgeries scheduled per block.
 
-\paragraph{Surgery duration distributions}
-For each subspecialty, we estimate an empirical probability distribution of surgery durations based on historical data. 
-These distributions are used in the overtime and cancellation analysis, allowing us to evaluate the likelihood of exceeding the allocated block time without imposing parametric assumptions.
+\paragraph{\textbf{Demand distributions}}
+Patient arrivals are modelled as Poisson processes. 
+For each subspecialty, the arrival rate $\lambda$ is estimated as the average monthly demand derived from historical activity.
+This is obtained by combining the expected number of surgeries per operating block (estimated from the duration distributions) with the observed number of allocated blocks, yielding an average monthly arrival rate.
 
-\paragraph{Demand distributions}
-Patient arrivals are modelled using Poisson distributions. 
-For each subspecialty, the arrival rate parameter $\lambda$ is estimated as the average monthly number of surgeries derived from historical data.
-
-Specifically, we first estimate the expected number of surgeries per operating block using the surgery duration distributions. 
-We then combine this estimate with the observed number of blocks allocated to each subspecialty over the year, obtaining an average monthly demand level. 
-This value is used as the parameter $\lambda$ of the Poisson distribution.
-
-\paragraph{Operational parameters}
-All parameters of the operating theatre scheduling model (see Table~\ref{tab:symb} in Section~\ref{sec:ot}) are set according to the real-world data. 
-These include operating theatre compatibilities, the availability of surgical teams and anaesthetists, and the number of working days per month.
+\paragraph{\textbf{Operational parameters}}
+All parameters of the operating theatre scheduling model (see Table~\ref{tab:symb} in Section~\ref{sec:ot}) are calibrated using real-world data, i.e., the actual values observed in each month of the year 2025.
+These include operating theatre compatibilities, staff availability, and working calendars.
 
 \subsection{Experimental Setup\label{sec:experimental_setup}}
+Experiments are conducted on a machine equipped with an Intel Core 7 150U processor (5.40 GHz) and 32 GB of RAM. 
+All modules are implemented in Python 3.12, and the MILP model is solved using SCIP 9.2.3 with default parameter settings, interfaced through the Pyomo library.
 
-The experiments were conducted on a machine equipped with an Intel Core 7 150U processor (5.40 GHz) and 32 GB of RAM. 
-All components of the proposed approach were implemented in Python 3.12. 
-The MILP model for operating theatre scheduling was solved using SCIP 9.2.3 with default parameter settings, interfaced through the Pyomo library.
+For the Queue Management module, the waiting time target is set to $\tau = 6$ months with confidence level $\alpha = 0.95$, ensuring that patients are treated within this horizon with high probability. 
+The threshold $R$ is defined as the midpoint between $\lowerq$ and $\upperq$.
 
-We simulate the operating theatre scheduling process over a one-year horizon. 
-The parameters derived in the strategic phase—namely the $(R,Q)$ values and the overtime and cancellation costs—are used to allocate operating blocks to specialties and to evaluate patient waiting times.
+In the Overtime and Cancellation module, the overtime cost is set to twice the regular surgery cost, while the cancellation cost equals the regular cost. 
+Additionally, we set the cost function to be quadratic in the number of surgeries cancelled, i.e., $c(x) = x^2$, reflecting the increasing marginal cost of cancellations as more surgeries are cancelled.
 
-Figure~\ref{fig:longterm_simulation} illustrates the simulation framework.
-The parameters obtained in the strategic phase (i.e., the preprocessed block units obtained from $(R,Q)$ values and overtime and cancellation costs) are used to allocate operating blocks to specialties and to evaluate the resulting patient waiting times.
+These strategic parameters are computed once and remain fixed throughout the simulation horizon.
+
+\paragraph{\textbf{Baseline policy}}
+The baseline policy excludes the strategic modules. 
+All specialties are scheduled in every period, and the MILP model is solved using only operational constraints, without $(R,Q)$ control or overtime optimisation.
+
+\subsection{Simulation Framework}
+
+Figure~\ref{fig:longterm_simulation} illustrates the simulation flow.
+The system evolves over a monthly decision cycle.
+In each period, patient arrivals are realised according to the estimated demand distributions, and queues are updated accordingly. 
+Under the proposed approach, only specialties with queue size exceeding $R$ are selected for scheduling.
+
+The MILP model then determines the allocation of operating theatre blocks. 
+For the proposed approach, the number of treated patients is sampled based on the distributions obtained from the Overtime and Cancellation module. 
+For the baseline policy, the number of treated patients is determined directly from surgery duration distributions without adjustment for overtime or cancellations.
+Queues are updated after treatment, and the process repeats for the next period.
+
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.9\textwidth]{images/experimental_design.png}
-    \caption{Long-term simulation framework.}
+    \caption{Long-term simulation flow.}
     \label{fig:longterm_simulation}
 \end{figure}
 
-The simulation follows a monthly decision cycle composed of two stages.
-In the first stage, the queue of each specialty is updated by incorporating newly arriving patients. 
-Specialties whose queue size exceeds the threshold $R$ are selected for scheduling in the current period.
-
-In the second stage, the selected specialties and resource constraints are provided as inputs to the MILP model, which determines the allocation of operating theatre blocks. 
-The number of treated patients is then sampled based on the probability distribution of planned surgeries (i.e., the output from the overtime and cancellation phase). 
-These patients are removed from the queues, defining the system state for the next period.
-
-To assess long-term stability, we perform 100 independent simulation runs using different random seeds to capture the stochasticity in surgery durations and patient arrivals.
-\textcolor{red}{continuar a descrever o setup dos experimentos (parametros específicos do RQ e do overtim; talvez só mencionar rapidamente...)}
+To assess long-term stability, we perform $100$ independent simulation runs using different random seeds to capture the stochasticity in surgery durations and patient arrivals.
 
 \subsection{Results from Strategic Decision-Making\label{sec:longterm_analysis}}
 
