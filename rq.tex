@@ -64,10 +64,10 @@ The proof closely follows that of \citet[Proposition 5.1]{Axsater2015Inv}. Let $
 \stocprocremain{\stocprocperiod+1} =  (\stocprocremainstate + k) \,\%\, \batchsizeq  = (\stocprocremainstate + k + \batchsizeq \stocprocbatches{\stocprocperiod}) \,\%\, \batchsizeq  = (\stocprocqueue{\stocprocperiod} + k) \,\%\, \batchsizeq,
 \] 
 %
-where the last equality come from the definitions in \eqref{eq:defYZ}. Therefore, given $\rvdemand=k$, it is evident that $\transmatrixval{\stocprocremainstate\stocprocremainstate'}{\stocprocremain{}}(k) := P( \stocprocremain{\stocprocperiod+1} = \stocprocremainstate' | \stocprocremain{\stocprocperiod} = \stocprocremainstate, \rvdemand=k )$ equals one for exactly one value of $\stocprocremainstate$ and zero otherwise. Consequently, we can write:
+where the last equality come from the definitions in Eq.~\eqref{eq:defYZ}. Therefore, given $\rvdemand=k$, it is evident that $\transmatrixval{\stocprocremainstate\stocprocremainstate'}{\stocprocremain{}}(k) := P( \stocprocremain{\stocprocperiod+1} = \stocprocremainstate' | \stocprocremain{\stocprocperiod} = \stocprocremainstate, \rvdemand=k )$ equals one for exactly one value of $\stocprocremainstate$ and zero otherwise. Consequently, we can write:
 %
 \[
-\sum_{\stocprocremainstate=0}^{\batchsizeq-1} \transmatrixval{\stocprocremainstate\stocprocremainstate'}{\stocprocremain{}} = \sum_{\stocprocremainstate=0}^{\batchsizeq-1} E_{k} \left\{ \transmatrixval{\stocprocremainstate\stocprocremainstate'}{\stocprocremain{}}(k) \right\} = E_k \left\{  \sum_{\stocprocremainstate=0}^{\batchsizeq-1} \transmatrixval{\stocprocremainstate\stocprocremainstate'}{\stocprocremain{}}(k) \right\} = E_k \{ 1 \} = 1.
+\sum_{\stocprocremainstate=0}^{\batchsizeq-1} \transmatrixval{\stocprocremainstate\stocprocremainstate'}{\stocprocremain{}} = \sum_{\stocprocremainstate=0}^{\batchsizeq-1} \mathbb{E}_{k} \left\{ \transmatrixval{\stocprocremainstate\stocprocremainstate'}{\stocprocremain{}}(k) \right\} = \mathbb{E}_k \left\{  \sum_{\stocprocremainstate=0}^{\batchsizeq-1} \transmatrixval{\stocprocremainstate\stocprocremainstate'}{\stocprocremain{}}(k) \right\} = \mathbb{E}_k \{ 1 \} = 1.
 \]
 %
 The expression above  implies that the Markov chain describing the dynamics of process $Z_t, \, t \ge 0$ is doubly stochastic, and therefore has a uniform steady state distribution. Indeed, substituting \eqref{eq:steadyZ} in the steady state equations:
@@ -177,7 +177,7 @@ When $\stocprocbatches{\stocprocperiod} = 0$, on the other hand, the next batch 
 \omega = \min \{\delta > 0 : \stocprocbatches{\delta} > 0 | \stocprocbatches{0} = 0 \}.
 \]
 %
-Considering the transition matrix in \eqref{eq:ydynamicY}, it follows that $\omega$ will be a geometrically distributed variable and:
+Considering the transition matrix in Eq.~\eqref{eq:ydynamicY}, it follows that $\omega$ will be a geometrically distributed variable and:
 %
 \begin{equation} \label{eq:upperbound}
 P( \omega > \waittimereq | \stocprocbatches{0} = 0 )  = k_0^{\waittimereq}.
@@ -208,7 +208,7 @@ $P(\rvdemand=\drawnrvdemand)$ & 0.0308 & 0.0393 & 0.1179 & 0.2096 & 0.2445 & 0.1
 \end{table}
 \end{center}
 %
-The expected monthly demand is therefore $E(\rvdemand) = 3.9022$. Setting $\batchsizeq = 4$, which ensures long-term stability, we have $\statespace_{\stocprocremain{}{}} = \{0, 1, 2, 3\}$. This allows us to evaluate the individual distributions of $\roundbatches(\stocprocremainstate), \, \stocprocremainstate \in \statespace_{\stocprocremain{}}$ as defined in Eq. \eqref{eq:Az}, which we depict in the Table \ref{tab:dembatches}, along with the distribution of variable $\roundbatches$ from Eq. \eqref{eq:batcharr}.
+The expected monthly demand is therefore $\mathbb{E}(\rvdemand) = 3.9022$. Setting $\batchsizeq = 4$, which ensures long-term stability, we have $\statespace_{\stocprocremain{}{}} = \{0, 1, 2, 3\}$. This allows us to evaluate the individual distributions of $\roundbatches(\stocprocremainstate), \, \stocprocremainstate \in \statespace_{\stocprocremain{}}$ as defined in Eq. \eqref{eq:Az}, which we depict in the Table \ref{tab:dembatches}, along with the distribution of variable $\roundbatches$ from Eq. \eqref{eq:batcharr}.
 
 
 \begin{table}[h!]
@@ -230,7 +230,7 @@ The distributions in Table \ref{tab:dembatches} follow directly from Eq. \eqref{
 
 Conversely, when $\stocprocremainstate=3$, we have three patients in excess of a discrete number of batches, which means that $P(\roundbatches(3) = 0) = p_{\rvdemand}(0)$ as new batches will be formed whenever one or more patients arrive. One new batch will form if $\rvdemand \in [1,4]$, two new batches if $\rvdemand \in [5,8]$ and three new batches when $\rvdemand \in [8,10]$. Specifically, when 10 patients arrive, they will form a set of 13 patients when joined to the $\stocprocremainstate=3$ remaining patients from the start of the period. These 3 patients will then suffice to form three batches of $\batchsizeq=4$ patients, with one remaining batchless for the following period.
 
-Note that $E(\roundbatches) = 0.9755$, and that this value is equal to $\rho = \dfrac{E(\rvdemand)}{\batchsizeq} = \dfrac{3.9022}{4} = 0.9755$. This is expected, as the dynamics of process $\stocprocbatches{\stocprocperiod}$ describes the original system, only looking at it in terms of batches of patients. Note that $E(\roundbatches)$ is simply the expected number of batches of $\batchsizeq$ patients arriving and since we process $\mu=1$ batch per time period, we have $\rho = E(\roundbatches)$ when looking at the evolution of the batch process $\stocprocbatches{\stocprocperiod}, \, \stocprocperiod \ge 0$.
+Note that $\mathbb{E}(\roundbatches) = 0.9755$, and that this value is equal to $\rho = \dfrac{\mathbb{E}(\rvdemand)}{\batchsizeq} = \dfrac{3.9022}{4} = 0.9755$. This is expected, as the dynamics of process $\stocprocbatches{\stocprocperiod}$ describes the original system, only looking at it in terms of batches of patients. Note that $\mathbb{E}(\roundbatches)$ is simply the expected number of batches of $\batchsizeq$ patients arriving and since we process $\mu=1$ batch per time period, we have $\rho = \mathbb{E}(\roundbatches)$ when looking at the evolution of the batch process $\stocprocbatches{\stocprocperiod}, \, \stocprocperiod \ge 0$.
 
 Now, let us suppose that $\waittimereq = 6$ and $\conflevel = 0.05$ in~\eqref{eq:waitthreshold}, which means that the system requires 95\% of the patients to be operated in up to six months. To verify whether that is satisfied, we need firstly to solve Eq. \eqref{eq:ssY} for the steady state distribution of $\stocprocbatches{\stocprocperiod}, \, \stocprocperiod \ge 0$ and then use it to verify~\eqref{eq:waitthresholdy}. From Table~\ref{tab:dembatches}, we obtain $k_0=0.171625$,  $k_1=0.681825$, $k_2 = 0.145925$ and $k_3=0.000625$, which can be applied in Eq.~\eqref{eq:ssY} to find $\steadystate{\stocprocbatches{}}(0) = 0.02445$, $\steadystate{\stocprocbatches{}}(1) = 0.1182$, $\steadystate{\stocprocbatches{}}(2) = 0.1219$, $\steadystate{\stocprocbatches{}}(3) = 0.1046$, $\steadystate{\stocprocbatches{}}(4) = 0.0898$, $\steadystate{\stocprocbatches{}}(5) = 0.077$, $\steadystate{\stocprocbatches{}}(6) = 0.0661$. This yields:
 \[

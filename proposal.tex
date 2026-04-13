@@ -1,0 +1,29 @@
+% ********************************************
+\section{Proposed Framework\label{sec:proposal}}
+% *******************************************
+
+We propose an integrated framework for elective surgery planning under uncertainty that links waiting-list management, in-block time management, and operating theatre scheduling. 
+Rather than formulating these decisions as a single monolithic model, the framework decomposes the problem into three modules. 
+The first two modules address strategic decisions related to queue and overtime management, and their outputs are then used as inputs to the tactical operating theatre scheduling model. 
+Figure~\ref{fig:framework} summarises the proposed framework.
+
+\begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/framework.png}
+    \caption{Proposed framework.\label{fig:framework}}
+\end{figure}
+
+The first module addresses queue management by determining admission targets based on demand characteristics and waiting-time requirements. 
+Specifically, a modified $(R,Q)$ inventory policy uses the probability distribution of patient demand for each medical subspecialty to define lower and upper bounds on the number of patients to be admitted each month, while ensuring that waiting-time requirements are satisfied at a given confidence level. 
+This module supports the long-term balance of the waiting list by aligning admission decisions with demand uncertainty and institutional access targets.
+
+The second module addresses overtime and cancellation management by evaluating the trade-off between overtime, idle time, and the risk of procedure cancellation under stochastic surgery durations. 
+Essentially, a Newsvendor-based model is used to determine an optimal time for the allocation of the final surgery in a block, which is then translated into a target number of surgeries to be planned in each block, balancing the costs of overtime and idle time against the risk of exceeding block capacity. 
+
+The outputs of these two modules provide key inputs to the third module, which formulates the OT scheduling problem. 
+In this way, monthly theatre allocation decisions are informed not only by resource availability and clinical compatibility, but also by demand uncertainty and block-level execution risk. 
+At the same time, the scheduling model remains deterministic, which facilitates solution within practical computational times for real-world implementation.
+
+Overall, the proposed framework provides a coherent approach to elective surgery planning across multiple decision levels. 
+By explicitly incorporating uncertainty into the strategic planning stages, it supports more robust and operationally meaningful scheduling decisions. 
+The following subsections present each module in detail.

@@ -16,7 +16,7 @@ This highlights the value of integrating the different decision layers, as it pr
 In the following subsections, we first describe the preprocessing of strategic inputs derived from the $(R,Q)$ policy and the effective capacity information in order to determine subspecialty demand in terms of block units, which constitute the relevant unit for the scheduling problem. 
 We then present the MILP formulation of the OTSP, detailing the decision variables, objective functions, and constraints that reflect the hospital's operational requirements and priorities.
 
-\subsection{Preprocessing strategic input}
+\subsection{Preprocessing Strategic Input}
 
 The OTSP requires demand to be expressed in block units, as these correspond to the operational granularity of theatre scheduling. 
 To this end, we preprocess the strategic outputs of the $(R,Q)$ policy together with the effective capacity information obtained from the cancellation and overtime management stage.
@@ -24,7 +24,7 @@ To this end, we preprocess the strategic outputs of the $(R,Q)$ policy together 
 % More specifically, we convert subspecialty demand into the number of blocks required to meet the lower and upper activity targets. 
 % This conversion accounts for both the stochastic nature of surgical durations and the effective capacity of each block.
 
-The overtime and cancellation stage provides the probability mass function $\blocksurgpmf_{\specialtyidx}$ of the number of surgeries that can be completed within a single block for subspecialty $\specialtyidx$. 
+The overtime and cancellation module provides the probability mass function $\blocksurgpmf_{\specialtyidx}$ of the number of surgeries that can be completed within a single block for subspecialty $\specialtyidx$. 
 To determine the block requirements associated with targets $\lowq$ and $\upq$ at confidence level $\conflevel$, we iteratively convolve this distribution. 
 
 Let $F^{(\convnumber)}_{\specialtyidx}$ denote the cumulative distribution function associated with the PMF obtained after convolving $\blocksurgpmf_{\specialtyidx}$ with itself $\convnumber$ times.
@@ -77,7 +77,7 @@ We model the OTSP as a MILP, which allows us to capture the complex interactions
 To formulate the problem, we use the the notation in Table~\ref{tab:symb}.
 \begin{table}[t!]
     \centering
-    \caption{\label{tab:symb}Table of Symbols \textcolor{red}{notaçao entre seçoes está caótica, vou sincronizar tudo no symb.tex}.}
+    \caption{\label{tab:symb}Table of Symbols}
     \scriptsize
     \begin{tabular}{cl}
     \toprule
