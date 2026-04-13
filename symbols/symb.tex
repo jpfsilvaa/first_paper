@@ -4,6 +4,104 @@
 % Pode dar conflito com outros pacotes
 \usepackage{amsthm}
 
+\newcommand{\hcunicamp}{HC - Unicamp}
+% \newcommand{\rqpolicy}{\(R,Q\)}
+\newcommand{\rqmodule}{Queue-management module}
+\newcommand{\overtimemodule}{Overtime and cancellation module}
+\newcommand{\preprocessmodule}{Preprocessing of strategic input / block-demand conversion}
+\newcommand{\otschedmodule}{Operating theatre scheduling module}
+
+
+% ==================================================
+% Queue-management module
+% ==================================================
+
+\newcommand{\rthreshold}{R}
+\newcommand{\batchsizeq}{Q}
+\newcommand{\lowq}{\underline{\batchsizeq}} % lower bound on Q in number of patients
+\newcommand{\upq}{\overline{\batchsizeq}} % upper bound on Q in number of patients
+\newcommand{\conflevel}{\alpha}
+\newcommand{\waittimereq}{\tau}
+
+\newcommand{\stocprocperiod}{t}
+\newcommand{\stocprocqueue}[1]{X_{#1}}
+\newcommand{\stocprocbatches}[1]{Y_{#1}}
+\newcommand{\stocprocremain}[1]{Z_{#1}}
+\newcommand{\stocprocremainstate}{z}
+
+\newcommand{\rvdemand}{D}
+\newcommand{\drawnrvdemand}{d}
+\newcommand{\roundbatches}{A}
+\newcommand{\maxnumberbatch}{M}
+
+\newcommand{\statespace}{S}
+
+\newcommand{\steadystate}[1]{\pi_{#1}}
+\newcommand{\transmatrix}[1]{P_{#1}}
+\newcommand{\transmatrixval}[2]{p_{#1}^{#2}}
+
+% ==================================================
+% Overtime and cancellation module
+% ==================================================
+
+% indices
+\newcommand{\surgidx}{i}
+\newcommand{\completedsurgsidx}{k}
+% \newcommand{\cancellationsidx}{u}
+
+% parameters
+\newcommand{\blocklength}{T}
+\newcommand{\safetythreshold}{t^{*}}
+\newcommand{\probstoppingthreshold}{\varepsilon_{\text{stop}}}
+\newcommand{\plannedsurgs}{n}
+\newcommand{\optplannedsurgs}{n^*}
+\newcommand{\durationpmf}{p}
+\newcommand{\excesscost}{c}
+\newcommand{\overtimepenalty}{p}
+\newcommand{\cancelledsurgeries}{\ell}
+
+% random variables
+\newcommand{\rvsurgdur}{T_D}
+
+\newcommand{\duration}{d}
+\newcommand{\cumulativeduration}[1]{s_{#1}}
+\newcommand{\numcompletedsurgs}{X}
+
+% functions
+% \newcommand{\cumulativedurationcdf}{F_{s_k}}
+\newcommand{\convolve}{\text{Convolve}}
+\newcommand{\calccdf}{\text{CalculateCDF}}
+\newcommand{\runnewsvendor}{\text{RunNewsvendor}}
+\newcommand{\gain}[1]{G(#1)}
+\newcommand{\cancellationcost}{C}
+\newcommand{\netvalue}{\Delta}
+\newcommand{\marginalvalue}{g}
+\newcommand{\cancellationfunction}{c}
+
+% auxiliary algorithm output
+\newcommand{\survivalvector}{q}
+
+% ==================================================
+% Preprocessing of strategic input / block-demand conversion
+% ==================================================
+
+% parameters
+\newcommand{\blocksurgpmf}{p}
+\newcommand{\targetq}{{Q'}}
+
+% index for successive convolutions / number of aggregated blocks
+\newcommand{\convidx}{counter}
+\newcommand{\convnumber}{n}
+
+% random variable
+% \newcommand{\totalsurgs}{S}
+
+% outputs in block units
+\newcommand{\blockdemand}{B}
+\newcommand{\lowerblockdemand}{\underline{\blockdemand}_{\specialtyidx}}
+\newcommand{\upperblockdemand}{\overline{\blockdemand}_{\specialtyidx}}
+
+
 % ==================================================
 % MILP Sets and indices
 % ==================================================
@@ -14,17 +112,17 @@
 \newcommand{\blocki}{b_i}
 \newcommand{\blockj}{b_j}
 
-\newcommand{\roomsete}{\mathcal{T}_{e}}
-\newcommand{\roomseta}{\mathcal{T}_{a}}
-\newcommand{\roomset}{\mathcal{T}}
-\newcommand{\roomidx}{t}
-\newcommand{\roomidxalt}{\ell}
+\newcommand{\roomsete}{\mathcal{OT}_{e}}
+\newcommand{\roomseta}{\mathcal{OT}_{a}}
+\newcommand{\roomset}{\mathcal{OT}}
+\newcommand{\roomidx}{ot}
+\newcommand{\roomidxalt}{ot'}
 
-\newcommand{\specialtyset}{\mathcal{S}}
-\newcommand{\specialtymset}{\mathcal{S}_{seq}}   % especialidades que precisam de dois blocos
-\newcommand{\specialtycset}{\mathcal{S}_{circ}}  % especialidades circunstanciais
-\newcommand{\specialtyprset}{\mathcal{S}_{prio}} % especialidades prioritárias
-\newcommand{\specialtytxset}{\mathcal{S}_{trans}}% especialidades de transplante
+\newcommand{\specialtyset}{\mathcal{Spec}}
+\newcommand{\specialtymset}{\mathcal{\specialtyset}_{seq}}   % especialidades que precisam de dois blocos
+\newcommand{\specialtycset}{\mathcal{\specialtyset}_{circ}}  % especialidades circunstanciais
+\newcommand{\specialtyprset}{\mathcal{\specialtyset}_{prio}} % especialidades prioritárias
+\newcommand{\specialtytxset}{\mathcal{\specialtyset}_{tx}}% especialidades de transplante
 \newcommand{\specialtyidx}{s}
 
 \newcommand{\planninghorizonset}{\mathcal{D}}
@@ -43,7 +141,7 @@
 \newcommand{\deficitvar}{z_{\specialtyidx}}
 \newcommand{\precvar}{y_{\roomidx\planninghorizonidx\specialtyidx}}
 \newcommand{\integervar}{w_{\blockidx\specialtyidx}}
-\newcommand{\balancevar}{L}
+% \newcommand{\balancevar}{L}
 \newcommand{\teamslackvar}{z_{\specialtyidx\blockidx}}
 \newcommand{\anestslackvar}{a_{\blockidx}}
 
@@ -51,76 +149,17 @@
 % MILP parameters
 % ==================================================
 
-\newcommand{\roomtospecialty}{\psi}
-\newcommand{\demand}{\delta}
-\newcommand{\numbersurgeons}{N}
-\newcommand{\numbersanests}{A}
-\newcommand{\needanest}{\gamma}
-\newcommand{\specteams}{\eta}
-\newcommand{\mindeficit}{\beta}
+% \newcommand{\roomtospecialty}{\psi}
+% \newcommand{\demand}{\delta}
+% \newcommand{\numbersurgeons}{NumSurgeons}
+\newcommand{\numbersanests}{NumAnests}
+\newcommand{\needanest}{NeedAnest}
+\newcommand{\specteams}{NumTeams}
+% \newcommand{\mindeficit}{\beta}
 \newcommand{\days}{|\planninghorizonset|}
 \newcommand{\eps}{\epsilon}
 \newcommand{\allowedrooms}{\lambda}
-\newcommand{\entiredayroom}{\phi}
-\newcommand{\upperq}{\overline{Q}_{\specialtyidx}}
-\newcommand{\lowerq}{\underline{Q}_{\specialtyidx}}
-\newcommand{\anestconstant}{C}
+\newcommand{\entiredayroom}{EntireDayRoom}
+\newcommand{\anestconstant}{\gamma}
 
-\newcommand{\modelname}{MILP-OT}
-\newcommand{\hcunicamp}{HC - Unicamp}
-
-% ==================================================
-% Overtime and cancellation stage
-% ==================================================
-
-% indices
-\newcommand{\surgidx}{i}
-\newcommand{\completedsurgsidx}{k}
-\newcommand{\cancellationsidx}{u}
-
-% parameters
-\newcommand{\blocklength}{T}
-\newcommand{\safetythreshold}{t^{*}}
-\newcommand{\probstoppingthreshold}{\varepsilon_{\text{stop}}}
-\newcommand{\plannedsurgs}{n}
-\newcommand{\optplannedsurgs}{n^*}
-\newcommand{\durationpmf}{p}
-
-% random variables
-\newcommand{\duration}{d}
-\newcommand{\cumulativeduration}{s}
-\newcommand{\numcompletedsurgs}{X}
-
-% functions
-\newcommand{\cumulativedurationcdf}{F_{s_k}}
-\newcommand{\convolve}{\text{Convolve}}
-\newcommand{\calccdf}{\text{CalculateCDF}}
-\newcommand{\runnewsvendor}{\text{RunNewsvendor}}
-\newcommand{\gain}{G}
-\newcommand{\cancellationcost}{\mathcal{C}}
-\newcommand{\netvalue}{\Delta}
-\newcommand{\marginalvalue}{R}
-\newcommand{\cancellationfunction}{c}
-
-% auxiliary algorithm output
-\newcommand{\survivalvector}{q}
-
-% ==================================================
-% Preprocessing of strategic input / block-demand conversion
-% ==================================================
-
-% parameters
-\newcommand{\conflevel}{\rho}
-\newcommand{\blocksurgpmf}{p}
-\newcommand{\targetq}{{Q}}
-
-% index for successive convolutions / number of aggregated blocks
-\newcommand{\convidx}{counter}
-
-% random variable
-\newcommand{\totalsurgs}{S}
-
-% outputs in block units
-\newcommand{\blockdemand}{B}
-\newcommand{\lowerblockdemand}{\underline{\blockdemand}_{\specialtyidx}}
-\newcommand{\upperblockdemand}{\overline{\blockdemand}_{\specialtyidx}}
+\newcommand{\modelname}{OTScheduling}

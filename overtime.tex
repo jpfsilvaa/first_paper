@@ -3,7 +3,7 @@
 % *******************************************
 
 To ensure consistency with the waiting-time requirements established by the $(R,Q)$ policy in Section~\ref{sec:waitinglist}, it is necessary to estimate how many elective patients can be accommodated within a single $6$-hour operating theatre block, in accordance with the scheduling regulations at HC-Unicamp. 
-This estimation determines whether the batch sizes $\upperq$ and $\lowerq$, for each specialty $\specialtyidx \in \specialtyset$, defined at the strategic level can be effectively served within the planning horizon.
+This estimation determines whether the batch sizes $\upq$ and $\lowq$, for each specialty $\specialtyidx \in \specialtyset$, defined at the strategic level can be effectively served within the planning horizon.
 
 Accurate estimation requires explicit consideration of uncertainty in surgery durations, which varies across subspecialties and directly affects both operating theatre utilisation and the risk of overtime. 
 In particular, a trade-off arises between idle time, resulting from underutilised theatre capacity, and overtime, which may trigger cancellations of scheduled procedures. 
@@ -19,12 +19,12 @@ The symbols used in this section are defined in Table~\ref{tab:symb_newsvendor}.
     \scriptsize
     \begin{tabular}{cl}
     \toprule
-    \textbf{Index} & \textbf{Description} \\
-    \midrule
-    $\surgidx$ & Surgery index \\
-    $\completedsurgsidx$ & Number of completed surgeries \\
-    $\cancellationsidx$ & Number of cancellations \\
-    \midrule
+    % \textbf{Index} & \textbf{Description} \\
+    % \midrule
+    % $\surgidx$ & Surgery index \\
+    % $\completedsurgsidx$ & Number of completed surgeries \\
+    % $\cancellationsidx$ & Number of cancellations \\
+    % \midrule
     \textbf{Parameter} & \textbf{Description} \\
     \midrule
     $\blocklength$ & Length of the surgery block (hours) \\
@@ -36,14 +36,14 @@ The symbols used in this section are defined in Table~\ref{tab:symb_newsvendor}.
     \textbf{Random Variable} & \textbf{Description} \\
     \midrule
     $\duration_{\surgidx}$ & Duration of the ${\surgidx}$-th surgery \\
-    $\cumulativeduration_{\completedsurgsidx}$ & Cumulative duration of the first $\completedsurgsidx$ surgeries, $\cumulativeduration_{\completedsurgsidx} = \sum_{i=1}^{\completedsurgsidx} \duration_i$ \\
+    $\cumulativeduration{\completedsurgsidx}$ & Cumulative duration of the first $\completedsurgsidx$ surgeries, $\cumulativeduration{\completedsurgsidx} = \sum_{i=1}^{\completedsurgsidx} \duration_i$ \\
     $\numcompletedsurgs$ & Number of surgeries performed within the block \\
     \midrule
     \textbf{Function} & \textbf{Description} \\
     \midrule
-    $\cumulativedurationcdf(\cdot)$ & Cumulative distribution function of $s_k$ \\
+    $F_{\cumulativeduration{\completedsurgsidx}}(\cdot)$ & Cumulative distribution function of $\cumulativeduration{\completedsurgsidx}$ \\
     $\convolve(\cdot,\cdot)$ & Convolution operator used to compute cumulative duration distributions \\
-    $\runnewsvendor(\cdot)$ & Function to compute $P(s_k < \blocklength - \safetythreshold)$\\
+    $\runnewsvendor(\cdot)$ & Function to compute $P(\cumulativeduration{\completedsurgsidx} < \blocklength - \safetythreshold)$\\
     $\gain(\cdot)$ & Gain function associated with scheduling additional surgeries \\
     $\cancellationcost(\cdot)$ & Cost function associated with cancellations \\
     $\netvalue(\cdot)$ & Net value function combining gain and cancellation cost \\
@@ -52,15 +52,15 @@ The symbols used in this section are defined in Table~\ref{tab:symb_newsvendor}.
     \midrule
     \textbf{Derived Quantity} & \textbf{Description} \\
     \midrule
-    $P(X > k)$ & Probability that more than $k$ surgeries can be completed (survival function)\\
-    $P(X = k)$ & Probability that exactly $k$ surgeries can be completed \\
-    $K_{\max}$ & Maximum number of surgeries considered, such that $F_{s_k}(\blocklength - \safetythreshold) > \probstoppingthreshold$ \\
-    $q[k]$ & Discrete representation of $P(X > k)$ (survival function of $X$) \\
-    $c^{(k)}$ & Probability distribution of cumulative duration $s_k$ \\
+    $P(\plannedsurgs > \completedsurgsidx)$ & Probability that more than $\completedsurgsidx$ surgeries can be completed (survival function)\\
+    $P(\plannedsurgs = \completedsurgsidx)$ & Probability that exactly $\completedsurgsidx$ surgeries can be completed \\
+    $K_{\max}$ & Maximum number of surgeries considered, such that $F_{\cumulativeduration{\completedsurgsidx}}(\blocklength - \safetythreshold) > \probstoppingthreshold$ \\
+    $q[k]$ & Discrete representation of $P(\numcompletedsurgs > \completedsurgsidx)$ (survival function of $\numcompletedsurgs$) \\
+    $c^{(k)}$ & Probability distribution of cumulative duration $\cumulativeduration{\completedsurgsidx}$ \\
     \midrule
     \textbf{Output Metric} & \textbf{Description} \\
     \midrule
-    $P(\text{cancellations} = \ell)$ & Probability that $\ell$ surgeries are cancelled \\
+    $P(\text{cancellations} = \cancelledsurgeries)$ & Probability that $\cancelledsurgeries$ surgeries are cancelled \\
     \bottomrule
     \end{tabular}
 \end{table}
@@ -69,79 +69,79 @@ The symbols used in this section are defined in Table~\ref{tab:symb_newsvendor}.
 \subsection{Managing surgery cancellations via a newsvendor-based model\label{sec:cancel}}
 % ********************************************************************************************* %
 
-Let us now consider the problem of determining the optimal time budget for the last surgery in a session, based on the random duration of this surgery. Let $T_D$ be a positive random variable taking values from $\Omega \in \mathbb R_+$, which represents the duration of a given surgery, with cumulative distribution $F_{T_D}: \Omega \to [0,1]$. Assume that, once the theatre is ready for the surgery, it only proceeds as planned if the remaining time in the session exceeds a prescribed budget of $t_b \in \Omega$ time units. Otherwise, the surgery is called off.
+Let us now consider the problem of determining the optimal time budget for the last surgery in a session, based on the random duration of this surgery. Let $\rvsurgdur$ be a positive random variable taking values from $\Omega \in \mathbb R_+$, which represents the duration of a given surgery, with cumulative distribution $F_{\rvsurgdur}: \Omega \to [0,1]$. Assume that, once the theatre is ready for the surgery, it only proceeds as planned if the remaining time in the session exceeds a prescribed budget of $t_b \in \Omega$ time units. Otherwise, the surgery is called off.
 
-The time budget $t_b \in \Omega$ can be interpreted as a perishable inventory of session time. If the inventory is excessive, we will not fully utilise the time allocated to the surgical team to perform the surgery. Conversely, if we proceed with the surgery, but the time budget is insufficient, the surgical team will have to work overtime to complete the surgery. Let $c>0$ be the cost of each unit of time budget in excess of the actual surgical time $T_D$ and $p > c$ be a penalty for each unit of overtime that the surgical team incurs. The expected cost of the time deviation between $T_D$ and $t_b$ is defined as: 
+The time budget $t_b \in \Omega$ can be interpreted as a perishable inventory of session time. If the inventory is excessive, we will not fully utilise the time allocated to the surgical team to perform the surgery. Conversely, if we proceed with the surgery, but the time budget is insufficient, the surgical team will have to work overtime to complete the surgery. Let $\excesscost > 0$ be the cost of each unit of time budget in excess of the actual surgical time $\rvsurgdur$ and $\overtimepenalty > \excesscost$ be a penalty for each unit of overtime that the surgical team incurs. The expected cost of the time deviation between $\rvsurgdur$ and $t_b$ is defined as: 
 %
 \begin{equation} \label{eq:newsvendor}
-u( t_b ) = c E (\beta_1) + p E( \beta_2 ), 
+u( t_b ) = \excesscost \mathbb{E} (\beta_1) + \overtimepenalty \mathbb{E}( \beta_2 ), 
 \end{equation}
 %
-where $\beta_1 = \min\{ t_b - T_D, \; 0 \}$ is the underused time budget, and $\beta_2 = \max \{ T_D - t_b, \; 0 \}$ is the total overtime. The objective is to find an optimal time budget allocation $t^*$ that minimizes the time deviation cost in Eq. \eqref{eq:newsvendor}, which is given by:
+where $\beta_1 = \min\{ t_b - \rvsurgdur, \; 0 \}$ is the underused time budget, and $\beta_2 = \max \{ \rvsurgdur - t_b, \; 0 \}$ is the total overtime. The objective is to find an optimal time budget allocation $\safetythreshold$ that minimizes the time deviation cost in Eq. \eqref{eq:newsvendor}, which is given by:
 %
 \begin{equation} \label{eq:mintimebudget}
-    t^* =  \arg \min_{t_b \in \Omega} u( t_b ).
+    \safetythreshold =  \arg \min_{t_b \in \Omega} u( t_b ).
 \end{equation}
 
 \begin{lemma}
-    Let $\beta_1 = \min\{ t_b - T_D, \; 0 \}$ and $\beta_2 = \max \{ T_D - t_b, \; 0 \}$. Then, it follows that:
+    Let $\beta_1 = \min\{ t_b - \rvsurgdur, \; 0 \}$ and $\beta_2 = \max \{ \rvsurgdur - t_b, \; 0 \}$. Then, it follows that:
 \begin{equation} \label{eq:beta}
- E(\beta_1 ) =  \int_0^{t_b} F_{T_D}(t) dt, \quad    E(\beta_2 ) = \int_{t_b}^\infty (1 - F_{T_D}(t) ) dt
+ \mathbb{E}(\beta_1 ) =  \int_0^{t_b} F_{\rvsurgdur}(t) dt, \quad    \mathbb{E}(\beta_2 ) = \int_{t_b}^\infty (1 - F_{\rvsurgdur}(t) ) dt
 \end{equation}
 \end{lemma}
 %
 \begin{proof}
 We will start by proving the result for $\beta_1$. Since $\beta_1 \ge 0$, it follows that:
 \begin{align*}
-E(\beta_1) = \int_{t=0}^\infty P ( \beta_1 > t ) dt = \int_{t=0}^{t_{b}} P( t_b - T_D > t ) dt 
-%E(\beta_1) 
-=  \int_{t=0}^{t_{b}} P( T_D < t_b - t ) dt = \int_{t=0}^{t_{b}} F_{T_D}(t_b - t) dt 
-%E(\beta_1)
-= \int_{t=0}^{t_{b}} F_{T_D}(t) dt.
+\mathbb{E}(\beta_1) = \int_{t=0}^\infty P ( \beta_1 > t ) dt = \int_{t=0}^{t_{b}} P( t_b - \rvsurgdur > t ) dt 
+%\mathbb{E}(\beta_1) 
+=  \int_{t=0}^{t_{b}} P( \rvsurgdur < t_b - t ) dt = \int_{t=0}^{t_{b}} F_{\rvsurgdur}(t_b - t) dt 
+%\mathbb{E}(\beta_1)
+= \int_{t=0}^{t_{b}} F_{\rvsurgdur}(t) dt.
 \end{align*}
 %
 
 Since $\beta_2$ is also non-negative, we can write:
 %
 \begin{align*}
-    E(\beta_2) =  \int_0^\infty P( T_D - t_b > t) dt = \int_0^\infty P( T_D  > t + t_b) dt
-    %E(\beta_2) 
-    = \int_{t_b}^\infty P( T_D  > t ) dt = \int_{t_b}^\infty (1 - F_{T_D}(t) ) dt
+    \mathbb{E}(\beta_2) =  \int_0^\infty P( \rvsurgdur - t_b > t) dt = \int_0^\infty P( \rvsurgdur  > t + t_b) dt
+    %\mathbb{E}(\beta_2) 
+    = \int_{t_b}^\infty P( \rvsurgdur  > t ) dt = \int_{t_b}^\infty (1 - F_{\rvsurgdur}(t) ) dt
 \end{align*}
 \end{proof}
 
 \begin{theo} \label{thm:quantile}
-Let $u(t_b)$ be defined in Eq. \eqref{eq:newsvendor}, and $t*$ be a solution to Eq. \eqref{eq:mintimebudget}. Then, if follows that:
+Let $u(t_b)$ be defined in Eq. \eqref{eq:newsvendor}, and $\safetythreshold$ be a solution to Eq. \eqref{eq:mintimebudget}. Then, if follows that:
 %
 \begin{equation} \label{eq:optimalquantile}
-t^* = F_{t_D}^{-1} \left( \dfrac{ \dfrac{p}{c}}{1 + \dfrac{p}{c}}\right),
+\safetythreshold = F_{\rvsurgdur}^{-1} \left( \dfrac{ \dfrac{\overtimepenalty}{\excesscost}}{1 + \dfrac{\overtimepenalty}{\excesscost}}\right),
 \end{equation}
 %
-where $F_{T_D}^{-1}(\cdot)$ is the inverse of the cumulative distribution function $F_{T_D}(\cdot)$.
+where $F_{\rvsurgdur}^{-1}(\cdot)$ is the inverse of the cumulative distribution function $F_{\rvsurgdur}(\cdot)$.
 \end{theo}
 %
 \begin{proof}
     Substituting \eqref{eq:beta} in Eq. \eqref{eq:newsvendor} yields:
 \[
-u( t_b ) = c  \int_0^{t_b} F_{T_D}(t) dt + p \int_{t_b}^\infty (1 - F_{T_D}(t) ) dt.
+u( t_b ) = \excesscost  \int_0^{t_b} F_{\rvsurgdur}(t) dt + \overtimepenalty \int_{t_b}^\infty (1 - F_{\rvsurgdur}(t) ) dt.
 \]
 % 
-When $t_b = t^*$, the first order optimality condition for $u(t_b)$ implies:
+When $t_b = \safetythreshold$, the first order optimality condition for $u(t_b)$ implies:
 %
 \[
-\dfrac{d u( t_b )}{d t_b} = c F_{T_D}(t^*) - p ( 1 - F_{T_D}(t^*) ) = 0.
+\dfrac{d u( t_b )}{d t_b} = \excesscost F_{\rvsurgdur}(\safetythreshold) - \overtimepenalty ( 1 - F_{\rvsurgdur}(\safetythreshold) ) = 0.
 \]
 %
 Hence, we must have:
 %
 \[
-c F_{T_D}(t^*) - p ( 1 - F_{T_D}(t^*) ) \implies \dfrac{F_{T_D}(t^*)}{( 1 - F_{T_D}(t^*) )} = \dfrac{p}{c} \implies F_{T_D}(t^*) \left( 1 + \dfrac{p}{c} \right) = \dfrac{p}{c}
+\excesscost F_{\rvsurgdur}(\safetythreshold) - \overtimepenalty ( 1 - F_{\rvsurgdur}(\safetythreshold) ) \implies \dfrac{F_{\rvsurgdur}(\safetythreshold)}{( 1 - F_{\rvsurgdur}(\safetythreshold) )} = \dfrac{\overtimepenalty}{\excesscost} \implies F_{\rvsurgdur}(\safetythreshold) \left( 1 + \dfrac{\overtimepenalty}{\excesscost} \right) = \dfrac{\overtimepenalty}{\excesscost}
 \]
 % 
 We conclude the proof by noting that \eqref{eq:optimalquantile} follows from the expression above.
 \end{proof}
 
-Theorem \ref{thm:quantile} implies that, whenever the remaining time in a session exceeds the quantile $t^*$ in Eq. \eqref{eq:optimalquantile}, the surgery is greenlighted to continue. Otherwise, the surgery is cancelled and the session comes to a close. Note that the quantile is solely a function of the ratio between the overtime cost $p$ and the cost of unused session time $c$, and is applicable to any surgery time distribution. For example, if $p = 2c$, $t^* = F^{-1}_{T_D} \left( \dfrac{2}{3} \right)$. This means that at least two thirds of the green-lighted surgeries will not require overtime.
+Theorem \ref{thm:quantile} implies that, whenever the remaining time in a session exceeds the quantile $\safetythreshold$ in Eq. \eqref{eq:optimalquantile}, the surgery is greenlighted to continue. Otherwise, the surgery is cancelled and the session comes to a close. Note that the quantile is solely a function of the ratio between the overtime cost $\overtimepenalty$ and the cost of unused session time $\excesscost$, and is applicable to any surgery time distribution. For example, if $\overtimepenalty = 2\excesscost$, $\safetythreshold = F^{-1}_{\rvsurgdur} \left( \dfrac{2}{3} \right)$. This means that at least two thirds of the green-lighted surgeries will not require overtime.
 
 % ******************************************************************************************** %
 \subsection{Applying the newsvendor model to the case study\label{sec:applicationnewsvendor}}
@@ -151,54 +151,54 @@ This is equivalent to assessing whether the residual time in the block exceeds t
 As described below, this probability is obtained through successive convolutions of the surgery-duration distributions associated with the relevant subspecialty.
 
 Let $\duration_{\surgidx}$ denote a non-negative the random variable representing the duration of the $i$-th surgery, with probability distribution $f_{\duration_{\surgidx}} : \Omega \to [0,1),\, \Omega \subset \mathbb{R}_{+}$ and cumulative distribution function $F_{\duration_{\surgidx}} : \Omega \to [0,1)$.
-Let $s_k = \sum_{i=1}^{\completedsurgsidx} \duration_{\surgidx}$ denote the cumulative duration of the first $k$ surgeries. 
-The probability that an additional surgery can be performed after $k$ procedures is given by
+Let $\cumulativeduration{\completedsurgsidx} = \sum_{i=1}^{\completedsurgsidx} \duration_{\surgidx}$ denote the cumulative duration of the first $\completedsurgsidx$ surgeries. 
+The probability that an additional surgery can be performed after $\completedsurgsidx$ procedures is given by
 \begin{align*}
-    P(\blocklength - s_k > \safetythreshold) &= P(s_k < \blocklength - \safetythreshold) \\
-                    &= \cumulativedurationcdf(\blocklength - \safetythreshold),
+    P(\blocklength - \cumulativeduration{\completedsurgsidx} > \safetythreshold) &= P(\cumulativeduration{\completedsurgsidx} < \blocklength - \safetythreshold) \\
+                    &= F_{\cumulativeduration{\completedsurgsidx}}(\blocklength - \safetythreshold),
 \end{align*}
-where $\cumulativedurationcdf : \Omega \to [0,1),\, \Omega \subset \mathbb{R}_{+}$ is the cumulative distribution function of $s_k$.
+where $F_{\cumulativeduration{\completedsurgsidx}} : \Omega \to [0,1),\, \Omega \subset \mathbb{R}_{+}$ is the cumulative distribution function of $\cumulativeduration{\completedsurgsidx}$.
 
 We also define the random variable $\numcompletedsurgs$ as the non-negative number of surgeries that can be executed within the block, with probability distribution $f_{\numcompletedsurgs} : \Omega \to [0,1),\, \Omega \subset \mathbb{N}_{+}$ and cumulative distribution function $F_{\numcompletedsurgs} : \Omega \to [0,1)$.
-Therefore, the probability that more than $k$ surgeries can be performed is given by
+Therefore, the probability that more than $\completedsurgsidx$ surgeries can be performed is given by
 \[
-P(\numcompletedsurgs > k) = P(s_k < \blocklength - \safetythreshold).
+P(\numcompletedsurgs > \completedsurgsidx) = P(\cumulativeduration{\completedsurgsidx} < \blocklength - \safetythreshold).
 \]
 
 \textcolor{red}{Preciso rever a explicacao do criterio de parada, porque do jeito em que está, eu explico o $K_{max}$ mas nem uso ele, só a ideia... Rever a explicação e o pseudocódigo tbm.}
 To ensure computational tractability, we define an upper bound $K_{\max}$ as the largest integer such that
 \[
-K_{\max} = \max \left\{ k \geq 0 : \cumulativedurationcdf(\blocklength - \safetythreshold) > \probstoppingthreshold \right\},
+K_{\max} = \max \left\{ \completedsurgsidx \geq 0 : F_{\cumulativeduration{\completedsurgsidx}}(\blocklength - \safetythreshold) > \probstoppingthreshold \right\},
 \]
 where $\probstoppingthreshold \in (0,1)$ is a pre-specified probability threshold. 
 This definition avoids ambiguity by directly linking $K_{\max}$ to the stopping criterion used in the algorithm.
 
-Given the model parameters $\blocklength, \safetythreshold, \probstoppingthreshold$, and the discretised probability mass function of surgery durations $\durationpmf_{\specialtyidx}$ for all $\specialtyidx \in \specialtyset$, we compute, for each subspecialty, the probabilities $P(\numcompletedsurgs > k)$ for $k = 0, \ldots, K_{\max}$ iteratively using convolution operations, as described in Algorithm~\ref{alg:newsvendor}.
+Given the model parameters $\blocklength, \safetythreshold, \probstoppingthreshold$, and the discretised probability mass function of surgery durations $\durationpmf_{\specialtyidx}$ for all $\specialtyidx \in \specialtyset$, we compute, for each subspecialty, the probabilities $P(\numcompletedsurgs > \completedsurgsidx)$ for $\completedsurgsidx = 0, \ldots, K_{\max}$ iteratively using convolution operations, as described in Algorithm~\ref{alg:newsvendor}.
 
 \begin{algorithm}[H]
 \scriptsize{
-\caption{Computation of $P(\numcompletedsurgs > k)$ via convolutions and the newsvendor model\label{alg:newsvendor}}
+\caption{Computation of $P(\numcompletedsurgs > \completedsurgsidx)$ via convolutions and the newsvendor model\label{alg:newsvendor}}
 \begin{algorithmic}[1]
 \State \textbf{Input:} $\blocklength$, $\safetythreshold$, $\probstoppingthreshold$, specialties $\specialtyidx \in \specialtyset$ and probability vectors $\durationpmf_{\specialtyidx}$ for all $\specialtyidx \in \specialtyset$
-\State \textbf{Output:} vector $\survivalvector$ such that $\survivalvector[\completedsurgsidx] = P(\numcompletedsurgs > \completedsurgsidx) = P(s_k < \blocklength - \safetythreshold)$
+\State \textbf{Output:} vector $\survivalvector$ such that $\survivalvector[\completedsurgsidx] = P(\numcompletedsurgs > \completedsurgsidx) = P(\cumulativeduration{\completedsurgsidx} < \blocklength - \safetythreshold)$
 \For {each $\specialtyidx \in \specialtyset$}
     \State Initialise $\survivalvector[0] \gets 1$
     \State Initialise $c^{(0)} \gets \durationpmf_{\specialtyidx}$
-    \State $k \gets 0$
+    \State $\completedsurgsidx \gets 0$
     \While{$\survivalvector[\completedsurgsidx] > \probstoppingthreshold$}
-        \If{$k > 0$}
-            \State $c^{(k)} \gets \text{Convolve}(c^{(\completedsurgsidx-1)}, \durationpmf_{\specialtyidx})$
+        \If{$\completedsurgsidx > 0$}
+            \State $c^{(\completedsurgsidx)} \gets \text{Convolve}(c^{(\completedsurgsidx-1)}, \durationpmf_{\specialtyidx})$
         \EndIf
-        \State $\survivalvector[k+1] \gets \text{RunNewsvendor}(c^{(\completedsurgsidx)}, \blocklength, \safetythreshold)$
-        \State $k \gets \completedsurgsidx + 1$
+        \State $\survivalvector[\completedsurgsidx+1] \gets \text{RunNewsvendor}(c^{(\completedsurgsidx)}, \blocklength, \safetythreshold)$
+        \State $\completedsurgsidx \gets \completedsurgsidx + 1$
     \EndWhile
 \EndFor
 \end{algorithmic}
 }
 \end{algorithm}
 
-In Algorithm~\ref{alg:newsvendor}, the function \texttt{Convolve} computes the distribution of the cumulative duration $s_k$ by convolving the distribution of $s_{\completedsurgsidx-1}$ with the single-surgery duration distribution $\durationpmf_{\specialtyidx}$. 
-The function \texttt{RunNewsvendor} evaluates $P(s_k < \blocklength - \safetythreshold)$, i.e., the probability that an additional surgery can be accommodated.
+In Algorithm~\ref{alg:newsvendor}, the function \texttt{Convolve} computes the distribution of the cumulative duration $s_k$ by convolving the distribution of $\cumulativeduration{\completedsurgsidx-1}$ with the single-surgery duration distribution $\durationpmf_{\specialtyidx}$. 
+The function \texttt{RunNewsvendor} evaluates $P(\cumulativeduration{\completedsurgsidx} < \blocklength - \safetythreshold)$, i.e., the probability that an additional surgery can be accommodated.
 
 The resulting vector $\survivalvector[\completedsurgsidx]$ provides the survival function $P(\numcompletedsurgs > \completedsurgsidx)$. 
 The probability mass function of $\numcompletedsurgs$ can then be obtained by
@@ -210,9 +210,9 @@ These probabilities allow us to characterise the distribution of the number of s
 Finally, from Equation~\ref{eq:pmf_X}, we can derive the probability of cancellations for a given number of surgeries planned in advance.
 Let $\plannedsurgs$ denote the number of scheduled surgeries within a block. 
 If $\numcompletedsurgs$ surgeries can be performed, then $\plannedsurgs - \numcompletedsurgs$ surgeries will be cancelled.
-Therefore, the probability of cancelling $\ell$ surgeries is
+Therefore, the probability of cancelling $\cancelledsurgeries$ surgeries is
 \begin{equation}\label{eq:cancellation_prob}
-    P(\text{cancellations} = \ell) = P(\numcompletedsurgs = \plannedsurgs - \ell), \quad \ell = 0, 1, \ldots, \plannedsurgs-1.
+    P(\text{cancellations} = \cancelledsurgeries) = P(\numcompletedsurgs = \plannedsurgs - \cancelledsurgeries), \quad \cancelledsurgeries = 0, 1, \ldots, \plannedsurgs-1.
 \end{equation}
 
 Overall, the proposed newsvendor-based model enables the estimation of both the number of surgeries that can be performed within a block and the associated cancellation probabilities. 
@@ -231,17 +231,17 @@ This decision is formulated through an inventory-based perspective that balances
 In contrast to classical inventory formulations, where the gain is typically proportional to the expected number of served units, we adopt an alternative interpretation of the benefit associated with performing surgeries. 
 Specifically, we define the gain of planning $\plannedsurgs$ surgeries as
 \begin{equation}\label{eq:gain_function}
-    G(\plannedsurgs) = R \cdot P(\numcompletedsurgs > \plannedsurgs - 1),
+    \gain{\plannedsurgs} = R \cdot P(\numcompletedsurgs > \plannedsurgs - 1),
 \end{equation}
 where $R > 0$ is a constant representing the marginal value of scheduling an additional surgery.
 % This formulation is based on the survival function $P(\numcompletedsurgs > \plannedsurgs - 1)$ provided by vector $q$ in Algorithm~\ref{alg:newsvendor}. 
 
-In this context, $G(\plannedsurgs)$ should be interpreted as a marginal gain associated with doing more surgeries in a block, rather than as a direct monetary return.
+In this context, $\gain{\plannedsurgs}$ should be interpreted as a marginal gain associated with doing more surgeries in a block, rather than as a direct monetary return.
 This interpretation is particularly relevant in public healthcare settings, where the objective is not purely financial. 
 Instead, the value of scheduling additional surgeries may reflect multiple factors, such as improved access to care, reduction of waiting lists, and better utilisation of operating theatre capacity. 
 However, the marginal benefit of adding further surgeries typically decreases, with various factors contributing to this effect, such as team fatigue, increased risk of complications, and diminishing returns in terms of patient outcomes.
 
-The cost associated with cancellations is modelled through a function $\cancellationfunction(\ell)$, where $\ell$ is the number cancelled surgeries. 
+The cost associated with cancellations is modelled through a function $\cancellationfunction(\cancelledsurgeries)$, where $\cancelledsurgeries$ is the number cancelled surgeries. 
 We assume that $\cancellationfunction(\cdot)$ is a non-decreasing function with $\cancellationfunction(0)=0$, reflecting the fact that cancellations generate administrative, logistical, and patient-related costs.
 
 The expected cancellation cost when planning $\plannedsurgs$ surgeries is given by

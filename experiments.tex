@@ -27,8 +27,8 @@ These include operating theatre compatibilities, staff availability, and working
 Experiments are conducted on a machine equipped with an Intel Core 7 150U processor (5.40 GHz) and 32 GB of RAM. 
 All modules are implemented in Python 3.12, and the MILP model is solved using SCIP 9.2.3 with default parameter settings, interfaced through the Pyomo library.
 
-For the Queue Management module, the waiting time target is set to $\tau = 6$ months with confidence level $\alpha = 0.95$, ensuring that patients are treated within this horizon with high probability. 
-The threshold $R$ is defined as the midpoint between $\lowerq$ and $\upperq$.
+For the Queue Management module, the waiting time target is set to $\waittimereq = 6$ months with confidence level $\conflevel = 0.1$, ensuring that patients are treated within this horizon with high probability. 
+The threshold $R$ is defined as the midpoint between $\lowq$ and $\upq$.
 
 In the Overtime and Cancellation module, the overtime cost is set to twice the regular surgery cost, while the cancellation cost equals the regular cost. 
 Additionally, we set the cost function to be quadratic in the number of surgeries cancelled, i.e., $c(x) = x^2$, reflecting the increasing marginal cost of cancellations as more surgeries are cancelled.
@@ -61,9 +61,35 @@ Queues are updated after treatment, and the process repeats for the next period.
 To assess long-term stability, we perform $100$ independent simulation runs using different random seeds to capture the stochasticity in surgery durations and patient arrivals.
 
 \subsection{Results from Strategic Decision-Making\label{sec:longterm_analysis}}
+The strategic modules are designed to ensure long-term stability and manage patient queues effectively.
+Together, the $(R,Q)$ control and the Overtime and Cancellation module aim to balance demand and capacity, preventing excessive queue growth while optimising resource utilisation.
+The results from this decision level are analysed in two parts: the $(R,Q)$ control outcomes and the impact of overtime and cancellations on system performance.
 
 \subsubsection{$(R,Q)$ Results}
+% apresentar os tamanhos dos Q para cada especialidade (em numero de cirurgias)
+% apresentar os tamanhos dos Q para cada especialidade (em numero de blocos)
+% analise: quais especialidades tem Q mais altos? quais tem Q mais baixos? qual a relação entre Q e a demanda? qual a relação entre Q e o numero de blocos alocados? qual a relação entre Q e o tempo de espera dos pacientes?
+The $(R,Q)$ control results indicate the threshold queue sizes $R$ and the corresponding target queue sizes $Q$ for each specialty. 
+Specialties with higher demand and longer surgery durations tend to have higher $Q$ values, reflecting the need for larger queues to ensure stability. 
+The relationship between $Q$ and demand is generally positive, as higher demand necessitates larger queues to accommodate variability in arrivals and service times. 
+Similarly, specialties with more allocated blocks tend to have higher $Q$ values, as the increased capacity allows for larger queues without risking instability. 
+The analysis also reveals that specialties with higher $Q$ values tend to have longer patient waiting times, as the system allows for larger queues to manage demand fluctuations effectively. 
+Overall, the $(R,Q)$ control provides a structured approach to managing patient queues, ensuring that the system remains stable while accommodating variability in demand and service times.
 
 \subsubsection{Overtime and Cancellation Results}
+% apresentar resultados do newsvendor: 
+% - o valor de t* para cada especialidade (tabela em apendice, talvez?)
+% - grafico de distribuições de se planejar k cirurgias
+% - analise: quais especialidades tem t* mais altos? quais tem t* mais baixos? talvez(relacao do t* com a distribuição do grafico); analisar o grafico e os impactos: quanto mais cirurgias planejar, maior a chande de cancelar (explicar intuitivamente)
+% apresentar resultados do inventory-model:
+% - grafico de custo vs ganho (uma ou duas especialidades)
+% - analise: como isse modelo foi usado para definir um numero de otimo de cirurigas a planejar? por que ele é bom? qual o impacto do custo de overtime e cancelamento? qual o impacto da forma da função de custo (quadratica)?
+
 
 \subsection{Long-term Stability Analysis\label{sec:otscheduling}}
+% apresentar graficos de fila ao longo do tempo (2 especialidades), comparando a abordagem proposta com a baseline
+% apresentar escalas mensais de alocação de sala
+% possiveis analises:
+% - nossa abordagem nao aloca todas especialidades todo mes, oque dá vazao pra outras especialidades, e isso é importante para manter a estabilidade do sistema.
+% - a abordagem baseline aloca todas especialidades todo mes, oque pode levar a um crescimento descontrolado da fila, especialmente para especialidades com alta demanda e poucos blocos alocados
+% - a abordagem proposta consegue manter as filas sob controle, mesmo para especialidades com alta demanda, graças ao controle $(R,Q)$ e à otimização de overtime e cancelamento, enquanto a abordagem baseline pode levar a filas crescentes e tempos de espera mais longos, especialmente para especialidades com alta demanda e poucos blocos alocados.

@@ -25,28 +25,28 @@ To this end, we preprocess the strategic outputs of the $(R,Q)$ policy together 
 % This conversion accounts for both the stochastic nature of surgical durations and the effective capacity of each block.
 
 The overtime and cancellation stage provides the probability mass function $\blocksurgpmf_{\specialtyidx}$ of the number of surgeries that can be completed within a single block for subspecialty $\specialtyidx$. 
-To determine the block requirements associated with targets $\lowerq$ and $\upperq$ at confidence level $\conflevel$, we iteratively convolve this distribution. 
+To determine the block requirements associated with targets $\lowq$ and $\upq$ at confidence level $\conflevel$, we iteratively convolve this distribution. 
 
-Let $F^{(r)}_{\specialtyidx}$ denote the cumulative distribution function associated with the PMF obtained after convolving $\blocksurgpmf_{\specialtyidx}$ with itself $r$ times.
-Then, for a generic target $\targetq \in \{\lowerq,\upperq\}$, the minimum number of blocks required is the smallest integer $r$ such that
+Let $F^{(\convnumber)}_{\specialtyidx}$ denote the cumulative distribution function associated with the PMF obtained after convolving $\blocksurgpmf_{\specialtyidx}$ with itself $\convnumber$ times.
+Then, for a generic target $\targetq \in \{\lowq,\upq\}$, the minimum number of blocks required is the smallest integer $\convnumber$ such that
 \[
-1 - F^{(r)}_{\specialtyidx}[\targetq - 1] \geq \conflevel.
+1 - F^{(\convnumber)}_{\specialtyidx}[\targetq - 1] \geq \conflevel.
 \]
-In other words, we seek the smallest number of blocks $r$ such that the probability of completing at least $\targetq$ surgeries is at least $\conflevel$.
+In other words, we seek the smallest number of blocks $\convnumber$ such that the probability of completing at least $\targetq$ surgeries is at least $\conflevel$.
 Algorithm \ref{alg:blockdemand} summarises this procedure.
 
 \begin{algorithm}[H]
 \scriptsize{
 \caption{Block demand estimation via successive convolutions\label{alg:blockdemand}}
 \begin{algorithmic}[1]
-\State \textbf{Input:} set of subspecialties $\specialtyset$, targets $(\lowerq,\upperq)$, confidence level $\conflevel$, PMF $\blocksurgpmf_{\specialtyidx}$ of surgeries per block for each $\specialtyidx \in \specialtyset$
+\State \textbf{Input:} set of subspecialties $\specialtyset$, targets $(\lowq,\upq)$, confidence level $\conflevel$, PMF $\blocksurgpmf_{\specialtyidx}$ of surgeries per block for each $\specialtyidx \in \specialtyset$
 \State \textbf{Output:} block requirements $(\lowerblockdemand,\upperblockdemand)$ for each $\specialtyidx \in \specialtyset$
 
 \For{each subspecialty $\specialtyidx \in \specialtyset$}
-    \If{$\lowerq = 0$ and $\upperq = 0$}
+    \If{$\lowq = 0$ and $\upq = 0$}
         \State $\lowerblockdemand \gets 0$, $\upperblockdemand \gets 0$
     \Else
-        \For{each $\targetq \in \{\lowerq,\upperq\}$}
+        \For{each $\targetq \in \{\lowq,\upq\}$}
             \State $\convidx \gets 1$
             \State $\blocksurgpmf_{\specialtyidx}^{(\convidx)} \gets \blocksurgpmf_{\specialtyidx}$
             \State $F \gets \calccdf\!\left(\blocksurgpmf_{\specialtyidx}^{(\convidx)}\right)$
@@ -55,7 +55,7 @@ Algorithm \ref{alg:blockdemand} summarises this procedure.
                 \State $\convidx \gets \convidx + 1$
                 \State $F \gets \calccdf\!\left(\blocksurgpmf_{\specialtyidx}^{(\convidx)}\right)$
             \EndWhile
-            \If{$\targetq = \lowerq$}
+            \If{$\targetq = \lowq$}
                 \State $\lowerblockdemand \gets \convidx$
             \Else
                 \State $\upperblockdemand \gets \convidx$
@@ -110,10 +110,10 @@ To formulate the problem, we use the the notation in Table~\ref{tab:symb}.
         $\specteams_{\blockidx\specialtyidx}$              & Number of teams of subspecialty $\specialtyidx \in \specialtyset$ available in block  $\blockidx \in \blockset$ \\
         $\numbersanests_{\blockidx}$                       & Number of anesthesiologists available in block $\blockidx \in \blockset$                         \\
         $\needanest_{\specialtyidx}$                       & 1 if subspecialty $\specialtyidx \in \specialtyset$ requires an anesthesiologist; 0 otherwise         \\    
-        $\mindeficit_{\specialtyidx}$                      & Minimum number of blocks for subspecialty $\specialtyidx \in \specialtyset$            \\
+        % $\mindeficit_{\specialtyidx}$                      & Minimum number of blocks for subspecialty $\specialtyidx \in \specialtyset$            \\
         $\anestconstant$                                   & Constant to penalize the anesthesiologist slack variable $\anestslackvar$ in the objective function ($\anestconstant = |\blockset|\cdot|\specialtyset|\cdot|\roomset|$) \\
         $\allowedrooms_{\roomidx\blockidx\specialtyidx}$   & 1 if room $\roomidx \in \roomset$, in block $\blockidx \in \blockset$, can              \\
-                                                           & be used by subspecialty $\specialtyidx \in \specialtyset$; 0 otherwise          \\
+                                                           & be used by subspecialty $\specialtyidx \in \specialtyset$ in the shift block $\blockidx \in \blockset$; 0 otherwise          \\
     \bottomrule
     \textbf{Variable}                         & \textbf{Description}                                                                  \\
     \midrule
@@ -188,7 +188,7 @@ With this, we formulate the theatre planning problem at \hcunicamp with the mode
 \bigskip
 
 Constraints~\eqref{eq:c1} and~\eqref{eq:c2} impose minimum and maximum bounds on the number of allocations of each subspecialty.
-This is part of the integration with the strategic layer, as these bounds are determined based on the demand $\demand_{\specialtyidx}$ for each subspecialty, which in turn is influenced by the $(R,Q)$ policy.
+This is part of the integration with the strategic layer, as these bounds are determined based on the demand surgeries demand for each subspecialty, which in turn is influenced by the $(R,Q)$ policy.
 Constraint~\eqref{eq:c3} ensures that each theatre and time block receives at most one subspeciality.
 Constraint~\eqref{eq:c4} is a soft constraint that limits the number of allocations that require anaesthetists according to their availability $\numbersanests_{\blockidx}$ in each block, while allowing for some flexibility through the slack variable $\anestslackvar$.
 Constraint~\eqref{eq:c5} similarly limits the number of allocations for each subspecialty based on the availability of medical teams $\specteams_{\blockidx\specialtyidx}$, with the slack variable $\teamslackvar$ providing flexibility when necessary.
