@@ -11,6 +11,70 @@ Thus, ensuring equitable access to care and adherence to waiting time standards 
 In line with this objective, this section introduces the theoretical foundations of the modified $(R,Q)$ control policy proposed to manage elective surgery waiting lists under stochastic demand.
 We first characterise the dynamics of the underlying stochastic process and analyse its long-run behaviour. 
 Subsequently, we derive analytical upper and lower bounds on the batch size $Q$ that ensures compliance with prescribed waiting-time requirements, thereby establishing the strategic input for the integrated planning framework.
+Table~\ref{tab:symb_rq} summarises the notation used in this section.
+
+\begin{table}[htb]
+    \centering
+    \caption{Symbols used in the long-term waiting list management model.\label{tab:symb_rq}}
+    \scriptsize
+    \begin{tabular}{cl}
+    \toprule
+    \textbf{Index} & \textbf{Description} \\
+    \midrule
+    $\stocprocperiod$ & Planning period index \\
+    $\stocprocremainstate$ & State index of the remainder process \\
+    $i,j$ & Generic state indices \\
+    \midrule
+
+    \textbf{Set} & \textbf{Description} \\
+    \midrule
+    $\statespace$ & State space of process $\stocprocqueue{\stocprocperiod}$ \\
+    $\statespace_{\stocprocbatches{}}$ & State space of process $\stocprocbatches{\stocprocperiod}$ \\
+    $\statespace_{\stocprocremain{}}$ & State space of process $\stocprocremain{\stocprocperiod}$ \\
+    $\Omega$ & Support of the demand random variable \\
+    \midrule
+
+    \textbf{Parameter} & \textbf{Description} \\
+    \midrule
+    $\rthreshold$ & Reorder threshold of the modified $(R,Q)$ policy \\
+    $\batchsizeq$ & Batch size under the modified $(R,Q)$ policy \\
+    $\waittimereq$ & Waiting-time target \\
+    $\conflevel$ & Probability threshold for the waiting-time requirement \\
+    $\upq$ & Upper bound on feasible batch sizes \\
+    $\lowq$ & Lower bound on feasible batch sizes \\
+    $\maxnumberbatch$ & Maximum number of batch arrivals in one period \\
+    \midrule
+
+    \textbf{Random Variable / Stochastic Process} & \textbf{Description} \\
+    \midrule
+    $\stocprocqueue{\stocprocperiod}$ & Queue-length process \\
+    $\rvdemand$ & Demand between two consecutive planning periods \\
+    $\drawnrvdemand$ & Realisation of $\rvdemand$ \\
+    $\stocprocbatches{\stocprocperiod}$ & Batch-level queue process \\
+    $\stocprocremain{\stocprocperiod}$ & Remainder process associated with $\stocprocqueue{\stocprocperiod}$ \\
+    $\roundbatches$ & Number of batch arrivals in one period \\
+    $\omega$ & Waiting time of an arriving patient \\
+    \midrule
+
+    \textbf{Function} & \textbf{Description} \\
+    \midrule
+    $f_{\rvdemand}(\cdot)$ & Probability mass function of $\rvdemand$ \\
+    $F_{\rvdemand}(\cdot)$ & Cumulative distribution function of $\rvdemand$ \\
+    $\roundbatches(\stocprocremainstate)$ & Number of batch arrivals given remainder state $\stocprocremainstate$ \\
+    $\steadystate{\stocprocremain{}}(\cdot)$ & Steady-state distribution of $\stocprocremain{\stocprocperiod}$ \\
+    $\steadystate{\stocprocbatches{}}(\cdot)$ & Steady-state distribution of $\stocprocbatches{\stocprocperiod}$ \\
+    $\transmatrix{\stocprocremain{}}$ & Transition matrix of process $\stocprocremain{\stocprocperiod}$ \\
+    $\transmatrix{}^{\stocprocbatches{}}$ & Transition matrix of process $\stocprocbatches{\stocprocperiod}$ \\
+    $\transmatrixval{\stocprocremainstate\stocprocremainstate'}{\stocprocremain{}}(k)$ & Conditional transition probability of $\stocprocremain{\stocprocperiod}$ given demand $k$ \\
+    $\transmatrixval{ij}{}$ & Generic transition probability entry \\
+    \midrule
+
+    \textbf{Derived Quantity} & \textbf{Description} \\
+    \midrule
+    $\1_{\{\stocprocqueue{\stocprocperiod} \ge \rthreshold\}}$ & Indicator of batch processing \\
+    \bottomrule
+    \end{tabular}
+\end{table}
 
 % *******************************************
 \subsection{$(R,Q)$ surgery scheduling policy: long-term distributions\label{sec:rqtheory}}

@@ -24,10 +24,10 @@ To this end, we preprocess the strategic outputs of the $(R,Q)$ policy together 
 % More specifically, we convert subspecialty demand into the number of blocks required to meet the lower and upper activity targets. 
 % This conversion accounts for both the stochastic nature of surgical durations and the effective capacity of each block.
 
-The overtime and cancellation module provides the probability mass function $\blocksurgpmf_{\specialtyidx}$ of the number of surgeries that can be completed within a single block for subspecialty $\specialtyidx$. 
+Recall that the overtime and cancellation module provides the probability mass function of planning of the optimal number of surgeries to be planned within a single block (i.e., $P(\numcompletedsurgs = \completedsurgsidx)$ for $\completedsurgsidx \in {1, ..., \optplannedsurgs}$) for subspecialty $\specialtyidx$. 
 To determine the block requirements associated with targets $\lowq$ and $\upq$ at confidence level $\conflevel$, we iteratively convolve this distribution. 
 
-Let $F^{(\convnumber)}_{\specialtyidx}$ denote the cumulative distribution function associated with the PMF obtained after convolving $\blocksurgpmf_{\specialtyidx}$ with itself $\convnumber$ times.
+Let $F^{(\convnumber)}_{\specialtyidx}$ denote the cumulative distribution function associated with the PMF obtained after convolving $\blocksurgpmf{\specialtyidx}$ with itself $\convnumber$ times.
 Then, for a generic target $\targetq \in \{\lowq,\upq\}$, the minimum number of blocks required is the smallest integer $\convnumber$ such that
 \[
 1 - F^{(\convnumber)}_{\specialtyidx}[\targetq - 1] \geq \conflevel.
@@ -39,7 +39,7 @@ Algorithm \ref{alg:blockdemand} summarises this procedure.
 \scriptsize{
 \caption{Block demand estimation via successive convolutions\label{alg:blockdemand}}
 \begin{algorithmic}[1]
-\State \textbf{Input:} set of subspecialties $\specialtyset$, targets $(\lowq,\upq)$, confidence level $\conflevel$, PMF $\blocksurgpmf_{\specialtyidx}$ of surgeries per block for each $\specialtyidx \in \specialtyset$
+\State \textbf{Input:} set of subspecialties $\specialtyset$, targets $(\lowq,\upq)$, confidence level $\conflevel$, PMF $\blocksurgpmf{\specialtyidx}$ of surgeries per block for each $\specialtyidx \in \specialtyset$
 \State \textbf{Output:} block requirements $(\lowerblockdemand,\upperblockdemand)$ for each $\specialtyidx \in \specialtyset$
 
 \For{each subspecialty $\specialtyidx \in \specialtyset$}
@@ -48,12 +48,12 @@ Algorithm \ref{alg:blockdemand} summarises this procedure.
     \Else
         \For{each $\targetq \in \{\lowq,\upq\}$}
             \State $\convidx \gets 1$
-            \State $\blocksurgpmf_{\specialtyidx}^{(\convidx)} \gets \blocksurgpmf_{\specialtyidx}$
-            \State $F \gets \calccdf\!\left(\blocksurgpmf_{\specialtyidx}^{(\convidx)}\right)$
+            \State $\blocksurgpmf{\specialtyidx}^{(\convidx)} \gets \blocksurgpmf{\specialtyidx}$
+            \State $F \gets \calccdf\!\left(\blocksurgpmf{\specialtyidx}^{(\convidx)}\right)$
             \While{$1 - F[\targetq - 1] < \conflevel$}
-                \State $\blocksurgpmf_{\specialtyidx}^{(\convidx+1)} \gets \convolve\!\left(\blocksurgpmf_{\specialtyidx}^{(\convidx)}, \blocksurgpmf_{\specialtyidx}\right)$
+                \State $\blocksurgpmf{\specialtyidx}^{(\convidx+1)} \gets \convolve\!\left(\blocksurgpmf{\specialtyidx}^{(\convidx)}, \blocksurgpmf{\specialtyidx}\right)$
                 \State $\convidx \gets \convidx + 1$
-                \State $F \gets \calccdf\!\left(\blocksurgpmf_{\specialtyidx}^{(\convidx)}\right)$
+                \State $F \gets \calccdf\!\left(\blocksurgpmf{\specialtyidx}^{(\convidx)}\right)$
             \EndWhile
             \If{$\targetq = \lowq$}
                 \State $\lowerblockdemand \gets \convidx$

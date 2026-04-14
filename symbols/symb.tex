@@ -47,7 +47,7 @@
 % indices
 \newcommand{\surgidx}{i}
 \newcommand{\completedsurgsidx}{k}
-% \newcommand{\cancellationsidx}{u}
+\newcommand{\kmax}{K_{\max}}
 
 % parameters
 \newcommand{\blocklength}{T}
@@ -55,7 +55,8 @@
 \newcommand{\probstoppingthreshold}{\varepsilon_{\text{stop}}}
 \newcommand{\plannedsurgs}{n}
 \newcommand{\optplannedsurgs}{n^*}
-\newcommand{\durationpmf}{p}
+\newcommand{\pmf}[1]{\ensuremath{\mathit{pmf}}_{#1}}
+\newcommand{\durationpmf}[1]{{\ensuremath{\mathit{surg\_pmf}}_{#1}}}
 \newcommand{\excesscost}{c}
 \newcommand{\overtimepenalty}{p}
 \newcommand{\cancelledsurgeries}{\ell}
@@ -64,8 +65,9 @@
 \newcommand{\rvsurgdur}{T_D}
 
 \newcommand{\duration}{d}
-\newcommand{\cumulativeduration}[1]{s_{#1}}
+\newcommand{\cumulativeduration}[1]{cd_{#1}}
 \newcommand{\numcompletedsurgs}{K}
+\newcommand{\blocksurgpmf}[1]{{\ensuremath{\mathit{block\_pmf}}_{#1}}}
 
 % functions
 % \newcommand{\cumulativedurationcdf}{F_{s_k}}
@@ -76,9 +78,10 @@
 \newcommand{\cancellationcost}{C}
 \newcommand{\netvalue}{\Delta}
 \newcommand{\marginalvalue}{g}
-\newcommand{\cancellationfunction}{cost}
+\newcommand{\cancellationfunction}{\ensuremath{\mathit{cost}}}
 
 % auxiliary algorithm output
+\newcommand{\cumulconvo}[1]{\ensuremath{cumul}^{(#1)}}
 \newcommand{\survivalvector}{q}
 
 % ==================================================
@@ -86,7 +89,6 @@
 % ==================================================
 
 % parameters
-\newcommand{\blocksurgpmf}{p}
 \newcommand{\targetq}{{Q'}}
 
 % index for successive convolutions / number of aggregated blocks
@@ -107,7 +109,7 @@
 % ==================================================
 
 \newcommand{\blockset}{\mathcal{B}}
-\newcommand{\blockmset}{\mathcal{B'}}
+\newcommand{\blockmset}{\mathcal{B}^{\prime}}
 \newcommand{\blockidx}{b}
 \newcommand{\blocki}{b_i}
 \newcommand{\blockj}{b_j}
@@ -116,19 +118,19 @@
 \newcommand{\roomsete}{\roomset_{e}}
 \newcommand{\roomseta}{\roomset_{a}}
 \newcommand{\roomidx}{ot}
-\newcommand{\roomidxalt}{ot'}
+\newcommand{\roomidxalt}{ot^{\prime}}
 
-\newcommand{\specialtyset}{Spec}
+\newcommand{\specialtyset}{\mathcal{S}}
 \newcommand{\specialtymset}{\specialtyset_{seq}}   % especialidades que precisam de dois blocos
 \newcommand{\specialtycset}{\specialtyset_{circ}}  % especialidades circunstanciais
 \newcommand{\specialtyprset}{\specialtyset_{prio}} % especialidades prioritárias
 \newcommand{\specialtytxset}{\specialtyset_{tx}}% especialidades de transplante
 \newcommand{\specialtyidx}{s}
 
-\newcommand{\planninghorizonset}{D}
+\newcommand{\planninghorizonset}{\mathcal{D}}
 \newcommand{\planninghorizonidx}{d}
 
-\newcommand{\timeperiodset}{M}
+\newcommand{\timeperiodset}{\mathcal{M}}
 \newcommand{\timeperiodidx}{m}
 
 % ==================================================
