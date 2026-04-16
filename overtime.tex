@@ -1,22 +1,24 @@
 % ********************************************
-\section{Estimating the number of patients per time block}
+\subsection{Module 2: modelling uncertainty in surgery duration and block sessions} \label{sec:module2}
 % *******************************************
 
-To ensure consistency with the waiting-time requirements established by the $(R,Q)$ policy in Section~\ref{sec:waitinglist}, it is necessary to estimate how many elective patients can be accommodated within a single $6$-hour operating theatre block, in accordance with the scheduling regulations at HC-Unicamp. 
-This estimation determines whether the batch sizes $\upq$ and $\lowq$, for each specialty $\specialtyidx \in \specialtyset$, defined at the strategic level can be effectively served within the planning horizon.
+This section details the components of module 2 of the proposed framework, see Section \ref{sec:proposal}. Firstly, it is necessary to estimate how many elective patients can be accommodated within a single operating theatre block for each sub-speciality, to ensure consistency between the periodic schedule and the waiting-time requirements established by the $(R,Q)$ policy in Section~\ref{sec:waitinglist}. This is key to ensuring that the number of sessions allocated to a given speciality is enough to warrant a number of surgeries that lies in the interval $[\lowq, \upq]$, considering the probabilistic distribution of surgery durations. Specifically, a trade-off arises between idle time, that results in underutilised theatre capacity, and overtime, which may trigger cancellations of scheduled procedures. 
 
-Accurate estimation requires explicit consideration of uncertainty in surgery durations, which varies across subspecialties and directly affects both operating theatre utilisation and the risk of overtime. 
-In particular, a trade-off arises between idle time, resulting from underutilised theatre capacity, and overtime, which may trigger cancellations of scheduled procedures. 
+%estimation determines whether the batch sizes $\upq$ and $\lowq$, for each specialty $\specialtyidx \in \specialtyset$, defined at the strategic level can be effectively served within the planning horizon.
 
-For this purpose, in this section we present the second module of the proposed integrated framework. 
-A newsvendor-based model is first employed to determine an optimal time allocation for the final surgery in a block under duration uncertainty, balancing idle-time and overtime costs. 
-Building on this result, an inventory-based formulation is then used to estimate the number of patients that can be reliably scheduled within a time block, providing the tactical input required for subsequent operating theatre allocation decisions.
+%Accurate estimation requires explicit consideration of uncertainty in surgery durations, which varies across subspecialties and directly affects both operating theatre utilisation and the risk of overtime.  In particular, a trade-off arises between idle time, resulting from underutilised theatre capacity, and overtime, which may trigger cancellations of scheduled procedures. 
+
+%For this purpose, in this section we present the second module of the proposed integrated framework. 
+We firstly introduce a newsvendor model to guide operational decisions on whether to perform or cancel the next scheduled surgery, depending on the time remaining in the session. Then, assuming that these decisions are taken sequentially at the end of each scheduled surgery, we introduce an inventory model to find the number of patients that can be reliably scheduled within a time block, as well as the probability distribution of the number of cancellations at each session. These are tactical inputs required for subsequent operating theatre allocation decisions.
+
+%A newsvendor-based model is first employed to determine an optimal time allocation for the final surgery in a block under duration uncertainty, balancing idle-time and overtime costs. 
+%Building on this result, an inventory-based formulation is then used to estimate the number of patients that can be reliably scheduled within a time block, providing the tactical input required for subsequent operating theatre allocation decisions.
 
 % ********************************************************************************************* %
-\subsection{Managing surgery cancellations via a newsvendor-based model\label{sec:cancel}}
+\subsubsection{Managing surgery cancellations via a newsvendor-based model\label{sec:cancel}}
 % ********************************************************************************************* %
 
-Let us now consider the problem of determining the optimal time budget for the last surgery in a session, based on the random duration of this surgery. The symbols used in this section are defined in Table~\ref{tab:symb_newsvendor}.
+Let us now consider the problem of determining the optimal time budget for the next surgery in a session, based on the random duration of this surgery. The symbols used in this section are defined in Table~\ref{tab:symb_newsvendor}.
 \begin{table}[htb]
     \centering
     \caption{Symbols used in the newsvendor-based model.\label{tab:symb_newsvendor}}
@@ -61,9 +63,9 @@ Let us now consider the problem of determining the optimal time budget for the l
     \end{tabular}
 \end{table}
 
-Let $\rvsurgdur$ be a non-negative random variable taking values from $\Omega \in \mathbb R_+$, which represents the duration of a given surgery, with cumulative distribution $F_{\rvsurgdur}: \Omega \to [0,1]$. Assume that, once the theatre is ready for the surgery, it only proceeds as planned if the remaining time in the session exceeds a prescribed budget of $t_b \in \Omega$ time units. Otherwise, the surgery is called off.
+Let $\rvsurgdur$ be a non-negative random variable taking values from $\Omega \in \mathbb R_+$, which represents the duration of a given surgery, with cumulative distribution $F_{\rvsurgdur}: \Omega \to [0,1]$. Assume that, once the theatre is ready for the surgery, it only proceeds as planned if the remaining time in the session exceeds a prescribed budget of $t_b \in \Omega$ time units. Otherwise, the surgery is called off and the session is terminated.
 
-The time budget $t_b \in \Omega$ can be interpreted as a perishable inventory of session time. If the inventory is excessive, we will not fully utilise the time allocated to the surgical team to perform the surgery. Conversely, if we proceed with the surgery, but the time budget is insufficient, the surgical team will have to work overtime to complete the surgery. Let $\excesscost > 0$ be the cost of each unit of time budget in excess of the actual surgical time $\rvsurgdur$ and $\overtimepenalty > \excesscost$ be a penalty for each unit of overtime that the surgical team incurs. The expected cost of the time deviation between $\rvsurgdur$ and $t_b$ is defined as: 
+The time budget $t_b \in \Omega$ can be interpreted as a perishable inventory of session time. If the inventory is excessive, we will not fully utilise the time allocated to the surgical team to perform the surgery. Conversely, if we proceed with the surgery but the time budget is insufficient, the surgical team will have to work overtime to complete the surgery. Let $\excesscost > 0$ be the cost of each unit of time budget in excess of the actual surgical time $\rvsurgdur$ and $\overtimepenalty > \excesscost$ be a penalty for each unit of overtime that the surgical team incurs. The expected cost of the time deviation between $\rvsurgdur$ and $t_b$ is defined as: 
 %
 \begin{equation} \label{eq:newsvendor}
 u( t_b ) = \excesscost \mathbb{E} (\beta_1) + \overtimepenalty \mathbb{E}( \beta_2 ), 
@@ -136,10 +138,10 @@ We conclude the proof by noting that \eqref{eq:optimalquantile} follows from the
 Theorem \ref{thm:quantile} implies that, whenever the remaining time in a session exceeds the quantile $\safetythreshold$ in Eq. \eqref{eq:optimalquantile}, the surgery is greenlighted to continue. Otherwise, the surgery is cancelled and the session comes to a close. Note that the quantile is solely a function of the ratio between the overtime cost $\overtimepenalty$ and the cost of unused session time $\excesscost$, and is applicable to any surgery time distribution. For example, if $\overtimepenalty = 2\excesscost$, $\safetythreshold = F^{-1}_{\rvsurgdur} \left( \dfrac{2}{3} \right)$. This means that at least two thirds of the green-lighted surgeries will not require overtime.
 
 % ******************************************************************************************** %
-\subsection{Applying the newsvendor model to the case study\label{sec:applicationnewsvendor}}
+\subsubsection{Applying the newsvendor model to the case study\label{sec:applicationnewsvendor}}
 % ******************************************************************************************** %
 Building on the theoretical results of the previous subsection, we first estimate, for each surgical subspecialty, the distribution of the number of surgeries that can be completed within a block of length $\blocklength \in \mathbb{Z}_{+}$. 
-This distribution is then used in the subsequent subsection to evaluate alternative planning decisions under an inventory-based formulation.
+This distribution is then used in the subsequent subsection to evaluate session-planning decisions under an inventory-based formulation.
 
 \begin{table}[htb]
     \centering
@@ -205,13 +207,13 @@ f_{\cumulativeduration{\completedsurgsidx}} = f_{\cumulativeduration{\completeds
 \]
 For each $\completedsurgsidx$, Eq.~\eqref{eq:survival_k_revised} then yields the survival probability $P(\numcompletedsurgs > \completedsurgsidx)$.
 
-These survival probabilities are computed sequentially and stored in the vector $\survivalvector$, whose $\completedsurgsidx$-th entry is defined as
+These survival probabilities are computed sequentially in Algorithm \ref{alg:newsvendor} and stored in the vector $\survivalvector$, whose $\completedsurgsidx$-th entry is defined as
 \[
 \survivalvector[\completedsurgsidx]=P(\numcompletedsurgs > \completedsurgsidx).
 \]
 The procedure starts at $\completedsurgsidx=0$, with $\survivalvector[0]=1$, and stops when $\survivalvector[\completedsurgsidx]\leq \probstoppingthreshold$. 
 This truncation preserves the relevant support of the distribution while avoiding unnecessary convolution steps in the negligible tail. 
-For each subspecialty, the algorithm therefore returns both the vector $\survivalvector$ and the largest relevant index $K_{\max}$.
+For each subspecialty, the algorithm therefore returns both the vector $\survivalvector$ and the largest relevant index $k$, defined as $K_{\max}$.
 
 \begin{algorithm}[H]
 \scriptsize{
@@ -252,7 +254,7 @@ Hence, the convolution procedure yields the full probability distribution of the
 This distribution is the main output of the present subsection and constitutes the probabilistic input to the inventory-based planning model described next.
 
 % ********************************************************************************* %
-\subsection{Inventory-based model for defining the number of surgeries in a time block\label{sec:patientsperblock}}
+\subsubsection{Inventory-based model for defining the number of surgeries in a time block\label{sec:patientsperblock}}
 % ********************************************************************************* %
 
 \textcolor{red}{TODO: ADD CITATIONS ABOUT INVENTORY MODEL USED FOR MODELING HERE}
@@ -306,7 +308,7 @@ P(\text{cancellations}=0)=P(\numcompletedsurgs \geq \plannedsurgs).
 \]
 
 We next associate each planning decision with a marginal gain and an expected cancellation cost. 
-In contrast to classical inventory formulations, in which the reward is usually proportional to the expected number of units served, we define the gain of planning $\plannedsurgs$ surgeries as the value of successfully accommodating the $\plannedsurgs$-th scheduled surgery:
+In contrast to classical inventory formulations, in which the reward is usually proportional to the expected number of units served, we define the gain of adding an $\plannedsurgs-$th surgery as the value of successfully accommodating the $\plannedsurgs$-th scheduled surgery:
 \begin{equation}\label{eq:gain_function_revised}
     \gain{\plannedsurgs} = \marginalvalue \cdot P(\numcompletedsurgs \geq \plannedsurgs),
 \end{equation}
@@ -319,7 +321,7 @@ Eq.~\eqref{eq:gain_function_revised} is directly obtained from the survival prob
 In this setting, $\gain{\plannedsurgs}$ is not interpreted as a direct monetary return, but rather as the marginal benefit associated with increasing the number of planned surgeries from $\plannedsurgs-1$ to $\plannedsurgs$. 
 This interpretation is particularly suitable in public healthcare settings, where the value of additional surgeries may reflect improved access to care, reduced waiting times, and better utilisation of operating theatre capacity.
 
-The cost associated with cancellations is modelled through a function $\cancellationfunction:\mathbb{N}_{+}\cup\{0\}\rightarrow\mathbb{R}_{+}$ satisfying $\cancellationfunction(0)=0$ and assumed to be non-decreasing. 
+The cost associated with cancellations is modelled through a function $\cancellationfunction:\mathbb{Z}_{+} \rightarrow\mathbb{R}_{+}$ satisfying $\cancellationfunction(0)=0$ and assumed to be non-decreasing. 
 The expected cancellation cost under planning decision $\plannedsurgs$ is therefore
 \begin{equation}\label{eq:cost_function_revised}
     \cancellationcost(\plannedsurgs)
@@ -345,5 +347,4 @@ Once $\optplannedsurgs$ has been determined, the relevant probabilistic input fo
 \[
 P(\numcompletedsurgs = \completedsurgsidx), \qquad \completedsurgsidx=0,1,\dots,\optplannedsurgs,
 \]
-together with the implied probability of cancellation. 
-These quantities are then passed to the next stage of the framework.
+together with the implied probability distribution of the number of cancellations. These quantities are then passed to the next stage of the framework.

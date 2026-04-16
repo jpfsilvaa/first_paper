@@ -1,8 +1,10 @@
 % ********************************************* %
-\section{Problem Description\label{sec:problem}}
+\section{Description of the case study \label{sec:problem}}
 % ********************************************* %
 
 Hospital de Cl\'inicas Unicamp (\hcunicamp) is a university hospital located in Campinas, Brazil~\citep{hc_unicamp_historia}. It is a high-complexity public hospital serving approximately $6.5$ million inhabitants from Campinas' metropolitan area and other regions of Brazil that handles around $500{,}000$ patient cases per year. Of these, roughly $10{,}000$ correspond to elective surgical procedures, with the remainder involving outpatient consultations and emergency care~\citep{hc_unicamp_dados}. In addition to providing healthcare services, \hcunicamp~operates as a teaching and research hospital, training healthcare professionals and conducting medical and interdisciplinary research.
+
+%thisnis something i am doing just for the show to try and be filmed and look pretty and look happy. alma minha gentil que te partiste tao cedo desta vida descontente repousa la no ceu 
 
 Elective surgical patients follow a complex, multi-stage care pathway (see Figure~\ref{fig:patient_flow}), encompassing pre-operative, intra-operative and post-operative phases.
 This process begins with waiting-list management, initiated at local medical consultations and coordinated through the regional bed regulation centre~\citep{central_reguladora}, a government agency responsible for regulating hospital access across Campinas Metropolitan Region.
@@ -46,7 +48,7 @@ For example, if $15$ anaesthetists are available on a given morning, at most $15
     \caption{Excerpt from a week's operating theatre schedule.\label{fig:ex_escala}}
 \end{figure}
 
-Figure~\ref{fig:ex_escala} presents an excerpt from a monthly operating theatre schedule. Rows represent day and shift, and columns correspond to theatres; allocated blocks are colour-coded (blue for procedures requiring anaesthesia and grey otherwise). Blank blocks highlight unallocated slots, reflecting the complexity of the constraint set. Allocations shown in red correspond to transplant surgeries, which require the simultaneous allocation of two theatres within the same day and shift.
+Figure~\ref{fig:ex_escala} presents an excerpt from a monthly operating theatre schedule. Rows correspond to day and shift and columns to theatres; allocated blocks are colour-coded (blue for procedures requiring anaesthesia and grey otherwise). Unallocated (blank) slots reflect the complexity of the constraint set. Allocations shown in red correspond to transplant surgeries, which require the simultaneous allocation of two theatres within the same day and shift.
 
 Historically, schedules such as those shown in Figure~\ref{fig:ex_escala} have been manually constructed using only electronic spreadsheets, often requiring more than two full working days. This manual process is time-consuming and does not guarantee optimality with respect to institutional policies. Automating the scheduling process therefore reduces administrative burden and enables the generation of optimal solutions under complex constraints.
 

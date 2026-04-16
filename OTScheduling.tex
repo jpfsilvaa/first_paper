@@ -1,45 +1,58 @@
 % ********************************************* %
-\section{Operating Theatre Scheduling Problem\label{sec:ot}}
+\subsection{Operating Theatre Scheduling Problem\label{sec:ot}}
 % ********************************************* %
 
-Following the proposed integrated framework, the final step consists of solving the Operating Theatre Scheduling Problem (OTSP), which addresses the tactical allocation of subspecialties to operating theatre blocks. 
-This stage is essential for translating the strategic decisions derived from the preceding layers into actionable schedules that can be implemented in hospital operations. 
-To this end, the model takes as input the demand for each subspecialty, driven by the $(R,Q)$ policy, as well as the effective capacity of each block, determined in the cancellation and overtime management stage.
+Following the proposed integrated framework, the final step consists in solving the Operating Theatre Scheduling Problem (OTSP), which addresses the tactical allocation of surgical subspecialties to operating theatre blocks. 
+This stage translates the strategic decisions derived in the preceding modules into implementable schedules for hospital operations. 
+In particular, the OTSP takes as input the target number of surgeries for each sub-speciality, as determined by the $(R,Q)$ policy, together with the effective block capacity obtained from the cancellation and overtime management module.
 
-We formulate the OTSP as a Mixed-Integer Linear Programming (MILP) model, which enables the representation of complex constraints and multiple, potentially competing objectives, while ensuring optimality with respect to the specified criteria. 
-The model incorporates several objectives aligned with hospital priorities, including maximising operating theatre utilisation, ensuring the allocation of priority subspecialties, and promoting efficient sequencing of block allocations from a logistical perspective.
+We formulate the OTSP as a Mixed-Integer Linear Programming (MILP) model. This formulation allows the explicit representation of operational constraints and multiple, potentially competing objectives, while ensuring optimality with respect to the specified criteria. 
+The model is designed to reflect hospital priorities such as high operating theatre utilisation, the allocation of priority subspecialities, and the efficient sequencing of blocks from a logistical perspective.
 
-Nevertheless, the proposed framework is sufficiently flexible to accommodate alternative solution approaches, such as heuristics or metaheuristics. 
-This flexibility arises because the outputs of the previous layers, namely demand and effective capacity, can serve as inputs to any scheduling methodology, not exclusively the MILP formulation proposed here. 
-This highlights the value of integrating the different decision layers, as it provides a structured mechanism for incorporating both strategic and operational insights into the scheduling process, irrespective of the specific solution approach adopted for the OTSP.
+The proposed framework is, however, not restricted to the MILP approach adopted here. 
+Since the previous modules provide demand and effective capacity as structured inputs, alternative solution methods, including heuristics and metaheuristics, could also be employed in the OTSP stage.
+The main value of the framework therefore lies in the integration of decision layers, rather than in the exclusive use of a particular scheduling technique.
 
-In the following subsections, we first describe the preprocessing of strategic inputs derived from the $(R,Q)$ policy and the effective capacity information in order to determine subspecialty demand in terms of block units, which constitute the relevant unit for the scheduling problem. 
-We then present the MILP formulation of the OTSP, detailing the decision variables, objective functions, and constraints that reflect the hospital's operational requirements and priorities.
+In the following subsections, we first describe how the strategic outputs of the $(R,Q)$ policy and the effective capacity information are preprocessed into block-demand units, which constitute the relevant unit of the scheduling problem. 
+We then present the MILP formulation of the OTSP, including its decision variables, objective functions, and constraints.
 
-\subsection{Preprocessing Strategic Input}
+\subsubsection{Preprocessing Strategic Input\label{subsec:preprocess_otsp}}
 
-The OTSP requires demand to be expressed in block units, as these correspond to the operational granularity of theatre scheduling. 
-To this end, we preprocess the strategic outputs of the $(R,Q)$ policy together with the effective capacity information obtained from the cancellation and overtime management stage.
+The OTSP is formulated at the block level. 
+Therefore, the strategic outputs of the previous modules must be converted into the number of blocks required for each subspecialty.
 
-% More specifically, we convert subspecialty demand into the number of blocks required to meet the lower and upper activity targets. 
-% This conversion accounts for both the stochastic nature of surgical durations and the effective capacity of each block.
-
-Recall that the overtime and cancellation module provides the probability mass function of planning of the optimal number of surgeries to be planned within a single block (i.e., $P(\numcompletedsurgs = \completedsurgsidx)$ for $\completedsurgsidx \in {1, ..., \optplannedsurgs}$) for subspecialty $\specialtyidx$. 
-To determine the block requirements associated with targets $\lowq$ and $\upq$ at confidence level $\conflevel$, we iteratively convolve this distribution. 
-
-Let $F^{(\convnumber)}_{\specialtyidx}$ denote the cumulative distribution function associated with the PMF obtained after convolving $\blocksurgpmf{\specialtyidx}$ with itself $\convnumber$ times.
-Then, for a generic target $\targetq \in \{\lowq,\upq\}$, the minimum number of blocks required is the smallest integer $\convnumber$ such that
+For each subspecialty $\specialtyidx \in \specialtyset$, let
 \[
-1 - F^{(\convnumber)}_{\specialtyidx}[\targetq - 1] \geq \conflevel.
+p_{\specialtyidx}(k)=P(\numcompletedsurgs = k), \qquad k=0,1,\dots,\optplannedsurgs_{\specialtyidx},
 \]
-In other words, we seek the smallest number of blocks $\convnumber$ such that the probability of completing at least $\targetq$ surgeries is at least $\conflevel$.
-Algorithm \ref{alg:blockdemand} summarises this procedure.
+denote the probability mass function of the number of surgeries that can be completed in a single block under the optimal planning decision obtained in the cancellation and overtime management module. 
+This distribution summarises the effective stochastic capacity of one block for subspecialty $\specialtyidx$.
+
+To determine the number of blocks required to achieve activity targets $\lowq$ and $\upq$ at confidence level $\conflevel$, we use successive convolutions of $p_{\specialtyidx}(\cdot)$. 
+Let
+\[
+p_{\specialtyidx}^{(n)} = \underbrace{p_{\specialtyidx} \ast \cdots \ast p_{\specialtyidx}}_{n \text{ times}}
+\]
+denote the probability mass function of the total number of surgeries that can be completed across $n$ blocks allocated to subspecialty $\specialtyidx$, and let $F_{\specialtyidx}^{(n)}$ be its corresponding cumulative distribution function.
+
+Then, for a generic target $\targetq \in \{\lowq,\upq\}$, the minimum number of blocks required is the smallest integer $n \in \mathbb{N}_{+}$ such that
+\begin{equation}\label{eq:block_requirement}
+P\!\left(\sum_{b=1}^{n} \numcompletedsurgs_b \geq \targetq\right)
+=
+1 - F_{\specialtyidx}^{(n)}(\targetq - 1)
+\geq
+\conflevel,
+\end{equation}
+where $\numcompletedsurgs_b$ denotes the number of surgeries completed in block $b$, assumed independent and identically distributed according to $p_{\specialtyidx}(\cdot)$.
+
+In other words, we seek the smallest number of blocks such that the probability of completing at least $\targetq$ surgeries is no smaller than $\conflevel$. 
+This procedure is applied separately to the lower and upper activity targets. Algorithm~\ref{alg:blockdemand} summarises the computation.
 
 \begin{algorithm}[H]
 \scriptsize{
 \caption{Block demand estimation via successive convolutions\label{alg:blockdemand}}
 \begin{algorithmic}[1]
-\State \textbf{Input:} set of subspecialties $\specialtyset$, targets $(\lowq,\upq)$, confidence level $\conflevel$, PMF $\blocksurgpmf{\specialtyidx}$ of surgeries per block for each $\specialtyidx \in \specialtyset$
+\State \textbf{Input:} set of subspecialties $\specialtyset$, targets $(\lowq,\upq)$, confidence level $\conflevel$, PMF $p_{\specialtyidx}$ for each $\specialtyidx \in \specialtyset$
 \State \textbf{Output:} block requirements $(\lowerblockdemand,\upperblockdemand)$ for each $\specialtyidx \in \specialtyset$
 
 \For{each subspecialty $\specialtyidx \in \specialtyset$}
@@ -47,18 +60,18 @@ Algorithm \ref{alg:blockdemand} summarises this procedure.
         \State $\lowerblockdemand \gets 0$, $\upperblockdemand \gets 0$
     \Else
         \For{each $\targetq \in \{\lowq,\upq\}$}
-            \State $\convidx \gets 1$
-            \State $\blocksurgpmf{\specialtyidx}^{(\convidx)} \gets \blocksurgpmf{\specialtyidx}$
-            \State $F \gets \calccdf\!\left(\blocksurgpmf{\specialtyidx}^{(\convidx)}\right)$
-            \While{$1 - F[\targetq - 1] < \conflevel$}
-                \State $\blocksurgpmf{\specialtyidx}^{(\convidx+1)} \gets \convolve\!\left(\blocksurgpmf{\specialtyidx}^{(\convidx)}, \blocksurgpmf{\specialtyidx}\right)$
-                \State $\convidx \gets \convidx + 1$
-                \State $F \gets \calccdf\!\left(\blocksurgpmf{\specialtyidx}^{(\convidx)}\right)$
+            \State $n \gets 1$
+            \State $p_{\specialtyidx}^{(n)} \gets p_{\specialtyidx}$
+            \State $F_{\specialtyidx}^{(n)} \gets \calccdf\!\left(p_{\specialtyidx}^{(n)}\right)$
+            \While{$1 - F_{\specialtyidx}^{(n)}(\targetq - 1) < \conflevel$}
+                \State $p_{\specialtyidx}^{(n+1)} \gets \convolve\!\left(p_{\specialtyidx}^{(n)}, p_{\specialtyidx}\right)$
+                \State $n \gets n + 1$
+                \State $F_{\specialtyidx}^{(n)} \gets \calccdf\!\left(p_{\specialtyidx}^{(n)}\right)$
             \EndWhile
             \If{$\targetq = \lowq$}
-                \State $\lowerblockdemand \gets \convidx$
+                \State $\lowerblockdemand \gets n$
             \Else
-                \State $\upperblockdemand \gets \convidx$
+                \State $\upperblockdemand \gets n$
             \EndIf
         \EndFor
     \EndIf
@@ -67,13 +80,13 @@ Algorithm \ref{alg:blockdemand} summarises this procedure.
 }
 \end{algorithm}
 
-This step is essential for the OTSP phase of the framework, since the problem is formulated at the block level and the monthly operating theatre schedule is constructed by allocating blocks rather than individual surgeries. 
-Moreover, this preprocessing step enables the uncertainty captured in the strategic layer to be incorporated into the framework without introducing stochastic elements directly into the scheduling model. 
-This simplifies both the model formulation and the solution process (i.e., the OTSP is solved as a deterministic MILP), while ensuring that the resulting schedules remain aligned with demand targets that reflect both variability in surgical durations and the effective capacity of blocks.
+This preprocessing step is essential because the OTSP is defined over block allocations rather than individual surgeries. 
+It also provides a mechanism for propagating the uncertainty captured in the strategic layer into the tactical scheduling stage without explicitly formulating the OTSP as a stochastic optimisation model. 
+As a result, the scheduling problem can be solved as a deterministic MILP while remaining consistent with surgery allocation targets that reflect both variability in surgery durations and the effective capacity of each block.
 
-\subsection{MILP Formulation}
+\subsubsection{MILP Formulation}
 
-We model the OTSP as a MILP, which allows us to capture the complex interactions between subspecialty demand, block capacity, and scheduling constraints in a structured manner.
+Modeling the OTSP as a MILP allows us to capture the complex interactions between subspeciality demand, block capacity, and scheduling constraints in a structured manner.
 To formulate the problem, we use the the notation in Table~\ref{tab:symb}.
 \begin{table}[t!]
     \centering
@@ -141,7 +154,7 @@ The second function is given by
 \begin{align}
     \text{Min } \displaystyle F_1 = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyset} \blockvar  \text{ only for variables where } \allowedrooms_{\roomidx\blockidx\specialtyidx} = 0 \label{eq:f1}
 \end{align}
-which minimises the number of allocations that violate the usual availability of rooms for each subspecialty, thus promoting the use of preferred rooms and reducing the need for last-minute adjustments.
+which minimises the number of allocations outside the aspirational theatre allocation defined for each subspecialty, thus promoting the use of preferred theatres.
 The third objective function is defined as
 \begin{align}
     \text{Max } \displaystyle F_2 = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyprset} \blockvar, \label{eq:f2}
@@ -159,7 +172,7 @@ Finally, the fifth OF is defined as
 which maximises the number of sequentially allocated blocks.
 This is particularly important for improving the logistics of the surgical process, reducing the need for equipment and team transfers between theatres.
 
-With this, we formulate the theatre planning problem at \hcunicamp with the model \modelname, incorporating these OFs and constraints based on the hospital's current operational framework, but with the flexibility to accommodate other settings as needed.
+With this, we formulate the problem, incorporating these OFs and constraints, but with the flexibility to accommodate other settings as needed.
 
 \begin{alignat}{4}
     (\modelname) \quad & \omit\rlap{Optimize $F_0$--$F_5$}\nonumber\\
@@ -188,7 +201,7 @@ With this, we formulate the theatre planning problem at \hcunicamp with the mode
 \bigskip
 
 Constraints~\eqref{eq:c1} and~\eqref{eq:c2} impose minimum and maximum bounds on the number of allocations of each subspecialty.
-This is part of the integration with the strategic layer, as these bounds are determined based on the demand surgeries demand for each subspecialty, which in turn is influenced by the $(R,Q)$ policy.
+This is part of the integration with the strategic layer, as these bounds are integrated to $(R,Q)$ policy and designed to enforce a prescribed waiting time requirement subspeciality, while taking full consideration of the uncertainty in surgery durations and the associated risk of surgery cancellations. % which in turn is influenced by the $(R,Q)$ policy.
 Constraint~\eqref{eq:c3} ensures that each theatre and time block receives at most one subspeciality.
 Constraint~\eqref{eq:c4} is a soft constraint that limits the number of allocations that require anaesthetists according to their availability $\numbersanests_{\blockidx}$ in each block, while allowing for some flexibility through the slack variable $\anestslackvar$.
 Constraint~\eqref{eq:c5} similarly limits the number of allocations for each subspecialty based on the availability of medical teams $\specteams_{\blockidx\specialtyidx}$, with the slack variable $\teamslackvar$ providing flexibility when necessary.

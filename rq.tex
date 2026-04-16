@@ -1,8 +1,9 @@
 % ********************************************
-\section{Long-Term Waiting List Management\label{sec:waitinglist}}
+\subsection{Long-Term Waiting List Management\label{sec:waitinglist}}
 % *******************************************
 
-As discussed in Section~\ref{sec:lit_review}, CMP constitutes the strategic decision layer responsible for determining the volumes of elective patients to be admitted over a given planning horizon.
+CMP is the strategic decision layer that decides the volumes of elective surgeries to be performed over a given planning horizon, see Section~\ref{sec:lit_review}. 
+%As discussed in Section~\ref{sec:lit_review}, CMP constitutes the strategic decision layer responsible for determining the volumes of elective patients to be admitted over a given planning horizon.
 In contrast to much of the existing literature, which primarily selects these volumes to optimise financial or capacity-related objectives, this work adopts a stability-oriented perspective.
 We aim to enable decision-makers to impose maximum acceptable waiting times (e.g., six months) and to guarantee, in the long run, that such targets are met without allowing waiting lists to grow unboundedly. 
 This is particularly relevant in the context of public healthcare systems, such as Brazil's Unified Health System (SUS), where there is a legal obligation to provide care to all patients in need.
@@ -77,7 +78,7 @@ Table~\ref{tab:symb_rq} summarises the notation used in this section.
 \end{table}
 
 % *******************************************
-\subsection{$(R,Q)$ surgery scheduling policy: long-term distributions\label{sec:rqtheory}}
+\subsubsection{$(R,Q)$ surgery scheduling policy: long-term distributions\label{sec:rqtheory}}
 % *******************************************
 
 Let $\stocprocqueue{\stocprocperiod}, \, \stocprocperiod \ge 0$ be a stochastic process representing an elective surgery queue with stationary and independent increments over discrete planning periods, with $\stocprocqueue{\stocprocperiod}$ representing the number of patients in the system at period $\stocprocperiod \ge 0$. Assume that the queue is controlled via a modified $(R,Q)$ policy \citep[e.g.,][]{Axsater2015Inv} whereby a batch of $\batchsizeq \in \mathbb N$ surgeries is processed at time period $\stocprocperiod$ whenever $\stocprocqueue{\stocprocperiod} \ge \rthreshold, \, \rthreshold \ge \batchsizeq$ at the start of the period, where $\mathbb N$ is the set of positive integers. In contrast to the classical $(R,Q)$ policy, which processes as many batches as necessary to bring the inventory below the reorder point ($R$), our policy can only process a batch at a time and relies on long-term properties to ensure that the process $\stocprocqueue{\stocprocperiod}, \, \stocprocperiod \ge 0$ is stable and guarantees prescribed waiting time requirements.
@@ -147,7 +148,7 @@ one can easily see that the steady state distribution satisfies Eq. \eqref{eq:st
 The result in Proposition \ref{prop:steadystate} is very important, as it shows that the steady state distribution of process $\stocprocremain{\stocprocperiod}, \, \stocprocperiod \ge 0$, is uniform regardless of the distribution of patient arrivals. Next, we will use this fact to derive the steady state distribution of process $\stocprocbatches{\stocprocperiod}, \, \stocprocperiod \ge 0$. 
 
 % ********************************************
-\subsection{The dynamics of process $\stocprocbatches{\stocprocperiod}, \, \stocprocperiod \ge 0$\label{sec:batchprocess}}
+\subsubsection{The dynamics of process $\stocprocbatches{\stocprocperiod}, \, \stocprocperiod \ge 0$\label{sec:batchprocess}}
 % *******************************************
 
 Assume that process $\stocprocremain{\stocprocperiod}, \, \stocprocperiod \ge 0$ has reached equilibrium, which is also equivalent to supposing that $P(\stocprocremain{0} = \stocprocremainstate) = \steadystate{\stocprocremain{}}(\stocprocremainstate) = \dfrac{1}{\batchsizeq}$ \citep[e.g.,][]{Bremaud2020}. We can describe the dynamics of process $\stocprocbatches{\stocprocperiod}, \, \stocprocperiod \ge 0$ as:
@@ -214,7 +215,7 @@ with the contour condition that $\steadystate{\stocprocbatches{}}(0) = 1 - \rho 
 where $\rho = E(\roundbatches)$. Observe that, to guarantee stability, we must have $E(\roundbatches) < 1$. Note also that the steady state probabilities up to a given state $j$ can be recursively calculated using the first $j$ equations in \eqref{eq:ssY}.
 
 % ********************************************
-\subsection{Upper and lower bounds on the batch size $\batchsizeq$ under waiting time requirements} \label{sec:bounds}
+\subsubsection{Upper and lower bounds on the batch size $\batchsizeq$ under waiting time requirements} \label{sec:bounds}
 % *******************************************
 
 Let $\omega$ be the waiting time of a patient joining the queue, and assume that the healthcare system requires that:
@@ -303,7 +304,7 @@ P(\omega \le 6 | \stocprocbatches{\stocprocperiod} \ge 1) \approx 0.602 < 0.95 =
 %
 This implies that $\underline Q > 4$ in Eq. \eqref{eq:under} and we should, therefore, recalculate the probability above for increasing values of $Q$ until we find the first value that satisfies the waiting time criterion - which will give us the lower bound $\underline Q$.
 
-To verify the waiting time requirements when $\stocprocbatches{\stocprocperiod} = 0$, one can apply \eqref{eq:upperbound}, which implies that $P(\omega \le 6 | \stocprocbatches{\stocprocperiod} = 0) = 0.171625^6 \approx 2.5 \cdot 10^{-5} < 0.05$. Therefore, to find the bound $\overline Q$ in Eq. \eqref{eq:overbound}.
+To verify the waiting time requirements when $\stocprocbatches{\stocprocperiod} = 0$, one can apply \eqref{eq:upperbound}, which implies that $P(\omega \le 6 | \stocprocbatches{\stocprocperiod} = 0) = 0.171625^6 \approx 2.5 \cdot 10^{-5} < 0.05$. Therefore, to find the bound $\overline Q$ in Eq. \eqref{eq:overbound}, we must iterate on higher values of $Q$.
 
 When verifying Eq.~\eqref{eq:under} with $Q = 10$, it implies $P(\omega \le 6 | \stocprocbatches{\stocprocperiod} = 0) = 0.609780^6 \approx 0.05114 > 0.05$. Then, if one set $\batchsizeq = 9$, it implies $P(\omega \le 6 | \stocprocbatches{\stocprocperiod} = 0) = 0.566478^6 \approx 0.03304 < 0.05$. Thus, we can set $\upq = 9$.
 

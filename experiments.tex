@@ -12,12 +12,12 @@ The data are processed to derive the inputs required for the strategic and opera
 
 \paragraph{\textbf{Surgery duration distributions}}
 For each subspecialty, empirical distributions of surgery durations are estimated from historical data. 
-These distributions are used in the Overtime and Cancellation module to evaluate the newsvendor model and determine the number of surgeries scheduled per block.
+These distributions are used in the Overtime and Cancellation module to evaluate the newsvendor model and determine the number of surgeries scheduled per block; see Section \ref{sec:module2}.
 
 \paragraph{\textbf{Demand distributions}}
 Patient arrivals are modelled as Poisson processes. 
 For each subspecialty, the arrival rate $\lambda$ is estimated as the average monthly demand derived from historical activity.
-This is obtained by combining the expected number of surgeries per operating block (estimated from the duration distributions) with the observed number of allocated blocks, yielding an average monthly arrival rate.
+%This is obtained by combining the expected number of surgeries per operating block (estimated from the duration distributions) with the observed number of allocated blocks, yielding an average monthly arrival rate.
 
 \paragraph{\textbf{Operational parameters}}
 All parameters of the operating theatre scheduling model (see Table~\ref{tab:symb} in Section~\ref{sec:ot}) are calibrated using real-world data, i.e., the actual values observed in each month of the year 2025.
@@ -37,7 +37,7 @@ These strategic parameters are computed once and remain fixed throughout the sim
 
 \paragraph{\textbf{Baseline policy}}
 The baseline policy excludes the strategic modules. 
-All specialties are scheduled in every period, and the MILP model is solved using only operational constraints, without $(R,Q)$ control or overtime optimisation.
+All specialities are scheduled in every period, and the MILP model is solved using only operational constraints, without $(R,Q)$ control or overtime optimisation.
 
 \subsection{Simulation Framework}
 
@@ -46,10 +46,9 @@ The system evolves over a monthly decision cycle.
 In each period, patient arrivals are realised according to the estimated demand distributions, and queues are updated accordingly. 
 Under the proposed approach, only specialties with queue size exceeding $R$ are selected for scheduling.
 
-The MILP model then determines the allocation of operating theatre blocks. 
-For the proposed approach, the number of treated patients is sampled based on the distributions obtained from the Overtime and Cancellation module. 
-For the baseline policy, the number of treated patients is determined directly from surgery duration distributions without adjustment for overtime or cancellations.
-Queues are updated after treatment, and the process repeats for the next period.
+The MILP model then determines the allocation of operating theatre blocks. For the proposed approach, the number of surgeries is sampled based on the distributions obtained from the Overtime and Cancellation module. 
+For the baseline policy, the number of surgeries is determined directly from surgery duration distributions without adjustment for overtime or cancellations.
+Queues are updated after surgery, and the process repeats at each new period.
 
 \begin{figure}[ht]
     \centering
