@@ -208,3 +208,7 @@ Constraint~\eqref{eq:c5} similarly limits the number of allocations for each sub
 Constraints~\eqref{eq:c6} and~\eqref{eq:c7} together guarantee sequential allocation of blocks on the same day when $\precvar = 1$.
 Subspecialities requiring two consecutive blocks are specifically addressed by constraint~\eqref{eq:c8}.
 Constraint~\eqref{eq:c9} ensures that transplant subspecialties are allocated in pairs, reflecting the need for simultaneous operating theatre use for donor and recipient procedures.tion balancing in conjunction with OF~\eqref{eq:f2}.
+
+No explicit constraints are required to model theatre-subspecialty compatibility. 
+Allocation variables $\blockvar$ are introduced only for compatible pairs $(\specialtyidx,\roomidx)$, where theatre $\roomidx \in \roomset$ provides the infrastructure required by subspecialty $\specialtyidx \in \specialtyset$. 
+Hence, infeasible assignments are excluded a priori from the feasible region, and all feasible solutions automatically satisfy compatibility requirements.
