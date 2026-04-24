@@ -84,9 +84,10 @@ In this section, we evaluate the long-term stability of the system under the pro
 We analyse the evolution of patient queues over time and the allocation of operating theatre blocks, highlighting the differences between the two approaches.
 
 \subsubsection{Queue Management Results}
-The one-year simulation horizon enables the analysis of queue dynamics under both the proposed framework and the baseline policy. 
-As results are obtained from $100$ independent runs, we also assess variability through the 10--90\% percentile interval, which provides insight into the robustness of each approach.
-\textcolor{red}{percebi que os graficos tem a mesma cor pro baseline e o proposto... todo: corrgir isso}
+\textcolor{red}{ao reler, vi que preciso aprofundar mais a análise aqui, ta bem rasa...}
+
+The one-year simulation horizon enables a detailed examination of queue dynamics under both the proposed framework and the baseline policy. 
+Results are based on $100$ independent simulation runs, and variability is captured through the 10--90\% percentile interval, providing insight into the stability and robustness of each approach under stochastic demand.
 
 \begin{figure}[htb]
     \centering
@@ -105,20 +106,20 @@ As results are obtained from $100$ independent runs, we also assess variability 
     \label{fig:queue_evolution_eda}
 \end{figure}
 
-Figure~\ref{fig:queue_evolution_eda} illustrates the evolution of the patient queue for the subspecialty \textit{Upper Digestive Endoscopy (UDP) -- Pediatric}. 
-Under the proposed approach (Figure~\ref{fig:eda_proposed}), the queue exhibits a clear decreasing trend from the initial level, with variability gradually reducing over time. 
-Once the queue approaches the threshold $R$ (around month 6--9), the policy implicitly limits further allocations to this subspecialty, allowing capacity to be redirected to others. 
-As a result, the queue stabilises around the target level, avoiding both excessive backlog and unnecessary over-allocation.
+Figure~\ref{fig:queue_evolution_eda} reports the evolution of the queue for the subspecialty \textit{Upper Digestive Endoscopy (UDP) -- Pediatric}. 
+Under the proposed approach (Figure~\ref{fig:eda_proposed}), the queue decreases steadily from its initial level, while the dispersion across simulation runs progressively narrows. 
+As the median queue approaches the threshold $R$ (approximately between months 6 and 9), the system transitions from a reduction phase to a regulated regime, in which the queue oscillates around the target level. 
+This behaviour reflects the action of the $(R,Q)$ control, which introduces a feedback mechanism that limits further allocations once the queue is sufficiently reduced, thereby preventing over-servicing and preserving capacity for other subspecialties.
 
-In contrast, the baseline policy (Figure~\ref{fig:eda_baseline}) lacks any feedback mechanism based on queue size. 
-Although an initial reduction is observed, the queue subsequently increases and displays a persistent upward trend, with widening variability. 
-This indicates that the system is unable to regulate demand and capacity effectively, leading to potential instability and longer waiting times.
+In contrast, the baseline policy (Figure~\ref{fig:eda_baseline}) operates without any form of feedback based on queue size. 
+Although a temporary reduction is observed in the initial periods, the queue subsequently exhibits a sustained upward trend, accompanied by increasing variability. 
+This pattern indicates that the allocation decisions are not aligned with the underlying demand, leading to an accumulation of backlog and a higher risk of prolonged waiting times.
 
-A similar behaviour is observed for the subspecialty \textit{Gastroenterology -- Esophagus-Stomach-Duodenum (ESD)} in Figure~\ref{fig:queue_evolution_gast_eed}. 
-Under the proposed approach (Figure~\ref{fig:gast_proposed}), the queue decreases more rapidly than in the previous case, reflecting the higher service capacity available for this subspecialty. 
-The queue then stabilises close to the threshold $R$, again indicating effective balancing between demand and allocation decisions.
+A comparable yet more pronounced dynamic is observed for the subspecialty \textit{Gastroenterology -- Esophagus-Stomach-Duodenum (ESD)}, as shown in Figure~\ref{fig:queue_evolution_gast_eed}. 
+For the proposed approach (Figure~\ref{fig:gast_proposed}), the queue declines more rapidly, which can be attributed to the greater service capacity available for this subspecialty. 
+After this initial reduction, the system again converges to a controlled regime in which the queue stabilises near the threshold $R$, indicating that the policy effectively adapts allocation decisions to the evolving system state.
 
-\begin{figure}[ht]
+\begin{figure}[htb]
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\textwidth]{images/queue_trend_gast_eed.png}
@@ -135,14 +136,16 @@ The queue then stabilises close to the threshold $R$, again indicating effective
     \label{fig:queue_evolution_gast_eed}
 \end{figure}
 
-For the baseline policy (Figure~\ref{fig:gast_baseline}), the queue also decreases over time, as this subspecialty is consistently allocated and benefits from sufficient capacity. 
-However, this apparent improvement is misleading when viewed at the system level. 
-Because the baseline allocates all subspecialties uniformly, without considering their relative queue sizes, it may over-serve some subspecialties (such as ESD) while neglecting others. 
-This lack of awareness of queue dynamics can lead to imbalances across the system, even if individual queues appear well behaved.
+Under the baseline policy (Figure~\ref{fig:gast_baseline}), the queue also decreases over time, reflecting the relatively high capacity assigned to this subspecialty. 
+However, this local improvement masks an important limitation of the baseline approach. 
+By trying to allocate all subspecialties independently of their queue levels, the policy fails to prioritise according to system-wide needs. 
+As a result, resources may be disproportionately allocated to subspecialties with already manageable queues, while others experience congestion. 
+This lack of coordination can lead to inefficient capacity utilisation and imbalanced system performance, even when individual queues appear well controlled.
 
-These results show that the $(R,Q)$-based control introduces a feedback mechanism that regulates queue sizes around a target level, reduces variability, and promotes efficient use of capacity. 
-In contrast, the baseline policy operates in an open-loop manner, which may lead to uncontrolled growth or inefficient allocation of resources. 
-Detailed results for all subspecialties are provided in Appendix~\ref{app:queue_evolution}.
+These results highlight that the $(R,Q)$-based mechanism not only reduces queue sizes but also actively regulates them around a target level, leading to more stable and predictable dynamics. 
+In addition, the reduction in variability across simulation runs suggests increased robustness to demand uncertainty. 
+In contrast, the baseline policy behaves as an open-loop allocation rule, which may either under- or over-serve specific subspecialties, ultimately compromising system-wide efficiency. 
+Comprehensive results for all subspecialties are provided in Appendix~\ref{app:queue_evolution}.
 
 \subsubsection{OT Allocation Results}
 % apresentar o grafico que mostra o quanto o framework alocou quando comparado ao intervalo Q (o grafico que brinquei que é ilícito -- só que melhorado)
