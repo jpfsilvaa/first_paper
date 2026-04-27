@@ -1,5 +1,5 @@
 % ********************************************
-\subsection{Module 2: modelling uncertainty in surgery duration and block sessions} \label{sec:module2}
+\subsection{Module 2: Modelling Uncertainty in Surgery Duration and Block Sessions} \label{sec:module2}
 % *******************************************
 
 This section details the components of module 2 of the proposed framework, see Section \ref{sec:proposal}. Firstly, it is necessary to estimate how many elective patients can be accommodated within a single operating theatre block for each sub-speciality, to ensure consistency between the periodic schedule and the waiting-time requirements established by the $(R,Q)$ policy in Section~\ref{sec:waitinglist}. This is key to ensuring that the number of sessions allocated to a given speciality is enough to warrant a number of surgeries that lies in the interval $[\lowq, \upq]$, considering the probabilistic distribution of surgery durations. Specifically, a trade-off arises between idle time, that results in underutilised theatre capacity, and overtime, which may trigger cancellations of scheduled procedures. 
@@ -9,19 +9,19 @@ This section details the components of module 2 of the proposed framework, see S
 %Accurate estimation requires explicit consideration of uncertainty in surgery durations, which varies across subspecialties and directly affects both operating theatre utilisation and the risk of overtime.  In particular, a trade-off arises between idle time, resulting from underutilised theatre capacity, and overtime, which may trigger cancellations of scheduled procedures. 
 
 %For this purpose, in this section we present the second module of the proposed integrated framework. 
-We firstly introduce a newsvendor model to guide operational decisions on whether to perform or cancel the next scheduled surgery, depending on the time remaining in the session. Then, assuming that these decisions are taken sequentially at the end of each scheduled surgery, we introduce an inventory model to find the number of patients that can be reliably scheduled within a time block, as well as the probability distribution of the number of cancellations at each session. These are tactical inputs required for subsequent operating theatre allocation decisions.
+At first, we introduce a Newsvendor model to guide operational decisions on whether to perform or cancel the next scheduled surgery, depending on the time remaining in the session. Then, assuming that these decisions are taken sequentially at the end of each scheduled surgery, we introduce an inventory model to find the number of patients that can be reliably scheduled within a time block, as well as the probability distribution of the number of cancellations at each session. These are tactical inputs required for subsequent operating theatre allocation decisions.
 
 %A newsvendor-based model is first employed to determine an optimal time allocation for the final surgery in a block under duration uncertainty, balancing idle-time and overtime costs. 
 %Building on this result, an inventory-based formulation is then used to estimate the number of patients that can be reliably scheduled within a time block, providing the tactical input required for subsequent operating theatre allocation decisions.
 
 % ********************************************************************************************* %
-\subsubsection{Managing surgery cancellations via a newsvendor-based model\label{sec:cancel}}
+\subsubsection{Managing surgery cancellations via a Newsvendor-based model\label{sec:cancel}}
 % ********************************************************************************************* %
 
 Let us now consider the problem of determining the optimal time budget for the next surgery in a session, based on the random duration of this surgery. The symbols used in this section are defined in Table~\ref{tab:symb_newsvendor}.
 \begin{table}[htb]
     \centering
-    \caption{Symbols used in the newsvendor-based model.\label{tab:symb_newsvendor}}
+    \caption{Symbols used in the Newsvendor-based model.\label{tab:symb_newsvendor}}
     \scriptsize
     \begin{tabular}{cl}
     \toprule
