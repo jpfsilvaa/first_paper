@@ -9,7 +9,7 @@ In particular, the OTSP takes as input the target number of surgeries for each s
 We formulate the OTSP as a Mixed-Integer Linear Programming (MILP) model. This formulation allows the explicit representation of operational constraints and multiple, potentially competing objectives, while ensuring optimality with respect to the specified criteria. 
 The model is designed to reflect hospital priorities such as high operating theatre utilisation, the allocation of priority subspecialities, and the efficient sequencing of blocks from a logistical perspective.
 
-The proposed framework is, however, not restricted to the MILP approach adopted here. 
+\textcolor{red}{(Talvez esse parágrafo a seguir fique melhor na seção de Conclusão)} The proposed framework is, however, not restricted to the MILP approach adopted here. 
 Since the previous modules provide demand and effective capacity as structured inputs, alternative solution methods, including heuristics and metaheuristics, could also be employed in the OTSP stage.
 The main value of the framework therefore lies in the integration of decision layers, rather than in the exclusive use of a particular scheduling technique.
 
@@ -120,12 +120,12 @@ To formulate the problem, we use the the notation in Table~\ref{tab:symb}.
     \midrule
         $\upperblockdemand$                                         & Maximum number of blocks allocated to each subspecialty $\specialtyidx \in \specialtyset$            \\
         $\lowerblockdemand$                                         & Minimum number of blocks allocated to each subspecialty $\specialtyidx \in \specialtyset$            \\
-        $\specteams_{\blockidx\specialtyidx}$              & Number of teams of subspecialty $\specialtyidx \in \specialtyset$ available in block  $\blockidx \in \blockset$ \\
+        $\specteams_{\blockidx,\specialtyidx}$              & Number of teams of subspecialty $\specialtyidx \in \specialtyset$ available in block  $\blockidx \in \blockset$ \\
         $\numbersanests_{\blockidx}$                       & Number of anesthesiologists available in block $\blockidx \in \blockset$                         \\
         $\needanest_{\specialtyidx}$                       & 1 if subspecialty $\specialtyidx \in \specialtyset$ requires an anesthesiologist; 0 otherwise         \\    
         % $\mindeficit_{\specialtyidx}$                      & Minimum number of blocks for subspecialty $\specialtyidx \in \specialtyset$            \\
         $\anestconstant$                                   & Constant to penalize the anesthesiologist slack variable $\anestslackvar$ in the objective function ($\anestconstant = |\blockset|\cdot|\specialtyset|\cdot|\roomset|$) \\
-        $\allowedrooms_{\roomidx\blockidx\specialtyidx}$   & 1 if room $\roomidx \in \roomset$, in block $\blockidx \in \blockset$, can              \\
+        $\allowedrooms_{\roomidx,\blockidx,\specialtyidx}$   & 1 if room $\roomidx \in \roomset$, in block $\blockidx \in \blockset$, can              \\
                                                            & be used by subspecialty $\specialtyidx \in \specialtyset$ in the shift block $\blockidx \in \blockset$; 0 otherwise          \\
     \bottomrule
     \textbf{Variable}                         & \textbf{Description}                                                                  \\
@@ -152,7 +152,7 @@ Formally, the first OF is defined as
 which minimises the total slack in team and anesthesiologist availability, with a high penalty on the latter as they are more scarce and expensive.
 The second function is given by
 \begin{align}
-    \text{Min } \displaystyle F_1 = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyset} \blockvar  \text{ only for variables where } \allowedrooms_{\roomidx\blockidx\specialtyidx} = 0 \label{eq:f1}
+    \text{Min } \displaystyle F_1 = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyset} \blockvar  \text{ only for variables where } \allowedrooms_{\roomidx\blockidx\specialtyidx} = 0, \label{eq:f1}
 \end{align}
 which minimises the number of allocations outside the aspirational theatre allocation defined for each subspecialty, thus promoting the use of preferred theatres.
 The third objective function is defined as
@@ -167,7 +167,7 @@ The fourth OF is given by
 which maximises the total number of allocated blocks, thus promoting overall capacity utilisation and service provision.
 Finally, the fifth OF is defined as
 \begin{align}
-    \text{Max } \displaystyle F_4 = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyset} \blockvar \label{eq:f4}
+    \text{Max } \displaystyle F_4 = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyset} \blockvar, \label{eq:f4}
 \end{align}
 which maximises the number of sequentially allocated blocks.
 This is particularly important for improving the logistics of the surgical process, reducing the need for equipment and team transfers between theatres.
