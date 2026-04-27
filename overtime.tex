@@ -142,6 +142,7 @@ Theorem \ref{thm:quantile} implies that, whenever the remaining time in a sessio
 % ******************************************************************************************** %
 Building on the theoretical results of the previous subsection, we first estimate, for each surgical subspecialty, the distribution of the number of surgeries that can be completed within a block of length $\blocklength \in \mathbb{Z}_{+}$. 
 This distribution is then used in the subsequent subsection to evaluate session-planning decisions under an inventory-based formulation.
+For this purpose, we use the notation introduced in Table~\ref{tab:symb_newsvendor}. 
 
 \begin{table}[htb]
     \centering
@@ -180,7 +181,7 @@ This distribution is then used in the subsequent subsection to evaluate session-
     \end{tabular}
 \end{table}
 
-We use the notation introduced in Table~\ref{tab:symb_newsvendor}. For each subspecialty, let $\duration_i$ denote the non-negative random variable representing the duration of the $i$-th surgery, with probability mass function $f_{\duration}$ and cumulative distribution function $F_{\duration}$. 
+For each subspecialty, let $\duration_i$ denote the non-negative random variable representing the duration of the $i$-th surgery, with probability mass function $f_{\duration}$ and cumulative distribution function $F_{\duration}$. 
 We assume that surgery durations are independent and identically distributed within each subspecialty. Hence, for any $k \in \mathbb{N}_{+}$, the cumulative duration of the first $k$ surgeries is
 \[
 \cumulativeduration{k}=\sum_{i=1}^{k}\duration_i.
