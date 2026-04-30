@@ -1,166 +1,173 @@
-\documentclass[a4paper, twoside, 12pt]{report}
-\usepackage{standalone}
-\usepackage[a4paper,showframe,width=150mm,top=25mm,bottom=25mm]{geometry}
-\usepackage[utf8]{inputenc}
-\usepackage{pgfplots}
-\usepackage{fixltx2e}
-\usepackage{siunitx}
-\usepackage{subfig}
-\usepackage{xcolor}
+% Arquivo TikZ refinado para reproduzir o framework original.
+% Requer no preâmbulo do documento principal:
+% \usepackage{tikz}
+% \usetikzlibrary{arrows.meta,calc,positioning}
 
-\usepackage[active,tightpage]{preview}
-\setlength{\PreviewBorder}{0pt}
-\usepackage{tikz}
-\PreviewEnvironment[{[]}]{tikzpicture}
-\begin{document}
 \begin{tikzpicture}[
-    font=\sffamily,
-    >={Stealth[length=3mm]},
-    line width=0.9pt,
-    node distance=6mm and 8mm,
-    
-    input/.style={
-        draw,
-        fill=white,
-        minimum width=2.6cm,
-        minimum height=1.5cm,
+    x=1cm,
+    y=1cm,
+    >=Stealth,
+    line cap=round,
+    line join=round,
+    % font=\sffamily\small,
+    arrow/.style={-{Stealth[length=3.2mm,width=3.8mm]}, line width=1.05pt},
+    conn/.style={line width=1.25pt},
+    panel/.style={draw=red!88!black, line width=3pt},
+    model/.style={
+        rectangle,
+        draw=blue!45!black,
+        fill=blue!18,
+        minimum height=1.48cm,
+        align=center,
+        % font=\sffamily\bfseries\small,
+        inner xsep=6pt,
+        inner ysep=5pt
+    },
+    greenblock/.style={
+        rectangle,
+        draw=green!45!black,
+        fill=green!18,
+        align=center,
+        % font=\sffamily\bfseries\small,
+        inner xsep=5pt,
+        inner ysep=4pt
+    },
+    title/.style={
+        % font=\sffamily\bfseries\itshape\Large,
         align=center
-    },
-    process/.style={
-        draw,
-        fill=blue!20,
-        minimum width=3.2cm,
-        minimum height=1.6cm,
-        align=center,
-        font=\bfseries
-    },
-    output/.style={
-        draw,
-        fill=green!20,
-        minimum width=2.5cm,
-        minimum height=1.5cm,
-        align=center,
-        font=\bfseries
-    },
-    bigbox/.style={
-        draw=red!85!black,
-        very thick,
-        inner sep=10pt,
-        rounded corners=1pt
-    },
-    every path/.style={draw, ->}
+    }
 ]
 
-% =========================================================
-% (i) Queue Management
-% =========================================================
+% ------------------------------------------------------------------
+% Caixas com canto dobrado, no estilo do draw.io.
+% Uso: \paperbox{nome}{(x,y)}{texto}{largura}{altura}
+% ------------------------------------------------------------------
+\newcommand{\paperbox}[5]{%
+    \node[rectangle, draw=black, fill=white, align=center,
+          minimum width=#4, minimum height=#5,
+          inner xsep=4pt, inner ysep=4pt] (#1) at #2 {#3};
+    \path (#1.north east) coordinate (#1ne);
+    \draw[draw=black, fill=white]
+        ($(#1ne)+(-0.34cm,0)$) -- (#1ne) --
+        ($(#1ne)+(0,-0.34cm)$) -- cycle;
+}
 
-\node[font=\bfseries\itshape\Large, anchor=west] (title1) at (0,8.6) {(i) Queue Management};
+\newcommand{\greenpaperbox}[5]{%
+    \node[greenblock, minimum width=#4, minimum height=#5] (#1) at #2 {#3};
+    \path (#1.north east) coordinate (#1ne);
+    \draw[draw=green!45!black, fill=green!18]
+        ($(#1ne)+(-0.36cm,0)$) -- (#1ne) --
+        ($(#1ne)+(0,-0.36cm)$) -- cycle;
+}
 
-\node[input, below=6mm of title1.west, anchor=west] (pdemand) {Patient\\demand\\probability\\distribution};
-\node[input, below=2mm of pdemand] (waitreq) {Waiting time\\requirement};
-\node[input, below=2mm of waitreq] (conf) {Confidence\\level};
+% ------------------------------------------------------------------
+% Molduras dos três módulos.
+% ------------------------------------------------------------------
+\draw[panel] (0.00,8.70) rectangle (7.75,14.25);
+\node[title] at (3.90,13.88) {(i) Queue Management};
 
-\node[process, right=1.8cm of waitreq] (rqpolicy) {(R,Q) Control\\Policy};
+\draw[panel] (0.00,0.00) rectangle (14.65,7.45);
+\node[title] at (7.30,7.06) {(ii) Overtime and Cancellation Management};
 
-\node[output, right=1.5cm of rqpolicy, yshift=1.1cm] (upperq) {Upper\\bound Q};
-\node[output, right=1.5cm of rqpolicy, yshift=-1.1cm] (lowerq) {Lower\\bound Q};
+\draw[panel] (15.65,0.40) rectangle (24.75,7.30);
+\node[title] at (20.20,6.90) {(iii) Operating Theatre Schedule};
 
-\draw (pdemand.east) -- ++(0.7,0) |- (rqpolicy.west);
-\draw (waitreq.east) -- (rqpolicy.west);
-\draw (conf.east) -- ++(0.7,0) |- (rqpolicy.west);
+% ------------------------------------------------------------------
+% (i) Queue Management.
+% Os blocos brancos foram espaçados verticalmente como no módulo (iii).
+% ------------------------------------------------------------------
+\paperbox{demand}{(1.20,12.65)}{Patient\\demand\\probability\\distribution}{1.50cm}{1.42cm}
+\paperbox{waiting}{(1.20,10.90)}{Waiting time\\requirement}{1.50cm}{1.42cm}
+\paperbox{confidence}{(1.20,9.15)}{Confidence\\level}{1.50cm}{1.42cm}
 
-\draw (rqpolicy.east) -- ++(0.45,0) |- (upperq.west);
-\draw (rqpolicy.east) -- ++(0.45,0) |- (lowerq.west);
+\node[model, minimum width=2.55cm] (rq) at (3.95,10.90) {$(R,Q)$ Control\\Policy};
+\greenpaperbox{upper}{(6.55,11.78)}{Upper\\bound Q}{1.38cm}{1.20cm}
+\greenpaperbox{lower}{(6.55,10.02)}{Lower\\bound Q}{1.38cm}{1.20cm}
 
-% Box around section (i)
-\node[bigbox, fit=(title1) (pdemand) (waitreq) (conf) (rqpolicy) (upperq) (lowerq)] (box1) {};
+% Entrada para a política (R,Q).
+\draw[conn] (demand.east) -- (2.28,12.65) -- (2.28,10.90);
+\draw[conn] (confidence.east) -- (2.28,9.15) -- (2.28,10.90);
+\draw[arrow] (waiting.east) -- (rq.west);
+\draw[arrow] (2.28,10.90) -- (rq.west);
 
-% =========================================================
-% Preprocessing
-% =========================================================
+% Saídas upper/lower bound Q.
+\draw[conn] (rq.east) -- (5.38,10.90);
+\draw[arrow] (5.38,10.90) |- (upper.west);
+\draw[arrow] (5.38,10.90) |- (lower.west);
 
-\node[process, minimum width=3.4cm, right=7.2cm of rqpolicy] (prep) {Preprocessing};
+% Junção das duas saídas Q para seguir ao Preprocessing.
+\draw[conn] (upper.east) -- (11.25,11.78) -- (11.25,10.90);
+\draw[conn] (lower.east) -- (11.25,10.02) -- (11.25,10.90);
 
-% Connector from queue outputs to preprocessing
-\coordinate[right=3.5cm of upperq.east] (mergeQ);
-\draw (upperq.east) -- (mergeQ |- upperq.east) |- (prep.west);
-\draw (lowerq.east) -- ++(3.2,0) |- (prep.west);
+% ------------------------------------------------------------------
+% (ii) Overtime and Cancellation Management.
+% Blocos brancos com o mesmo ritmo vertical do módulo (iii).
+% ------------------------------------------------------------------
+\paperbox{surgdur}{(1.20,5.85)}{Surgery\\duration\\probability\\distribution}{1.50cm}{1.42cm}
+\paperbox{otcost}{(1.20,4.15)}{Overtime\\cost}{1.50cm}{1.42cm}
+\paperbox{idlecost}{(1.20,2.45)}{Idle time\\cost}{1.50cm}{1.42cm}
+\paperbox{blocksize}{(1.20,0.75)}{Block size}{1.50cm}{1.42cm}
 
-% =========================================================
-% (ii) Overtime and Cancelation Management
-% =========================================================
+\node[model, minimum width=2.55cm] (newsvendor) at (4.25,3.30) {Newsvendor\\model};
+\greenpaperbox{fitprob}{(7.45,4.15)}{Probabilities\\of surgeries\\to fit into the\\block}{1.95cm}{1.58cm}
+\greenpaperbox{cancelprob}{(7.45,1.90)}{Probabilities\\of canceling\\the surgery}{1.95cm}{1.58cm}
+\node[model, minimum width=2.65cm] (inventory) at (10.55,3.30) {Inventory-\\based model};
+\greenpaperbox{numsurgeries}{(13.25,3.30)}{Number of\\surgeries to\\plan in a\\block}{1.65cm}{1.32cm}
 
-\node[font=\bfseries\itshape\Large, anchor=west] (title2) at (1.8,-0.2) {(ii) Overtime and Cancelation Management};
+% Entradas para o newsvendor.
+\draw[conn] (surgdur.east) -- (2.55,5.85) -- (2.55,3.30);
+\draw[conn] (otcost.east) -- (2.55,4.15);
+\draw[conn] (idlecost.east) -- (2.55,2.45);
+\draw[conn] (blocksize.east) -- (2.55,0.75) -- (2.55,3.30);
+\draw[arrow] (2.55,3.30) -- (newsvendor.west);
 
-\node[input, below=10mm of title2.west, anchor=west] (sdur) {Surgery\\duration\\probability\\distribution};
-\node[input, below=2mm of sdur] (ocost) {Overtime\\cost};
-\node[input, below=2mm of ocost] (icost) {Idle time\\cost};
-\node[input, below=2mm of icost] (bsize) {Block size};
+% Newsvendor para probabilidades.
+\draw[conn] (newsvendor.east) -- (5.95,3.30);
+\draw[arrow] (5.95,3.30) |- (fitprob.west);
+\draw[arrow] (5.95,3.30) |- (cancelprob.west);
 
-\node[process, right=2.0cm of ocost] (newsvendor) {Newsvendor\\model};
+% Probabilidades para modelo inventory-based.
+\draw[conn] (fitprob.east) -- (8.85,4.15) -- (8.85,3.30);
+\draw[conn] (cancelprob.east) -- (8.85,1.90) -- (8.85,3.30);
+\draw[arrow] (8.85,3.30) -- (inventory.west);
+\draw[arrow] (inventory.east) -- (numsurgeries.west);
 
-\node[output, right=1.6cm of newsvendor, yshift=1.2cm, minimum width=3.0cm, minimum height=1.8cm] (pfit)
-{Probabilities\\of surgeries\\to fit into the\\block};
+% ------------------------------------------------------------------
+% Preprocessing: junção limpa das duas fontes de entrada.
+% ------------------------------------------------------------------
+\node[model, minimum width=3.05cm, minimum height=0.78cm] (preproc) at (17.35,11.58) {Preprocessing};
 
-\node[output, right=1.6cm of newsvendor, yshift=-1.2cm, minimum width=3.0cm, minimum height=1.8cm] (pcancel)
-{Probabilities\\of canceling\\the surgery};
+% A saída do módulo (i) chega por uma linha horizontal superior.
+\draw[conn] (11.25,10.90) -- (15.60,10.90) -- (15.60,11.78);
 
-\node[process, right=2.2cm of pfit.south east, xshift=0.2cm, yshift=-1.25cm, minimum width=3.2cm, minimum height=1.8cm] (inventory)
-{Inventory-\\based model};
+% A saída do módulo (ii) sobe e chega por uma linha horizontal inferior.
+\draw[conn] (numsurgeries.east) -- (14.85,3.30) -- (14.85,11.38);
 
-\node[output, right=1.4cm of inventory, minimum width=2.7cm, minimum height=1.7cm] (nplan)
-{Number of\\surgeries to\\plan in a\\block};
+% Dois pequenos trechos finais com setas separadas, evitando cruzamento/ambiguidade.
+\draw[arrow] (15.60,11.78) -- ([yshift=0.20cm]preproc.west);
+\draw[arrow] (14.85,11.38) -- ([yshift=-0.20cm]preproc.west);
 
-\draw (sdur.east) -- ++(0.8,0) |- (newsvendor.west);
-\draw (ocost.east) -- ++(0.8,0) |- (newsvendor.west);
-\draw (icost.east) -- ++(0.8,0) |- (newsvendor.west);
-\draw (bsize.east) -- ++(0.8,0) |- (newsvendor.west);
+% ------------------------------------------------------------------
+% (iii) Operating Theatre Schedule.
+% ------------------------------------------------------------------
+\paperbox{compat}{(16.95,4.85)}{Theatre\\compatibility}{1.68cm}{1.42cm}
+\paperbox{teams}{(16.95,3.15)}{Teams\\availability}{1.68cm}{1.42cm}
+\paperbox{anaesth}{(16.95,1.45)}{Anaesthetists\\availability}{1.68cm}{1.42cm}
 
-\draw (newsvendor.east) -- ++(0.5,0) |- (pfit.west);
-\draw (newsvendor.east) -- ++(0.5,0) |- (pcancel.west);
+\node[model, minimum width=2.55cm] (milp) at (20.70,3.15) {MILP allocation\\model};
+\greenpaperbox{monthly}{(23.35,3.15)}{Monthly\\Theatre\\Schedule}{1.35cm}{1.18cm}
 
-\draw (pfit.east) -- (inventory.west |- pfit.east);
-\draw (pcancel.east) -- (inventory.west |- pcancel.east);
+% Preprocessing para o MILP.
+\draw[conn] (preproc.south) -- (17.35,6.05) -- (18.62,6.05) -- (18.62,3.76);
+\draw[arrow] (18.62,3.76) -- (milp.west);
 
-\draw (inventory.east) -- (nplan.west);
+% Restrições/entradas locais para o MILP.
+\draw[conn] (compat.east) -- (18.35,4.85) -- (18.35,3.15);
+\draw[conn] (anaesth.east) -- (18.35,1.45) -- (18.35,3.15);
+\draw[arrow] (teams.east) -- (milp.west);
+\draw[arrow] (18.35,3.15) -- (milp.west);
 
-% Box around section (ii)
-\node[bigbox, fit=(title2) (sdur) (ocost) (icost) (bsize) (newsvendor) (pfit) (pcancel) (inventory) (nplan)] (box2) {};
-
-% =========================================================
-% (iii) Operating Theatre Schedule
-% =========================================================
-
-\node[font=\bfseries\itshape\Large, anchor=west] (title3) at (19.3,0.0) {(iii) Operating Theatre Schedule};
-
-\node[input, below=10mm of title3.west, anchor=west] (compat) {Theatre\\compatibility};
-\node[input, below=2mm of compat] (teams) {Teams\\availability};
-\node[input, below=2mm of teams] (anes) {Anaesthetists\\availability};
-
-\node[process, right=1.8cm of teams, minimum width=3.2cm, minimum height=1.8cm] (milp) {MILP allocation\\model};
-
-\node[output, right=1.4cm of milp, minimum width=2.7cm, minimum height=1.8cm] (msched) {Monthly\\Theatre\\Schedule};
-
-\draw (compat.east) -- ++(0.8,0) |- (milp.west);
-\draw (teams.east) -- (milp.west);
-\draw (anes.east) -- ++(0.8,0) |- (milp.west);
-
-\draw (milp.east) -- (msched.west);
-
-% Box around section (iii)
-\node[bigbox, fit=(title3) (compat) (teams) (anes) (milp) (msched)] (box3) {};
-
-% =========================================================
-% Cross-section connections
-% =========================================================
-
-% From number of surgeries to preprocessing
-\draw (nplan.east) -- ++(2.2,0) |- ([yshift=-2mm]prep.west);
-
-% From preprocessing down to section (iii)
-\coordinate (downprep) at ($(prep.south)+(0,-1.7)$);
-\draw (prep.south) -- (downprep) -| ([yshift=8mm]milp.west);
+% Saída final.
+\draw[arrow] (milp.east) -- (monthly.west);
 
 \end{tikzpicture}
-\end{document}
