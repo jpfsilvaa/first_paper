@@ -200,14 +200,14 @@ With this, we formulate the problem, incorporating these OFs and constraints, bu
 
 \bigskip
 
-Constraints~\eqref{eq:c1} and~\eqref{eq:c2} impose minimum and maximum bounds on the number of allocations of each subspecialty.
-This is part of the integration with the strategic layer, as these bounds are integrated to $(R,Q)$ policy and designed to enforce a prescribed waiting time requirement subspeciality, while taking full consideration of the uncertainty in surgery durations and the associated risk of surgery cancellations. % which in turn is influenced by the $(R,Q)$ policy.
+Constraints~\eqref{eq:c1} and~\eqref{eq:c2} impose minimum and maximum bounds on the number of allocations of each subspeciality.
+This is part of the integration with the strategic layer, as these bounds are integrated to the $(R,Q)$ policy and designed to enforce a prescribed waiting time requirement subspeciality, while taking full consideration of the uncertainty in surgery durations and the associated risk of surgery cancellations. % which in turn is influenced by the $(R,Q)$ policy.
 Constraint~\eqref{eq:c3} ensures that each theatre and time block receives at most one subspeciality.
-Constraint~\eqref{eq:c4} is a soft constraint that limits the number of allocations that require anaesthetists according to their availability $\numbersanests_{\blockidx}$ in each block, while allowing for some flexibility through the slack variable $\anestslackvar$.
-Constraint~\eqref{eq:c5} similarly limits the number of allocations for each subspecialty based on the availability of medical teams $\specteams_{\blockidx\specialtyidx}$, with the slack variable $\teamslackvar$ providing flexibility when necessary.
+Constraint~\eqref{eq:c4} is a soft constraint that limits the number of allocations that require anaesthetists according to their availability in each block ($\numbersanests_{\blockidx}$), while allowing for some flexibility through the slack variable $\anestslackvar$.
+Constraint~\eqref{eq:c5} similarly limits the number of allocations for each subspeciality based on the availability of medical teams $\specteams_{\blockidx\specialtyidx}$, with the slack variable $\teamslackvar$ providing flexibility when necessary.
 Constraints~\eqref{eq:c6} and~\eqref{eq:c7} together guarantee sequential allocation of blocks on the same day when $\precvar = 1$.
 Subspecialities requiring two consecutive blocks are specifically addressed by constraint~\eqref{eq:c8}.
-Constraint~\eqref{eq:c9} ensures that transplant subspecialties are allocated in pairs, reflecting the need for simultaneous operating theatre use for donor and recipient procedures.tion balancing in conjunction with OF~\eqref{eq:f2}.
+Constraint~\eqref{eq:c9} ensures that transplant subspecialties are allocated in pairs, reflecting the need for simultaneous operating theatre use for donor and recipient procedures. %tion balancing in conjunction with OF~\eqref{eq:f2}.
 
 No explicit constraints are required to model theatre-subspecialty compatibility. 
 Allocation variables $\blockvar$ are introduced only for compatible pairs $(\specialtyidx,\roomidx)$, where theatre $\roomidx \in \roomset$ provides the infrastructure required by subspecialty $\specialtyidx \in \specialtyset$. 
