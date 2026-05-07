@@ -60,22 +60,21 @@ To assess long-term stability of the framework and the baseline, we perform $100
 This way, we can evaluate not only the expected performance but also the variability and robustness of the proposed approach compared to the baseline policy.
 
 \subsection{Results from Strategic Decision-Making\label{sec:longterm_analysis}}
-In this section, we report and analyse the results obtained from the strategic modules (i.e., the $(R,Q)$ policy and the Overtime and Cancellation).
-These both modules are independent of each other, but the results produced by them are merged to guide the tactical scheduling decisions in the OT Scheduling module.
-This separation impacts the execution time of the overall framework, since the strategic modules are computed once and their outputs are used as fixed inputs for the scheduling module, which is executed at each month of the simulation horizon.
+This section reports and analyses the results obtained from the strategic components of the proposed framework, namely the $(R,Q)$ policy and the Overtime and Cancellation module. 
+Although these two modules are solved independently, their outputs are combined to support tactical decisions in the OT Scheduling module. 
+This decomposition has an important computational implication: the strategic modules are computed once, and their outputs are then used as fixed inputs by the scheduling module, which is executed at each monthly cycle of the simulation horizon.
 
-We start the discussion by the results of the Overtime and Cancellation module, which determines the expected number of surgeries that can be planned in each block while controlling cancellation risk. 
-Then, we present the results of the $(R,Q)$ policy, which defines the control intervals for each subspecialty.
-However, we present these intervals already converted to block units (see Section~\ref{subsec:preprocess_otsp}), according to the expected number of surgeries per block obtained from the Overtime and Cancellation module.
-By doing so, we compare the intervals across subspecialties in a common unit (blocks) that is directly relevant for the scheduling module, rather than in terms of patients.
-Essentially, the number of patients that can be treated in a block depends on the subspecialty-specific surgery duration distributions and the cancellation rules defined by the Overtime and Cancellation module.
-
+We first discuss the results of the Overtime and Cancellation module, which estimates the number of surgeries that can be planned in each block while controlling cancellation risk. 
+We then present the results of the $(R,Q)$ policy, which defines the control intervals for each subspecialty. 
+These intervals are reported after conversion into block units (see Section~\ref{subsec:preprocess_otsp}), using the expected number of surgeries per block obtained from the Overtime and Cancellation module. 
+This conversion allows the control intervals to be compared across subspecialties in a common operational unit that is directly relevant to the scheduling module. 
+In practice, the number of patients that can be treated in a block depends on both the subspecialty-specific distribution of surgical durations and the cancellation rules defined by the Overtime and Cancellation module.
 
 \subsubsection{Overtime and Cancellation Results\label{sec:overtime_results}}
-This section reports the experimental results of the Overtime and Cancellation module focusing on Foot Orthopaedics as a representative subspecialty, although the same analysis is performed for all subspecialities (see Appendix~\ref{app:oc_results}).
-Figure~\ref{fig:newsvendor_pmf} shows the probability distribution of the number of surgeries completed in a Foot Orthopaedics block for different numbers of planned surgeries. 
-The distributions are computed after applying the newsvendor-based cancellation rule defined in Section~\ref{sec:cancel}, according to which an additional surgery is only started if the remaining session time is sufficiently large. 
-%Thus, the figure represents the effective surgical output of a block, rather than its nominal planned workload.
+This section reports the results of the Overtime and Cancellation module for Foot Orthopaedics, which is used as a representative subspecialty. 
+The same analysis is performed for all subspecialties, with the complete results reported in Appendix~\ref{app:oc_results}. 
+Figure~\ref{fig:newsvendor_pmf} shows the probability distribution of the number of surgeries completed in a Foot Orthopaedics block for different planned values of $\plannedsurgs$. 
+The distributions are obtained after applying the newsvendor-based cancellation rule defined in Section~\ref{sec:cancel}, according to which an additional surgery is performed only if the remaining session time is sufficiently large.
 
 \begin{figure}[htb]
     \centering
@@ -84,22 +83,21 @@ The distributions are computed after applying the newsvendor-based cancellation 
     \label{fig:newsvendor_pmf}
 \end{figure}
 
-The results show that conservative planning almost eliminates cancellation risk, but at the cost of low block productivity. 
-Indeed, when a single surgery is assigned to a session ($\plannedsurgs=1$), it always goes ahead and therefore the probability of cancellations is zero.
-Therefore, allocating a single surgery in a session ($\plannedsurgs=1$) is a safe, but it is an inefficient decision for this subspecialty. 
-For when we plan two surgeries ($\plannedsurgs=2$), the probability mass remains highly concentrated around two completed surgeries, suggesting that the block can usually absorb this workload without substantial cancellation risk. 
-When planning three surgeries ($\plannedsurgs=3$), the distribution becomes more dispersed: completing all three surgeries remains feasible, but the probability of completing only two surgeries becomes relevant. 
-This indicates that the third planned surgery increases expected throughput while also exposing the system to a non-negligible risk of cancellation. 
-Finally, for $\plannedsurgs=4$, the probability of completing all planned surgeries becomes very low, and the realised output is more likely to remain below the nominal plan.
+The results reveal a clear trade-off between block productivity and cancellation risk. 
+When only one surgery is planned in a session ($\plannedsurgs=1$), the surgery is always completed and the cancellation probability is zero. 
+Although this planning decision is operationally safe, it underuses the available block capacity for this subspecialty. 
+When two surgeries are planned ($\plannedsurgs=2$), the probability mass remains highly concentrated around two completed surgeries, indicating that the block can usually accommodate this workload without substantial cancellation risk. 
+When three surgeries are planned ($\plannedsurgs=3$), the distribution becomes more dispersed: completing all three surgeries remains feasible, but the probability of completing only two surgeries becomes more relevant. 
+This indicates that the third planned surgery increases expected throughput while introducing a non-negligible cancellation risk. 
+Finally, when four surgeries are planned ($\plannedsurgs=4$), the probability of completing all planned surgeries becomes very low, and the realised output is more likely to remain below the nominal plan.
 
-These results provide an important insight into the trade-off between productivity and cancellation risk.
-The block does not behave as a deterministic capacity unit capable of accommodating a fixed number of surgeries with certainty. 
+These findings highlight that an OT block should not be treated as a deterministic capacity unit capable of accommodating a fixed number of surgeries with certainty. 
 Instead, increasing the number of planned surgeries changes the probability distribution of realised surgical output. 
-Therefore, using only nominal capacity would overestimate the contribution of a block when many surgeries are assigned to it. 
-This is particularly relevant for the proposed framework, since the $(R,Q)$ policy may indicate the need to treat a certain number of patients in the month cycle, but the overtime module determines how much of this demand can realistically be assigned to each block without creating excessive cancellation risk.
+Consequently, using only nominal capacity would overestimate the effective contribution of a block, particularly when many surgeries are assigned to the same session. 
+This insight is central to the proposed framework: while the $(R,Q)$ policy may indicate that a certain number of patients should be released for treatment during a monthly cycle, the Overtime and Cancellation module determines how much of this demand can realistically be assigned to each block without creating excessive cancellation risk.
 
 Figure~\ref{fig:gain_cost} complements this analysis by comparing the expected marginal gain and the expected cancellation cost associated with each value of $\plannedsurgs$ for the same subspecialty. 
-While Figure~\ref{fig:newsvendor_pmf} shows the probability of different realised outputs, Figure~\ref{fig:gain_cost} converts this uncertainty into a decision criterion for selecting the planned number of surgeries per block, as defined by the inventory-based model in Section~\ref{sec:patientsperblock}.
+Whereas Figure~\ref{fig:newsvendor_pmf} reports the probability distribution of realised outputs, Figure~\ref{fig:gain_cost} converts this uncertainty into a decision criterion for selecting the planned number of surgeries per block, as defined by the inventory-based model in Section~\ref{sec:patientsperblock}.
 
 \begin{figure}[htb]
     \centering
@@ -109,98 +107,105 @@ While Figure~\ref{fig:newsvendor_pmf} shows the probability of different realise
 \end{figure}
 
 The gain--cost comparison confirms that planning too few surgeries underuses available OT capacity, whereas planning too many surgeries produces an unfavourable cancellation profile. 
-For $\plannedsurgs=1$ and $\plannedsurgs=2$ (i.e., planning 1 or 2 surgeries), the expected gain is substantially higher than the expected cost, indicating that these planning levels are operationally safe. 
-However, they are also conservative, especially when compared with the additional throughput that may be obtained by planning a third surgery. 
-When we plan 3 surgeries, the expected cancellation cost increases, but it remains below the expected gain. 
-This suggests that the third surgery is still justified, since it improves expected block productivity without making the cancellation risk dominant.
+For $\plannedsurgs=1$ and $\plannedsurgs=2$, the expected gain is substantially higher than the expected cost, indicating that these planning levels are operationally conservative. 
+However, they also leave potential throughput unused, particularly when compared with the additional output that can be obtained by planning a third surgery. 
+For $\plannedsurgs=3$, the expected cancellation cost increases, but remains below the expected gain. 
+This suggests that the third planned surgery is still justified, as it improves expected block productivity without making cancellation risk dominant.
 
 The main change occurs when moving from $\plannedsurgs=3$ to $\plannedsurgs=4$. 
 At this point, the expected gain drops sharply, while the expected cancellation cost increases substantially. 
-This pattern indicates that the fourth planned surgery contributes little to expected completed output and mainly increases the likelihood of cancellations. 
-Consequently, the experimental result for Foot Orthopaedics supports an optimal number of $\optplannedsurgs=3$ as the recommended number of surgeries to plan per block. 
-This value represents the highest planning level for which the expected benefit of adding surgeries still compensates for the expected cancellation cost.
+This pattern indicates that the fourth planned surgery contributes little to the expected number of completed surgeries and mainly increases the likelihood of cancellations. 
+Therefore, for Foot Orthopaedics, the experimental results support $\optplannedsurgs=3$ as the recommended number of surgeries to plan per block. 
+This value represents the highest planning level for which the expected benefit of adding surgeries still compensates for the associated cancellation cost.
 
-Thus, the overtime and cancellation results show that the effective capacity of each block is subspecialty-specific as it depends on the empirical distribution of surgical durations. 
-For Foot Orthopaedics, as an example, the experiment indicates that three planned surgeries per block provide the best balance between productivity and cancellation risk. 
-This output is then combined with the $(R,Q)$ limits to determine how many blocks should be allocated to this subspecialty in each month.
-Therefore, the MILP does not allocate blocks based only on nominal session availability, but on a probabilistic estimate of how many surgeries each allocated block can realistically deliver while controlling overtime-related cancellations.
+Thus, the Overtime and Cancellation results show that the effective capacity of each block is subspecialty-specific and depends on the empirical distribution of surgical durations. 
+For Foot Orthopaedics, three planned surgeries per block provide the best balance between productivity and cancellation risk. 
+This output is then combined with the $(R,Q)$ limits to determine how many blocks should be allocated to this subspecialty in each monthly cycle. 
+Therefore, the MILP does not allocate blocks solely on the basis of nominal session availability. 
+Instead, it uses a probabilistic estimate of how many surgeries each allocated block can realistically deliver while controlling overtime-related cancellations.
 
 
 \subsubsection{$(R,Q)$ Batch Size Results}
-In this section, we report the control intervals obtained by the $(R,Q)$ policy for all subspecialties.
-Figure~\ref{fig:rq_intervals} summarises these control intervals, already converted to block units (see Section~\ref{sec:preprocess_otsp}). 
-To improve readability, subspecialties are ordered according to the interval width, $\upq - \lowq$, rather than alphabetically. 
+
+This section reports the control intervals obtained from the $(R,Q)$ policy for all subspecialties. 
+Figure~\ref{fig:rq_intervals} summarises these intervals after conversion into block units (see Section~\ref{subsec:preprocess_otsp}). 
+To improve readability, subspecialties are ordered according to interval width, $\upq - \lowq$, rather than alphabetically.
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=0.9\textwidth]{images/rq_blocks_interval.png}
-    \caption{Control intervals for the $(R,Q)$ policy across subspecialties. It represents the admissible range of blocks that can be allocated to each subspecialty when its queue exceeds the reorder point $R$.}
+    \caption{Control intervals for the $(R,Q)$ policy across subspecialties. The intervals represent the admissible range of blocks that can be allocated to each subspecialty when its queue exceeds the reorder point $R$.}
     \label{fig:rq_intervals}
 \end{figure}
 
-The results reveal substantial heterogeneity across subspecialities. 
+The results reveal substantial heterogeneity across subspecialties. 
 Although most services are associated with relatively narrow feasible intervals, a smaller group exhibits considerably higher lower and upper limits. 
-As expected, this pattern is consistent with the variation in the patient demand distributions. 
-Subspecialties with higher expected demands will trigger higher values of both $\lowq$ and $\upq$, whereas higher variances will be associated with wider intervals from $\lowq$ to $\upq$.
+This pattern is consistent with variation in patient demand distributions. 
+Subspecialties with higher expected demand tend to produce higher values of both $\lowq$ and $\upq$, whereas higher demand variability tends to generate wider intervals.
 
-The high-interval subspecialities, such as ENT (Ear, Nose, Throat), NEURO (neurosurgery), and  VASC (vascular surgery), provide flexibility, as the number of blocks (and consequently the number of patients) released for scheduling can vary considerably from one planning cycle to another without compromising waiting time requirements. 
-In a high-demand public hospital, this flexibility is important for broad-access or high-referral subspecialities, as they may accumulate patients rapidly when surgical capacity is constrained.
-Moreover, they may also release significant surgical capacity to other specialities when their waiting times are low. 
+High-interval subspecialties, such as ENT (Ear, Nose and Throat), NEURO (Neurosurgery), and VASC (Vascular Surgery), provide greater flexibility because the number of blocks, and consequently the number of patients released for scheduling, can vary substantially from one planning cycle to another without compromising waiting-time requirements. 
+In a high-demand public hospital, this flexibility is particularly important for broad-access or high-referral subspecialties, which may accumulate patients rapidly when surgical capacity is constrained. 
+At the same time, these subspecialties may release significant capacity to other services when their own queues are under control.
 
-By contrast, the low-interval subspecialties operate within very tight allocation intervals. 
-This does not imply lower clinical importance; rather, that their demand is smaller and more stable from the perspective of queue replenishment. 
-The medium group occupies an intermediate position, representing services whose demand is recurrent enough to require enable some flexibility, but not sufficiently large or variable to dominate the release process. 
+By contrast, low-interval subspecialties operate within tighter allocation ranges. 
+This does not imply lower clinical importance. 
+Rather, it indicates that their demand is smaller and more stable from the perspective of queue replenishment. 
+Subspecialties in the medium group occupy an intermediate position: their demand is recurrent enough to require some flexibility, but not sufficiently large or variable to dominate the release process.
 
-These results have direct implications for CMP. 
-As the $(R,Q)$ limits determine the number of patients transferred from the queue-management layer to the tactical planning stage, subspecialties with wider and higher intervals are more likely to influence capacity allocation and overtime requirements. 
-This does not necessarily mean that these services should always receive more operating-theatre time.
-In fact, it indicates that their larger and more variable demand must be explicitly represented in the tactical optimisation problem. 
-Conversely, subspecialties with narrow intervals generate smaller and more predictable demand, reducing their impact on capacity allocation decisions.
+These results have direct implications for capacity management planning. 
+Because the $(R,Q)$ limits determine the number of patients transferred from the queue-management layer to the tactical planning stage, subspecialties with wider and higher intervals are more likely to influence capacity allocation and overtime requirements. 
+This does not necessarily mean that these services should always receive more operating-theatre time. 
+Instead, it indicates that their larger and more variable demand must be explicitly represented in the tactical optimisation problem. 
+Conversely, subspecialties with narrow intervals generate smaller and more predictable demand releases, reducing their impact on capacity allocation decisions.
 
-Additionally, recall that the $(R,Q)$ policy only triggers allocation decisions to a subspeciality when its queue size exceeds $R$. 
-This means that even subspecialities with wider intervals will not necessarily dominate the block allocation process, as they will only be considered for scheduling when their queues are sufficiently large. 
-This mechanism ensures that the system remains responsive and adaptive to actual demand conditions, rather than being driven solely by the potential variability in patient arrivals.
+It is also important to recall that the $(R,Q)$ policy triggers allocation decisions for a subspecialty only when its queue size exceeds the threshold $R$. 
+Thus, even subspecialties with wider intervals will not necessarily dominate the block allocation process, because they are considered for scheduling only when their queues are sufficiently large. 
+This feedback mechanism ensures that the system remains responsive to actual demand conditions, rather than being driven solely by potential variability in patient arrivals.
 
-Therefore, the control intervals provide a quantitative link between queue dynamics and tactical planning. 
-They translate differences in subspeciality-specific demand into structured release limits, ensuring that the scheduling modules are provided with an adaptive and flexible demand that is consistent with both the statistical behaviour of the queues and the operational characteristics of a high-demand public hospital such as \hcunicamp.
+Overall, the control intervals provide a quantitative link between queue dynamics and tactical planning. 
+They translate subspecialty-specific demand characteristics into structured release limits, ensuring that the scheduling module receives adaptive demand inputs that are consistent with both the statistical behaviour of the queues and the operational characteristics of a high-demand public hospital such as \hcunicamp.
+
 
 \subsection{Long-term Stability Analysis\label{sec:otscheduling}}
-In this section, we evaluate the long-term stability of the system under the proposed framework and compares it with the baseline policy. 
-The analysis focuses on two complementary dimensions: the evolution of patient queues over time and the monthly allocation of operating theatre (OT) capacity. 
-Together, these results allow us to assess whether the proposed framework not only reduces queues locally, but also supports stable and demand-responsive planning at the system level.
+
+This section evaluates the long-term stability of the system under the proposed framework and compares it with the baseline policy. 
+The analysis focuses on two complementary dimensions: the evolution of patient queues over time and the monthly allocation of operating-theatre capacity. 
+Together, these results allow us to assess whether the proposed framework not only reduces individual queues, but also supports stable and demand-responsive planning at the system level.
+
 
 \subsubsection{Queue Management Results}
-The one-year simulation horizon provides a detailed view of queue dynamics under both policies. 
-Results are reported over with the 10--90\% percentile interval to characterise variability across the simulations.
 
-Figure~\ref{fig:queue_evolution_eda} presents the evolution of the queue for the subspecialty \textit{Upper Digestive Endoscopy (UDP) -- Pediatric}. 
-Under the proposed approach (Figure~\ref{fig:eda_proposed}), the system exhibits two distinct phases. 
-Initially, a transient phase is observed, in which the queue decreases steadily from its initial level. 
-This phase is followed by a controlled regime, where the queue starts to stabilise (approximately between months 6 and 9) and then fluctuates around the $R$ threshold. 
-This transition reflects the action of the $(R,Q)$ policy, which introduces a demand-driven mechanism: allocation decisions are triggered only when the queue exceeds $R$, thereby preventing unnecessary servicing once the waiting-list has been reduced. 
-As a result, the system converges towards a stable operating point, where queues are maintained within a controlled region that balances waiting time requirements with capacity constraints.
+The one-year simulation horizon provides a detailed view of queue dynamics under both policies. 
+Results are reported using the 10--90\% percentile interval to characterise variability across simulation replications.
+
+Figure~\ref{fig:queue_evolution_eda} presents the queue evolution for \textit{Upper Digestive Endoscopy (UDP) -- Paediatric}. 
+Under the proposed framework (Figure~\ref{fig:eda_proposed}), the system exhibits two distinct phases. 
+The first is a transient phase, during which the queue decreases steadily from its initial level. 
+This is followed by a controlled regime, in which the queue starts to stabilise, approximately between months 6 and 9, and then fluctuates around the reorder threshold $R$. 
+This transition reflects the action of the $(R,Q)$ policy, which introduces a demand-driven feedback mechanism: allocation decisions are triggered only when the queue exceeds $R$, thereby preventing unnecessary service once the waiting list has been reduced. 
+As a result, the system converges towards a stable operating region that balances waiting-time requirements with capacity constraints.
 
 \begin{figure}[htb]
     \centering
     \begin{subfigure}[b]{0.49\textwidth}
         \includegraphics[width=\textwidth]{images/queue_trend_eda_infantil.png}
-        \caption{Queue Evolution for the Proposed framework.}
+        \caption{Queue evolution under the proposed framework.}
         \label{fig:eda_proposed}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.49\textwidth}
         \includegraphics[width=\textwidth]{images/baseline_queue_trend_eda_infantil.png}
-        \caption{Queue Evolution for the Baseline policy.}
+        \caption{Queue evolution under the baseline policy.}
         \label{fig:eda_baseline}
     \end{subfigure}
-    \caption{Evolution of patient queues over time for the subspecialty \textit{UDP -- Pediatric}.}
+    \caption{Evolution of patient queues over time for the subspecialty \textit{UDP -- Paediatric}.}
     \label{fig:queue_evolution_eda}
 \end{figure}
 
 In contrast, the baseline policy leads to a markedly different trajectory (Figure~\ref{fig:eda_baseline}). 
-The queue grows throughout the simulation horizon, accompanied by an increasing dispersion across replications. 
+The queue grows throughout the simulation horizon and is accompanied by increasing dispersion across replications. 
 This pattern suggests a persistent mismatch between demand and allocated capacity for this subspecialty. 
-Since the baseline allocation rule does not explicitly account for the current queue state, capacity may be assigned even when it is not most needed, while queues that require additional intervention continue to accumulate. 
+Because the baseline allocation rule does not explicitly account for the current queue state, capacity may be assigned when it is not most needed, while queues requiring additional intervention continue to accumulate.
 
 \begin{figure}[htb]
     \centering
@@ -220,15 +225,16 @@ Since the baseline allocation rule does not explicitly account for the current q
 \end{figure}
 
 A similar stability pattern is observed for \textit{Gastroenterology -- Esophagus-Stomach-Duodenum (ESD)} in Figure~\ref{fig:queue_evolution_gast_eed}. 
-Under the proposed framework (Figure~\ref{fig:gast_proposed}), the initial waiting-list is reduced rapidly and the queue subsequently remains close to the reorder threshold. 
-This indicates that the $(R,Q)$ mechanism adapts allocation decisions to the evolving state of every subspecialty while maintaining a consistent target operating region. 
-The queue does not continue decreasing indefinitely; instead, it stabilises around $R$, which is the intended behaviour of a reorder-point policy that aims to regulate rather than eliminate queues.
+Under the proposed framework (Figure~\ref{fig:gast_proposed}), the initial waiting list is reduced rapidly and the queue subsequently remains close to the reorder threshold. 
+This indicates that the $(R,Q)$ mechanism adapts allocation decisions to the evolving state of each subspecialty while maintaining a consistent target operating region. 
+Importantly, the queue does not continue decreasing indefinitely. 
+Instead, it stabilises around $R$, which is the intended behaviour of a reorder-point policy designed to regulate, rather than eliminate, queues.
 
 For the baseline policy (Figure~\ref{fig:gast_baseline}), the queue also decreases over time. 
 However, this local improvement should not be interpreted as evidence of system-wide stability. 
-As the baseline does not prioritise subspecialties according to their queue status, it may allocate capacity to subspecialties whose queues are already manageable (e.g., subspecialties with more available capacity), while other subspecialties remain congested. 
-Thus, the baseline can produce favourable trajectories for some queues while still generating inefficient allocation patterns at the system level. 
-This distinction is important: analysing a single subspecialty in isolation may obscure whether the policy is effectively coordinating capacity across the full set of queues.
+As the baseline does not prioritise subspecialties according to queue status, it may allocate capacity to services whose queues are already manageable, while other subspecialties remain congested. 
+Thus, the baseline can produce favourable trajectories for selected queues while still generating inefficient allocation patterns at the system level. 
+This distinction is important: analysing a single subspecialty in isolation may obscure whether a policy is effectively coordinating capacity across the full portfolio of surgical queues.
 
 \begin{figure}[htb]
     \centering
@@ -247,52 +253,45 @@ This distinction is important: analysing a single subspecialty in isolation may 
     \label{fig:queue_convergence_r}
 \end{figure}
 
-Figure~\ref{fig:queue_convergence_r} complements the subspecialty-level analysis by reporting the median queue trajectories for all subspecialties, normalised by their corresponding reorder threshold $R$, i.e., $\frac{Q(m)}{R} \cdot 100$, where $Q(m)$ is the queue length at month cycle $m$. 
-This normalisation enables comparison across subspecialties with different demand profiles and queue scales. 
+Figure~\ref{fig:queue_convergence_r} complements the subspecialty-level analysis by reporting the median queue trajectories for all subspecialties, normalised by their corresponding reorder threshold $R$, i.e., $\frac{Q(m)}{R} \cdot 100$, where $Q(m)$ is the queue length in monthly cycle $m$. 
+Although the baseline policy do not use the $(R,Q)$ policy, normalising queues by $R$ provides a common reference point for comparing the two approaches across subspecialties.
+Also, this normalisation enables comparisons across subspecialties with different demand profiles and queue scales.
 
-Under the proposed framework (Figure~\ref{fig:proposed_convergence}), all queues progressively concentrate around the 100\% reference line, indicating convergence towards the intended controlled region. 
-Thus, the overall pattern shows that the proposed framework regulates queues consistently across the system.
-As a consequence, the waiting time requirements are met with high probability, as the queues are maintained within the limits defined by the $(R,Q)$ policy.
-Specifically, the queues do not grow indefinitely, nor do they remain persistently above the reorder threshold.
-It means that a patient arriving to the system has a high probability of being treated within the target waiting time, since the queues are controlled to avoid excessive accumulation of patients.
+Under the proposed framework (Figure~\ref{fig:proposed_convergence}), queues progressively concentrate around the 100\% reference line, indicating convergence towards the intended controlled region. 
+This system-wide pattern shows that the proposed framework regulates queues consistently across subspecialties. 
+As a consequence, waiting-time requirements are met with high probability, because queues are maintained within the limits defined by the $(R,Q)$ policy. 
+Specifically, queues neither grow indefinitely nor remain persistently above their reorder thresholds. 
+This indicates that an arriving patient has a high probability of being treated within the target waiting time, as the policy prevents excessive patient accumulation.
 
 In contrast, the baseline policy (Figure~\ref{fig:baseline_convergence}) exhibits a more heterogeneous and unstable pattern. 
-Some subspecialties move towards lower queue levels, whereas so many others experience sustained growth and remain substantially above their reorder thresholds. 
-This dispersion reveals the absence of a system-wide stabilising mechanism: the baseline may perform adequately for selected subspecialties, but it does not ensure convergence across the full portfolio of surgical queues. 
-Even worse, the baseline may fail to meet waiting time requirements for many subspecialties, as their queues has no explicit control.
-% The comparison therefore highlights the role of the $(R,Q)$ policy as a coordination mechanism that links stochastic demand to capacity allocation decisions.
+Some subspecialties move towards lower queue levels, whereas several others experience sustained growth and remain substantially above their reorder thresholds. 
+This dispersion reveals the absence of a system-wide stabilising mechanism. 
+The baseline may perform adequately for selected subspecialties, but it does not ensure convergence across the full portfolio of surgical queues. 
+More importantly, it may fail to meet waiting-time requirements for many subspecialties, because queues are not explicitly controlled.
 
-Ultimately, these results show that the proposed framework, composed by strategic and tactical components, acts as a coordination layer between stochastic demand and deterministic scheduling decisions. 
-By driving queues towards a controlled operating region, limiting excessive waiting-list accumulation, and supporting demand-driven prioritisation, our mechanism provide meaningful long-term stability, which is a critical requirement for high-demand public hospitals.
-In contrast, the baseline policy lacks an explicit feedback mechanism based on queue status, which may lead to no compliance with waiting time requirements, resulting in locally acceptable but globally inefficient outcomes. 
+By driving queues towards a controlled operating region, limiting excessive waiting-list accumulation, and supporting demand-driven prioritisation, the proposed framework provides meaningful long-term stability, which is a critical requirement for high-demand public hospitals. 
+In contrast, the baseline policy lacks an explicit feedback mechanism based on queue status. 
+This can lead to non-compliance with waiting-time requirements and to outcomes that are locally acceptable but globally inefficient. 
 Detailed queue trajectories for all subspecialties are provided in Appendix~\ref{app:queue_evolution}.
+
 
 \subsubsection{Long-term OT Allocation Results}
 
-
-% While the $(R,Q)$ module determines when each subspecialty requires intervention, and the overtime module estimates how many surgeries can be planned in each allocated block, the OT Scheduling module translates these strategic decisions into feasible monthly allocations of OT capacity. 
-% Therefore, the scheduling module provides the operational link between queue-control decisions and theatre-level planning.
-
-% Recall that, in the proposed framework (and in our case study), the MILP does not allocate individual patients directly. 
-% Instead, it assigns OT blocks to subspecialties. 
-% For each allocated block, the expected number of planned surgeries is obtained from the overtime module, which accounts for the trade-off between overtime and cancellation risk. 
-% This modelling structure allows the MILP to operate at the same aggregation level typically used in tactical theatre planning, while preserving the connection with patient-level demand through the queue-control policy.
-
-This section analyses the long-term allocation decisions produced by the OT Scheduling module described in Section~\ref{sec:ot_scheduling}. 
-Figure~\ref{fig:room_occupancy} reports monthly operating room occupancy under the proposed framework and the baseline policy. 
+This section analyses the long-term allocation decisions produced by the OT Scheduling module described in Section~\ref{sec:ot}. 
+Figure~\ref{fig:room_occupancy} reports monthly operating-room occupancy under the proposed framework and the baseline policy. 
 Both approaches generate feasible allocations with substantial use of available capacity. 
-This is consistent with the MILP formulation, which maximizes block allocations while respecting theatre availability, subspecialty compatibility, monthly capacity limits
-For the proposed framework, specifically, the scheduling layer is able to convert planned surgical demand into executable theatre allocations.
-It means that the MILP successfully implements the strategic decisions produced by the queue-control and overtime modules, translating them into operationally meaningful theatre plans that can be executed in practice.
+This is consistent with the MILP formulation, which maximises block allocations while respecting theatre availability, subspecialty compatibility, and monthly capacity limits. 
+Specifically, for the proposed framework, this result indicates that the scheduling layer is able to convert planned surgical demand into executable theatre allocations. 
+In other words, the MILP successfully implements the strategic decisions produced by the queue-control and overtime modules, translating them into operationally meaningful theatre plans.
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=0.9\textwidth]{images/room_occupancy.png}
-    \caption{Monthly operating room occupancy under the proposed framework and the baseline policy. We calculate the number of allocated blocks in each month and divide it by the total number of available blocks to obtain the occupancy rate.}
+    \caption{Monthly operating-room occupancy under the proposed framework and the baseline policy. Occupancy is calculated as the number of allocated blocks in each month divided by the total number of available blocks. The baseline policy has no shaded area because its allocation decisions are independent of realised demand and queue states. As it attempts to allocate blocks to all subspecialties in every month, the resulting occupancy is deterministic across replications.}
     \label{fig:room_occupancy}
 \end{figure}
 
-However, the baseline systematically presents higher occupancy than the proposed framework. 
+The baseline policy systematically presents higher occupancy than the proposed framework. 
 This difference is expected and reflects the distinct logic behind the two allocation policies. 
 The baseline allocates capacity without explicitly considering whether each subspecialty queue is above or below its reorder point. 
 As a consequence, it tends to distribute theatre blocks across a larger set of subspecialties and maintains high occupancy even when some queues do not require immediate intervention.
@@ -300,36 +299,33 @@ As a consequence, it tends to distribute theatre blocks across a larger set of s
 By contrast, the proposed framework triggers allocation only when a subspecialty queue exceeds its reorder threshold $R$. 
 When the queue is below this level, the framework does not force an allocation merely to increase theatre utilisation. 
 Therefore, the lower occupancy observed in some months should not be interpreted as an inefficiency of the scheduling model. 
-Rather, it reflects a deliberate control mechanism that avoids allocating capacity to subspecialties already operating within the desired region. 
+Rather, it reflects a deliberate control mechanism that avoids allocating capacity to subspecialties already operating within the desired region.
 
 Figure~\ref{fig:specialties_allocated} supports this interpretation by showing the number of subspecialties allocated each month. 
 The baseline assigns blocks to a relatively stable and high number of subspecialties, ranging from approximately 34 to 39 throughout the simulation horizon. 
-In contrast, the proposed framework allocates fewer subspecialties in most months, with a more pronounced reduction in the second half of the year. 
-This confirms that the difference in occupancy is directly associated with the queue-control mechanism: as more queues enter the controlled region, fewer subspecialties require active allocation.
+In contrast, the proposed framework allocates fewer subspecialties in most months, with a more pronounced reduction in the second half of the year --- which is consistent with the initial waiting-list sizes of each subspecialty: we draw 6 months of demand as the initial queue, so it is expected that a more significant reduction in the number of allocated subspecialties occurs after month 6, as more queues enter the controlled region.
+This analysis confirms that the difference in occupancy is directly associated with the queue-control mechanism: as more queues enter the controlled region, fewer subspecialties require active allocation.
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=0.9\textwidth]{images/allocated_specialities.png}
-    \caption{Number of subspecialties allocated per month under the proposed framework and the baseline policy.}
+    \caption{Number of subspecialties allocated per month under the proposed framework and the baseline policy. The baseline policy has no shaded area due to the same reason in Figure~\ref{fig:room_occupancy}: its allocation decisions are independent of realised demand and queue states. As it attempts to allocate blocks to all subspecialties in every month, the resulting occupancy is deterministic across replications.}
     \label{fig:specialties_allocated}
 \end{figure}
 
-This behaviour has important implications for long-term planning. 
-A policy that keeps allocating blocks to all, or nearly all, subspecialties may produce higher utilisation rates, but it can also consume capacity on queues that are already under control, while neglecting those that require intervention.
+The behaviour observed in Figure~\ref{fig:specialties_allocated} has important implications for long-term planning. 
+A policy that allocates blocks to all, or nearly all, subspecialties may produce higher utilisation rates, but it can also consume capacity on queues that are already under control while neglecting those that require intervention. 
 The proposed framework introduces a more selective allocation logic: capacity is concentrated on subspecialties whose queues require intervention, while subspecialties below $R$ can temporarily remain unallocated. 
-This creates a controlled form of flexibility, allowing the MILP to redirect blocks over time according to the evolving state of the system rather than reproducing a fixed allocation pattern.
+This creates a controlled form of flexibility, allowing the OT scheduling MILP to redirect blocks over time according to the evolving state of the system rather than reproducing a fixed allocation pattern.
 
 This distinction is central to the interpretation of the occupancy results. 
-The baseline tends to preserve a regular allocation of subspecialties, leading to higher occupancy but weaker responsiveness to queue conditions. 
+The baseline tends to preserve regular allocation across subspecialties, leading to higher occupancy but weaker responsiveness to queue conditions. 
 The proposed framework links allocation decisions to queue status: it may increase, reduce, or temporarily suppress allocations depending on whether each subspecialty requires intervention. 
 As a result, the objective is not simply to fill the OT schedule, but to allocate theatre capacity where it contributes most to maintaining queue stability.
+In other words, the proposed framework prioritises (and indeed promotes) long-term stability and responsiveness over short-term occupancy maximisation.
 
-Lastly, it is important to note that the proposed framework aim to long-term stability rather than short-term occupancy maximisation. 
-The scheduling module is designed to implement the strategic decisions produced by the queue-control and overtime modules, which are focused on regulating queues and managing cancellation risk. 
-Therefore, the scheduling model may produce allocations that are not fully utilising available capacity in the short term, but that contribute to a more stable and responsive system in the long term.
-
-Therefore, the long-term allocation results show that the OT Scheduling module successfully implements the decisions produced by the queue-control and overtime modules. 
-The occupancy results demonstrate that the MILP generates feasible and operationally meaningful theatre plans. 
-The lower occupancy observed under the proposed framework is consistent with the $(R,Q)$ policy, since capacity is not forced into subspecialties whose queues are already below the reorder threshold. 
-The reduction in the number of allocated subspecialties further confirms this selective behaviour. 
-Thus, the proposed framework provides a planning mechanism that is feasible at the operating theatre level and responsive to the long-term dynamics of surgical queues.
+% Overall, the long-term allocation results show that the OT Scheduling module successfully implements the decisions produced by the queue-control and overtime modules. 
+% The occupancy results demonstrate that the MILP generates feasible and operationally meaningful theatre plans. 
+% The lower occupancy observed under the proposed framework is consistent with the $(R,Q)$ policy, because capacity is not forced into subspecialties whose queues are already below the reorder threshold. 
+% The reduction in the number of allocated subspecialties further confirms this selective behaviour. 
+% Thus, the proposed framework provides a planning mechanism that is feasible at the operating-theatre level and responsive to the long-term dynamics of surgical queues.
