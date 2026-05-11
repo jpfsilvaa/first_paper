@@ -1,1 +1,42 @@
 \section{Conclusions and Future Directions\label{sec:conclusion}}
+
+This paper has proposes a modular framework that integrates strategic and tactical decisions for elective surgery planning under uncertainty. 
+The framework combines waiting-list control, capacity dimensioning, and tactical operating theatre allocation within a coherent decision process. 
+Rather than solving a single large-scale holistic model, the proposed approach decomposes the problem into interconnected modules. 
+This design is particularly relevant in practice, as it allows decision-makers to adapt the parameters to different hospital contexts, or even to use a subset of the modules, while also reducing the computational burden by solving smaller and more specialised optimisation problems.
+
+The first module defines waiting-list control policies for each surgical group, establishing target numbers of patients to be scheduled in each planning cycle. 
+As part of the strategic layer of the framework, this module guides long-term queue stability and supports compliance with waiting-time requirements. 
+The second module, also within the strategic layer, uses a newsvendor-based model to define a time budget for each surgical block, explicitly representing the trade-off between using more theatre capacity and increasing the risk of overtime or cancellations due to uncertain surgery durations. 
+The distributions derived from this model are then used in an inventory-based model to determine the optimal number of surgeries to be scheduled in a block for each subspecialty. 
+Finally, the third module performs the tactical allocation of theatre blocks to subspecialties in each planning cycle, using as inputs the decisions and parameters produced by the strategic modules. 
+
+Although the tactical module was formulated as a MILP in this study, and was able to solve the scheduling problem rapidly, the framework does not depend on this specific modelling choice. 
+Other exact, heuristic, or metaheuristic methods could be used, since the main contribution lies in the integration of the modules and in the consistency between strategic and tactical decisions. 
+This highlights the flexibility of the proposed approach, as the tactical module can be adapted to another optimisation method motivated by the specific context of application, the size of the problem, or the preferences of decision-makers, while still benefiting from the strategic insights provided by the first two modules.
+
+Beyond the theoretical contribution, the framework is evaluated through a real case study in a large Brazilian public referral hospital, using real surgical data. 
+The results from the \overtimemodule~provided a quantitative assessment of the trade-off between planning additional surgeries and exposing the system to higher cancellation risk.
+It indicates that planning the nominal capacity of a surgical block as if surgery durations were deterministic is not realistic, as it may substantially increase the probability of overtime and cancellations.
+
+The queue-control policies from the \rqmodule~also played a central role in the performance of the framework. 
+The intervals defined for each waiting list were able to keep queues balanced and to ensure that waiting-time requirements were met with high probability, even under uncertain demand. 
+These intervals provide flexibility to absorb demand fluctuations while avoiding both excessive queue growth, which may lead to long waiting times, and excessively short queues, which may result in underutilisation of surgical resources.
+
+The simulation experiments further illustrate the importance of integrating strategic and tactical decisions. 
+When the theatre scheduling problem is considered in isolation, without explicitly modelling waiting-list dynamics and uncertainty in surgery durations, the resulting plans may look attractive in terms of short-term utilisation but perform poorly in practice. 
+For instance, under the baseline policy, many waiting lists grow without control, leading to excessive waiting times. 
+By contrast, the proposed framework drives the waiting lists towards their respective reorder points and keeps them stable over the simulation horizon. 
+Additionally, the results show that high theatre occupancy should not be interpreted in isolation: a policy may use more capacity while still allowing queues to deteriorate, as happened in the baseline policy. 
+In the proposed framework, lower average occupancy in some periods reflects the fact that, once a queue reaches its target region, capacity can be redirected to other groups or kept available, while waiting-time requirements remain satisfied through queue stability.
+From a managerial perspective, this provides valuable information for capacity-allocation decisions. 
+It allows hospital managers to identify theatre blocks that may be redirected to other surgical groups, emergency demand, training activities, maintenance, or other operating-centre priorities, while still preserving control over waiting lists and cancellations. 
+This is particularly relevant in public hospitals, where demand pressure is high and additional capacity is often limited.
+
+This study has some limitations that open avenues for future research. 
+First, demand was modelled as a Poisson process, based on the number of patients treated in the case-study hospital according to the historical data. 
+Future applications could incorporate observed patient arrivals and real queue trajectories over time, allowing the framework to be calibrated and validated in an operational setting. 
+Second, the framework could be extended to include bed-management decisions, both upstream and downstream of surgery. 
+Integrating operating theatre allocation with ward and ICU availability would help avoid situations in which surgical capacity is assigned to a specialty but patients cannot be operated on because the required beds are unavailable. 
+Third, a sensitivity analysis of the parameters on both the strategic and tactical layers could be performed to identify, for instance, the impact of different waiting-time requirements on the performance of the framework, or the effect of different cost structures on the trade-off between planning more surgeries and increasing cancellation risk.
+Finally, the framework could be extended to include an operational decision layer, such as the sequencing of surgeries within blocks, the allocation of specific surgical teams, and the management of emergency cases that may arise on the day of surgery.
