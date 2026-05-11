@@ -87,7 +87,7 @@ As a result, the scheduling problem can be solved as a deterministic MILP while 
 \subsubsection{MILP Formulation}
 
 Modeling the OTSP as a MILP allows us to capture the complex interactions between subspeciality demand, block capacity, and scheduling constraints in a structured manner.
-To formulate the problem, we use the the notation in Table~\ref{tab:symb}.
+To formulate the problem, we use the notation in Table~\ref{tab:symb}.
 \begin{table}[t!]
     \centering
     \caption{\label{tab:symb}Table of Symbols}
@@ -121,21 +121,21 @@ To formulate the problem, we use the the notation in Table~\ref{tab:symb}.
         $\upperblockdemand$                                         & Maximum number of blocks allocated to each subspecialty $\specialtyidx \in \specialtyset$            \\
         $\lowerblockdemand$                                         & Minimum number of blocks allocated to each subspecialty $\specialtyidx \in \specialtyset$            \\
         $\specteams_{\blockidx,\specialtyidx}$              & Number of teams of subspecialty $\specialtyidx \in \specialtyset$ available in block  $\blockidx \in \blockset$ \\
-        $\numbersanests_{\blockidx}$                       & Number of anesthesiologists available in block $\blockidx \in \blockset$                         \\
-        $\needanest_{\specialtyidx}$                       & 1 if subspecialty $\specialtyidx \in \specialtyset$ requires an anesthesiologist; 0 otherwise         \\    
+        $\numbersanests_{\blockidx}$                       & Number of anaesthetists available in block $\blockidx \in \blockset$                         \\
+        $\needanest_{\specialtyidx}$                       & 1 if subspecialty $\specialtyidx \in \specialtyset$ requires an anaesthetist; 0 otherwise         \\    
         % $\mindeficit_{\specialtyidx}$                      & Minimum number of blocks for subspecialty $\specialtyidx \in \specialtyset$            \\
-        $\anestconstant$                                   & Constant to penalize the anesthesiologist slack variable $\anestslackvar$ in the objective function ($\anestconstant = |\blockset|\cdot|\specialtyset|\cdot|\roomset|$) \\
-        $\allowedrooms_{\roomidx,\blockidx,\specialtyidx}$   & 1 if room $\roomidx \in \roomset$, in block $\blockidx \in \blockset$, can              \\
-                                                           & be used by subspecialty $\specialtyidx \in \specialtyset$ in the shift block $\blockidx \in \blockset$; 0 otherwise          \\
+        $\anestconstant$                                   & Constant to penalize the anaesthetist slack variable $\anestslackvar$ in the objective function ($\anestconstant = |\blockset|\cdot|\specialtyset|\cdot|\roomset|$) \\
+        $\allowedrooms_{\roomidx,\blockidx,\specialtyidx}$   & 1 if theatre $\roomidx \in \roomset$, in block $\blockidx \in \blockset$, is preferred to be by subspecialty $\specialtyidx \in \specialtyset$ in the shift block $\blockidx \in \blockset$; \\
+                                                           &  0 otherwise          \\
     \bottomrule
     \textbf{Variable}                         & \textbf{Description}                                                                  \\
     \midrule
-        $\blockvar$                                        & 1 if room $\roomidx \in \roomset$, in block $\blockidx \in \blockset$, is allocated to subspecialty $\specialtyidx \in \specialtyset$; 0 otherwise. \\
+        $\blockvar$                                        & 1 if theatre $\roomidx \in \roomset$, in block $\blockidx \in \blockset$, is allocated to subspecialty $\specialtyidx \in \specialtyset$; 0 otherwise. \\
                                                            & This variable is only created if the allocation is feasible (i.e., specialty $\specialtyidx$ is compatible with the theatre $\roomidx$).                \\
-        $\precvar$                                         & 1 when room $\roomidx \in \roomset$, on day $\planninghorizonidx \in \planninghorizonset$, is allocated only to subspecialty $\specialtyidx \in \specialtyset$; 0 otherwise  \\
+        $\precvar$                                         & 1 when theatre $\roomidx \in \roomset$, on day $\planninghorizonidx \in \planninghorizonset$, is allocated only to subspecialty $\specialtyidx \in \specialtyset$; 0 otherwise  \\
         $\integervar$                                      & Number of transplants to be performed in block $\blockidx \in \blockset$ by subspecialty $\specialtyidx \in \specialtyset$ \\
         % $\balancevar$                                      & Minimum allocation proportion by demand among all subspecialties   \\
-        $\anestslackvar$                                   & Slack variable for the number of anesthesiologists available in block $\blockidx \in \blockset$ \\
+        $\anestslackvar$                                   & Slack variable for the number of anaesthetists available in block $\blockidx \in \blockset$ \\
         $\teamslackvar$                                    & Slack variable for the number of teams available in block $\blockidx \in \blockset$ for subspecialty $\specialtyidx \in \specialtyset$ \\
         \bottomrule
     \end{tabular}
@@ -149,7 +149,7 @@ Formally, the first OF is defined as
 \begin{align}
     \text{Min } \displaystyle F_0 = \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyset} \teamslackvar + \anestconstant \cdot \anestslackvar, \label{eq:f0}
 \end{align}
-which minimises the total slack in team and anesthesiologist availability, with a high penalty on the latter as they are more scarce and expensive.
+which minimises the total slack in team and anaesthetist availability, with a high penalty on the latter as they are more scarce and expensive.
 The second function is given by
 \begin{align}
     \text{Min } \displaystyle F_1 = \sum_{\roomidx \in \roomset} \sum_{\blockidx \in \blockset} \sum_{\specialtyidx \in \specialtyset} \blockvar  \text{ only for variables where } \allowedrooms_{\roomidx\blockidx\specialtyidx} = 0, \label{eq:f1}
@@ -172,7 +172,7 @@ Finally, the fifth OF is defined as
 which maximises the number of sequentially allocated blocks.
 This is particularly important for improving the logistics of the surgical process, reducing the need for equipment and team transfers between theatres.
 
-With this, we formulate the problem, incorporating these OFs and constraints, but with the flexibility to accommodate other settings as needed.
+With this, we formulate the scheduling problem with the \modelname (Long-Term Operating Theatre Scheduling) model, incorporating these OFs and constraints, but with the flexibility to accommodate other settings as needed.
 
 \begin{alignat}{4}
     (\modelname) \quad & \omit\rlap{Optimize $F_0$--$F_5$}\nonumber\\
