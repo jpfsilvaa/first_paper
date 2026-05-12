@@ -5,32 +5,33 @@ To this end, we simulate the long-term surgery planning process and compare the 
 
 \subsection{Real-world Data\label{instances}}
 The dataset comprises detailed information on surgery durations, operating theatre availability, team constraints, and specialty schedules over a one-year period (2025). 
-Each month is treated as an individual instance of the OTSP, while the full year is used to evaluate long-term system behaviour.
+Each month is treated as an individual instance of the OTSP to be solved in \otschedmodule~module, while the full year is used to evaluate long-term system behaviour.
 
 \subsection{Derivation of Model Inputs}
 The data are processed to derive the inputs required for the strategic and operational components of the proposed approach.
 
 \paragraph{\textbf{Demand distributions}}
 Patient arrivals are modelled as Poisson processes. 
-For each subspecialty, the arrival rate $\lambda$ is estimated as the average monthly demand derived from historical activity.
-This parameter is used in the \rqmodule~to determine the $(R,Q)$ policy parameters, ensuring that waiting-time requirements are met with high probability despite demand uncertainty.
+For each subspecialty, the arrival rate $\lambda$ is estimated as the average monthly demand derived from historical activity from each subspecialty.
+Then, after building the demand distributions from $\lambda$, we use it as inputs for the \rqmodule~ module to determine the $(R,Q)$ policy parameters, ensuring that waiting-time requirements are met with high probability despite demand uncertainty.
 
 \paragraph{\textbf{Surgery duration distributions}}
 For each subspecialty, empirical distributions of surgery durations are estimated from historical data. 
-These distributions are used in the \overtimemodule~to evaluate the newsvendor model and determine the number of surgeries scheduled per block; see Section \ref{sec:module2}.
+These distributions are used in the \overtimemodule~module to evaluate the newsvendor model and determine the number of surgeries scheduled per block; see Section \ref{sec:module2}.
 
 \paragraph{\textbf{Tactical parameters}}
 All parameters of the \modelname~model (see Table~\ref{tab:symb} in Section~\ref{sec:ot}) are based on real-world data, i.e., the actual values observed in each month of the year 2025.
-These include OT compatibilities, staff availability, and working calendars.
+These include theatre compatibilities, staff availability, and working calendars.
 
 \subsection{Experimental Setup\label{sec:experimental_setup}}
 Experiments are conducted on a machine equipped with an Intel Core 7 150U processor (5.40 GHz) and 32 GB of RAM. 
 All modules are implemented in Python 3.12, and the MILP model is solved using SCIP 9.2.3 with default parameter settings, interfaced through the Pyomo library.
 
-For the \rqmodule, the waiting time target is set to $\waittimereq = 6$ months with confidence level $\conflevel = 0.1$, and the threshold $R$ is defined as the midpoint between $\lowq$ and $\upq$.
+For the \rqmodule~module, the waiting time target is set to $\waittimereq = 6$ months with confidence level $\conflevel = 0.1$, and the threshold $R$ is defined as the midpoint between $\lowq$ and $\upq$.
 In other words, we design the $(R,Q)$ policy to ensure that, with 90\% confidence (i.e., $1 - \conflevel$), patients are treated within 6 months from the time they join the queue, while the threshold $R$ is set to the average of the lower and upper bounds of the control interval, providing a balanced point for triggering scheduling decisions.
 
-The parameters for the \overtimemodule~are set as follows. The unit idle-time cost, $\excesscost$, is set to $1$, whereas the overtime penalty cost, $p$, is set to $2 \cdot \excesscost$.
+The parameters for the \overtimemodule~module are set as follows. 
+The unit idle-time cost, $\excesscost$, is set to $1$, whereas the overtime penalty cost, $p$, is set to $2 \cdot \excesscost$.
 Under this specification, and analogously to the example at the end of Section~\ref{sec:cancel}, the optimal time budget is given by $\safetythreshold = F^{-1}_{\rvsurgdur} \left( \dfrac{2}{3} \right)$, which implies that at least two thirds of the green-lighted surgeries are expected to be completed without incurring overtime.
 In the inventory model step of this module, the marginal value of scheduling an additional surgery in a block, denoted by $g$, is set to $2$, representing the expected gain from treating one additional patient. 
 The cancellation cost is specified as $c(x)=x^2$, where $x$ denotes the number of surgeries cancelled in a block, thereby capturing the increasing marginal cost of cancellations.
@@ -38,7 +39,7 @@ The cancellation cost is specified as $c(x)=x^2$, where $x$ denotes the number o
 \paragraph{\textbf{Baseline policy}}
 The baseline policy excludes the strategic modules. 
 All specialities are scheduled in every period, and the MILP model is solved using only operational constraints, without $(R,Q)$ control or overtime optimisation.
-Essentially, we do so by deactivating the block demand constraints~\eqref{eq:c1} and~\eqref{eq:c2} in the MILP model and using the original surgery duration distributions (without adjustment for overtime or cancellations) to drawn the number of surgeries that happened into each scheduled block.
+Essentially, we do so by deactivating the block demand constraints~\eqref{eq:c1} and~\eqref{eq:c2} in the \modelname model and using the original surgery duration distributions (without adjustment for overtime or cancellations) to drawn the number of surgeries that happened into each scheduled block.
 The patient arrival process and the operational parameters remain the same as in the proposed approach, ensuring a fair comparison.
 
 \subsection{Simulation Framework}
@@ -48,7 +49,7 @@ The system evolves over a monthly decision cycle.
 In each period, patient arrivals are realised according to the estimated demand distributions, and queues are updated accordingly. 
 Under the proposed approach, only specialties with queue size exceeding $R$ are selected for scheduling.
 
-The MILP model then determines the allocation of operating theatre blocks. For the proposed approach, the number of surgeries is sampled based on the distributions obtained from the \overtimemodule. 
+The MILP model then determines the allocation of operating theatre blocks. For the proposed approach, the number of surgeries is sampled based on the distributions obtained from the \overtimemodule~module. 
 Queues are updated after the monthly cycle, and the process repeats at each new period.
 
 \begin{figure}[ht]
@@ -62,7 +63,7 @@ To assess long-term stability of the framework and the baseline, we perform $100
 This way, we can evaluate not only the expected performance but also the variability and robustness of the proposed approach compared to the baseline policy.
 
 \subsection{Results from Strategic Decision-Making\label{sec:longterm_analysis}}
-This section reports and analyses the results obtained from the strategic components of the proposed framework, namely the \rqmodule~and the \overtimemodule. 
+This section reports and analyses the results obtained from the strategic components of the proposed framework, namely the \rqmodule~and the \overtimemodule~modules. 
 Although these two components are solved independently, their outputs are combined to support tactical decisions in the OT Scheduling module. 
 This decomposition has an important computational implication: the strategic modules are computed once, and their outputs are then used as fixed inputs by the scheduling module, which is executed at each monthly cycle of the simulation horizon.
 
@@ -93,7 +94,7 @@ When three surgeries are planned ($\plannedsurgs=3$), the distribution becomes m
 This indicates that the third planned surgery increases expected throughput while introducing a non-negligible cancellation risk. 
 Finally, when four surgeries are planned ($\plannedsurgs=4$), the probability of completing all planned surgeries becomes very low, and the realised output is more likely to remain below the nominal plan.
 
-These findings highlight that an OT block should not be treated as a deterministic capacity unit capable of accommodating a fixed number of surgeries with certainty. 
+These findings highlight that a theatre block should not be treated as a deterministic capacity unit capable of accommodating a fixed number of surgeries with certainty. 
 Instead, increasing the number of planned surgeries changes the probability distribution of realised surgical output. 
 Consequently, using only nominal capacity would overestimate the effective contribution of a block, particularly when many surgeries are assigned to the same session. 
 This insight is central to the proposed framework: while the $(R,Q)$ policy may indicate that a certain number of patients should be released for treatment during a monthly cycle, the Overtime and Cancellation module determines how much of this demand can realistically be assigned to each block without creating excessive cancellation risk.
